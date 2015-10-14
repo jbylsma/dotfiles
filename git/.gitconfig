@@ -1,0 +1,20 @@
+[color]
+	status = auto
+	branch = auto
+	interactive = auto
+	diff = auto
+[push]
+	default = tracking
+[core]
+	editor = vim
+	excludesfile = /Users/jbylsma/.gitignore_global
+	autocrlf = input
+[mergetool]
+	keepBackup = false
+[alias]
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+[merge]
+  tool = gvimdiff
+  conflictstyle = diff3
+[include]
+  path = ~/.gitconfig.local

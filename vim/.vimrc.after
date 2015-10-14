@@ -1,0 +1,35 @@
+" Theme
+set background=dark
+colorscheme molokai
+
+" 2015-02-16
+" Turn on visual bell
+set visualbell
+
+" 2015-02-12
+" Split nicely
+set splitbelow
+set splitright
+
+" Make ctags search recursively
+set tags=./tags,tags;$HOME
+
+" Override gundo mapping with vdebug
+if (exists("*Vdebug_load_keymaps"))
+  call Vdebug_load_keymaps(g:vdebug_keymap)
+  let vdebug_options['break_on_open'] = 0
+endif
+
+"Disable aggressive PHP checking
+" let g:syntastic_phpcs_disable=1
+let g:syntastic_php_checkers=['php']
+let g:syntastic_php_checkers=['php', 'phpmd']
+
+"Use PHP syntax with files
+au BufNewFile,BufRead *.install set filetype=php
+au BufNewFile,BufRead *.test set filetype=php
+au BufNewFile,BufRead *.inc set filetype=php
+
+" 2014-08-30
+" Janus uses :NERDTreeMirror whenever NT is invoked. Override.
+map <Leader>n :NERDTree<CR>

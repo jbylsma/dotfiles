@@ -1,0 +1,5 @@
+" Disable LustyJuggler
+let g:loaded_lustyjuggler = 1
+
+" Suppress LustyExplorer's message
+set hidden

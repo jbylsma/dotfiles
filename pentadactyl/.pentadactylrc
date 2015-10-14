@@ -1,0 +1,84 @@
+"hg6830
+
+loadplugins '\.(js|penta)$'
+group user
+
+""""""""""""""
+" Preferences
+""""""""""""""
+
+" Disable smooth scroll
+set! general.smoothScroll=false
+
+" Use blank page for home
+set! browser.startup.homepage=about:blank
+
+" Use Google for search
+set! browser.search.countryCode=US
+set! browser.search.defaultenginename=Google
+set! browser.search.defaultenginename.US=Google
+set! browser.search.isUS=true
+set! browser.search.region=US
+
+" Don't close the last window
+set! browser.tabs.closeWindowWithLastTab=false
+
+" Disable tab group (Panorama) animation
+set! browser.panorama.animate_zoom=false
+
+" Enable "Do Not Track" header
+set! privacy.donottrackheader.enabled=true
+
+" Don't use <C-v> for individual pass throughs.
+" Good for Linux. Still having problems in Gmail compose mode.
+map -builtin <C-c> <Pass>
+map -builtin -m command-line,insert <C-v> <Pass>
+
+" Force the status line to display when toggling fullscreen.
+au Fullscreen .* :set guioptions+=s
+
+" Set up fonts
+highlight FontFixed font-family: "Ubuntu Mono" !important; font-size: 13px;
+highlight -append FontCode font-family: "Ubuntu Mono" !important;
+highlight -append Hint font-family: "Ubuntu Mono"; font-size: 11px !important;
+
+"""""""""""
+" Commands
+"""""""""""
+
+" Flush browser DNS
+command flushdns set! network.dnsCacheExpiration=0 | set! network.dnsCacheExpiration&
+
+" Enable Reader mode and create command
+set! reader.parse-on-load.enabled=true
+command reader execute "open about:reader?url=" + content.location.href
+
+""""""""""
+" Add-ons
+""""""""""
+
+" Force uBlock to use legacy interface
+set! extensions.ublock.forceLegacyToolbarButton=true
+set! extensions.ublock0.forceLegacyToolbarButton=true
+
+" Keyconfig: disable certain keys
+" TODO: Are these disabled just for Pentadactyl? Switch to nmaps?
+javascript <<EOF
+  var keys = [
+    'focusChatBar',
+    'goBackKb',
+    'goBackKb2',
+    'goFowardKb2',
+    'key_find', // Find
+    'key_search',
+    'xxx_key31_cmd_handleBackspace', // goBackKb
+    'xxx_key32_cmd_handleShiftBackspace', // goForwardKb
+  ];
+
+  keys.forEach(function(key) {
+    prefs.set('keyconfig.main.' + key, '!][][');
+  });
+EOF
+
+" Load local pentadactyl configuration
+source! $HOME/.pentadactylrc.local
