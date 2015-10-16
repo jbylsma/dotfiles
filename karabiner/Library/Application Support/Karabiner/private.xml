@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<root>
+  <item>
+    <name>Change Show Dashboard to Show Desktop</name>
+    <identifier>private.swap_dashboard_and_exposeall</identifier>
+    <autogen>
+      __KeyToKey__
+      KeyCode::DASHBOARD,
+      KeyCode::EXPOSE_ALL, ModifierFlag::COMMAND_L
+    </autogen>
+  </item>
+  <item>
+    <name>Change Show Launchpad to Show Desktop</name>
+    <identifier>private.swap_launchpad_and_exposeall</identifier>
+    <autogen>
+      __KeyToKey__
+      KeyCode::LAUNCHPAD,
+      KeyCode::EXPOSE_ALL, ModifierFlag::COMMAND_L
+    </autogen>
+  </item>
+</root>
