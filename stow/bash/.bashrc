@@ -11,7 +11,9 @@ if [ -x /usr/libexec/path_helper ]; then
   source /etc/profile
 fi
 
-# Append history instead of overwriting
+# History configuration
+export HISTSIZE=
+export HISTFILESIZE=
 shopt -s histappend
 
 # Terminal configuration
