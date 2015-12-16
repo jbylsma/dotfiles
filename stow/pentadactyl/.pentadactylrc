@@ -34,6 +34,27 @@ set! privacy.donottrackheader.enabled=true
 map -builtin <C-c> <Pass>
 map -builtin -m command-line,insert <C-v> <Pass>
 
+" Disable certain keys
+javascript <<EOF
+  var keys = [
+    '<M-S-c>', // focusChatBar
+    '<M-[>', // goBackKb
+    '<M-Left>', // goBackKb
+    '<BS>', // goBackKb
+    '<M-]>', // goFowardKb
+    '<M-Right>', // goFowardKb
+    '<S-BS>', // goFowardKb
+    '<M-f>', // Find
+    '<M-g>', // Find Again
+    '<F3>', // Find Again
+    '<M-k>', 'key_search',
+  ];
+
+  keys.forEach(function(key) {
+    dactyl.execute('nmap -builtin ' + key + ' <Nop>');
+  });
+EOF
+
 " Force the status line to display when toggling fullscreen.
 au Fullscreen .* :set guioptions+=s
 
@@ -60,25 +81,6 @@ command reader execute "open about:reader?url=" + content.location.href
 " Force uBlock to use legacy interface
 set! extensions.ublock.forceLegacyToolbarButton=true
 set! extensions.ublock0.forceLegacyToolbarButton=true
-
-" Keyconfig: disable certain keys
-" TODO: Are these disabled just for Pentadactyl? Switch to nmaps?
-javascript <<EOF
-  var keys = [
-    'focusChatBar',
-    'goBackKb',
-    'goBackKb2',
-    'goFowardKb2',
-    'key_find', // Find
-    'key_search',
-    'xxx_key31_cmd_handleBackspace', // goBackKb
-    'xxx_key32_cmd_handleShiftBackspace', // goForwardKb
-  ];
-
-  keys.forEach(function(key) {
-    prefs.set('keyconfig.main.' + key, '!][][');
-  });
-EOF
 
 " Load local pentadactyl configuration
 source! $HOME/.pentadactylrc.local
