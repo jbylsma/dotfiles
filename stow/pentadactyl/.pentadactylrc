@@ -47,7 +47,7 @@ javascript <<EOF
     '<M-f>', // Find
     '<M-g>', // Find Again
     '<F3>', // Find Again
-    '<M-k>', 'key_search',
+    '<M-k>', // Key Search
   ];
 
   keys.forEach(function(key) {
