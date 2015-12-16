@@ -79,7 +79,6 @@ command reader execute "open about:reader?url=" + content.location.href
 """"""""""
 
 " Force uBlock to use legacy interface
-set! extensions.ublock.forceLegacyToolbarButton=true
 set! extensions.ublock0.forceLegacyToolbarButton=true
 
 " Load local pentadactyl configuration
