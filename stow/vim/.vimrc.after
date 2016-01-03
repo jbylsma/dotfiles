@@ -33,3 +33,7 @@ au BufNewFile,BufRead *.inc set filetype=php
 " 2014-08-30
 " Janus uses :NERDTreeMirror whenever NT is invoked. Override.
 map <Leader>n :NERDTree<CR>
+
+if filereadable(expand("~/.vimrc.after.local"))
+  source ~/.vimrc.after.local
+endif
