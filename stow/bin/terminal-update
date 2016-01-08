@@ -55,7 +55,7 @@ update_dactyl() {
   git fetch origin
   if [[ "$(dactyl_commit_get)" != "$(dactyl_commit_get "${dactyl_branch}")" ]]; then
     echo "Installing new Pentadactyl"
-    git rebase "${dactyl_branch}"
+    git pull
   else
     echo "Already up-to-date."
   fi
