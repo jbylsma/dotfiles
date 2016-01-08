@@ -83,6 +83,27 @@ if [ -f $HOME/.bcrc ]; then
   export BC_ENV_ARGS=$HOME/.bcrc
 fi
 
+# Quickly change to the webroot of Drupal site
+if _which drush; then
+  function dcd {
+    local path
+    local target
+
+    target="${1:-root}"
+    path="$(drush dd --local-only "${target}" 2>/dev/null)"
+
+    if [[ $? -eq 0 ]]; then
+      if ! cd "${path}"; then
+        echo "Could not change to directory ${path}."
+        return 1
+      fi
+    else
+      echo "Target '${target}' not found."
+      return 1
+    fi
+  }
+fi
+
 # Disable Wine debugger everywhere
 export WINEDEBUG=-all
 
