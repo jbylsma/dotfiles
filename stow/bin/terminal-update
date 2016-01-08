@@ -1,0 +1,78 @@
+#!/bin/bash
+set -e
+
+#
+title() {
+  local char
+  local title
+
+  char='*'
+  title="$1"
+
+  printf "\n%$((${#title} + 4))s\n" | tr ' ' "${char}"
+  printf "%s* ${title} *\n"
+  printf "%$((${#title} + 4))s\n" | tr ' ' "${char}"
+}
+
+#
+update_janus() {
+  local janus_dir
+
+  janus_dir="${HOME}/.vim"
+
+  title "Janus"
+  cd "${janus_dir}"
+  rake
+}
+
+#
+update_brew() {
+  title "Brew"
+  brew update
+  brew upgrade --all
+}
+
+dactyl_commit_get() {
+  git rev-parse "${1:-HEAD}"
+}
+
+#
+update_dactyl() {
+  local dactyl_dir
+  local dactyl_branch
+
+  dactyl_branch="origin/master"
+  dactyl_dir="${HOME}/usr/src/dactyl"
+
+  title "Pentadactyl"
+
+  # Make sure dactyl exists
+  [[ ! -d "${dactyl_dir}" ]] && \
+    echo "Dactyl directory could not be found." && \
+    return
+
+  cd "${dactyl_dir}"
+  git fetch origin
+  if [[ "$(dactyl_commit_get)" != "$(dactyl_commit_get "${dactyl_branch}")" ]]; then
+    echo "Installing new Pentadactyl"
+    git rebase "${dactyl_branch}"
+  else
+    echo "Already up-to-date."
+  fi
+}
+
+update_composer() {
+  title "Composer"
+  composer self-update
+  composer global update
+}
+
+#
+main() {
+  update_janus
+  update_brew
+  update_dactyl
+  update_composer
+  echo -e "\n${0} completed"
+}
+main

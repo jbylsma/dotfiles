@@ -1,0 +1,56 @@
+#!/bin/bash
+readonly USR=jbylsma
+readonly GROUP=QUOTIENT-INC\\LinuxUsers
+
+###
+#
+usage() {
+  cat >&2 <<EOF
+Usage: $(basename "$0") [-gh]
+	Recursively sets file permissions for web development.
+
+Arguments:
+	-g GROUP  Set group to GROUP, otherwise uses default group ${GROUP}
+	-h        Show helps
+
+EOF
+}
+
+###
+#
+main() {
+  local group
+
+  group="${GROUP}"
+
+  while getopts ":g:h" opt; do
+    case "${opt}" in
+      h)
+        usage
+        exit
+        ;;
+      g)
+        group="${OPTARG}"
+        ;;
+      \?)
+        echo "Invalid option: -${OPTARG}" >&2
+        exit 1
+        ;;
+      :)
+        echo "Option -${OPTARG} requires an argument" >&2
+        exit 1
+    esac
+  done
+
+  echo "Setting user and group to ${USR}:${group}"
+  find . -exec chown "${USR}:${group}" {} + \
+
+  echo "Setting directory permissions"
+  find . -type d -exec chmod 2775 {} +
+
+  echo "Setting file permissions"
+  find . -type f -exec chmod 664 {} +
+
+  echo "Done"
+}
+main "$@"
