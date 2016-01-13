@@ -31,8 +31,8 @@ set! privacy.donottrackheader.enabled=true
 
 " Don't use <C-v> for individual pass throughs.
 " Good for Linux. Still having problems in Gmail compose mode.
-noremap <C-c> <C-v><C-c>
-noremap <C-v> <C-v><C-v>
+map -builtin <C-c> <C-v><C-c>
+map -builtin <C-v> <C-v><C-v>
 
 " Disable certain keys
 javascript <<EOF
