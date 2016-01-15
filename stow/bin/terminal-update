@@ -74,7 +74,7 @@ update_dactyl() {
 update_composer() {
   title "Composer"
 
-  _which composer || \
+  ! _which composer && \
     echo "composer not found" >&2 && \
     return
 
