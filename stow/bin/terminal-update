@@ -2,6 +2,11 @@
 set -e
 
 #
+function _which() {
+  which "$@" >/dev/null 2>&1
+}
+
+#
 title() {
   local char
   local title
@@ -28,6 +33,11 @@ update_janus() {
 #
 update_brew() {
   title "Brew"
+
+  ! _which brew && \
+    echo "Brew not found" >&2 && \
+    return
+
   brew update
   brew upgrade --all
 }
@@ -47,8 +57,8 @@ update_dactyl() {
   title "Pentadactyl"
 
   # Make sure dactyl exists
-  [[ ! -d "${dactyl_dir}" ]] && \
-    echo "Dactyl directory could not be found." && \
+  test ! -d "${dactyl_dir}" && \
+    echo "Dactyl directory could not be found." >&2 && \
     return
 
   cd "${dactyl_dir}"
@@ -63,6 +73,11 @@ update_dactyl() {
 
 update_composer() {
   title "Composer"
+
+  _which composer || \
+    echo "composer not found" >&2 && \
+    return
+
   composer self-update
   composer global update
 }
