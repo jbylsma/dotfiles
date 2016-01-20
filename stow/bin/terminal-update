@@ -20,6 +20,29 @@ title() {
 }
 
 #
+update_dotfiles() {
+  local dotfiles_branch
+  local dotfiles_dir
+
+  dotfiles_branch="origin/master"
+  dotfiles_dir="${HOME}/usr/src/dotfiles"
+
+  title "dotfiles"
+
+  test ! -d "${dotfiles_dir}" && \
+    echo "dotfiles directory could not be found." >&2 && \
+    return
+
+  git -C "${dotfiles_dir}" fetch origin
+  if [[ "$(git_commit_get HEAD)" != "$(git_commit_get "${dotfiles_branch}")" ]]; then
+    echo "Updating new dotfiles"
+    git -C "${dotfiles_dir}" pull
+  else
+    echo "Already up-to-date."
+  fi
+}
+
+#
 update_janus() {
   local janus_dir
 
@@ -42,8 +65,8 @@ update_brew() {
   brew upgrade --all
 }
 
-dactyl_commit_get() {
-  git rev-parse "${1:-HEAD}"
+git_commit_get() {
+  git rev-parse "${1}"
 }
 
 #
@@ -61,11 +84,10 @@ update_dactyl() {
     echo "Dactyl directory could not be found." >&2 && \
     return
 
-  cd "${dactyl_dir}"
-  git fetch origin
-  if [[ "$(dactyl_commit_get)" != "$(dactyl_commit_get "${dactyl_branch}")" ]]; then
-    echo "Installing new Pentadactyl"
-    git pull
+  git -C "${dactyl_dir}" fetch origin
+  if [[ "$(git_commit_get HEAD)" != "$(git_commit_get "${dactyl_branch}")" ]]; then
+    echo "Updating Pentadactyl"
+    git -C "${dactyl_dir}" pull
   else
     echo "Already up-to-date."
   fi
@@ -84,6 +106,7 @@ update_composer() {
 
 #
 main() {
+  update_dotfiles
   update_janus
   update_brew
   update_dactyl
