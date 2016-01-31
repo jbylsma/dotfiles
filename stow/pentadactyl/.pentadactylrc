@@ -74,6 +74,51 @@ command flushdns set! network.dnsCacheExpiration=0 | set! network.dnsCacheExpira
 set! reader.parse-on-load.enabled=true
 command reader execute "open about:reader?url=" + content.location.href
 
+" Tab Group commands
+
+" Create new tab group
+" TODO: Test that group doesn't already exist, even though FF allows it
+command tgnew
+  \ -nargs=+
+  \ -description "Create a new tab group"
+  \ -js <<EOT
+  tabs.getGroups(function({GroupItems}) {
+    GroupItems.newGroup().setTitle(args);
+  });
+EOT
+
+" Delete tab group
+command tgdel
+  \ -nargs=+
+  \ -description "Delete a tab group"
+  \ -js <<EOT
+  tabs.getGroups(function({GroupItems}) {
+    for (item of GroupItems.groupItems) {
+      if (item.id == args) {
+        item.closeAll();
+      }
+    }
+  });
+EOT
+
+" List tab groups
+command tgls
+  \ -nargs=0
+  \ -description "List tab groups"
+  \ -js <<EOT
+  tabs.getGroups(function({GroupItems}) {
+    let items = [];
+
+    for (item of GroupItems.groupItems) {
+      let title = item.getTitle();
+      items.push(item.id + (title ? ': ' + title : ''));
+    }
+    dactyl.echomsg(items.join("\n"));
+  });
+EOT
+
+" TODO tabgroup rename
+
 """"""""""
 " Add-ons
 """"""""""
