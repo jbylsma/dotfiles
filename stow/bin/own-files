@@ -1,39 +1,75 @@
 #!/bin/bash
-readonly USR=jbylsma
-readonly GROUP=QUOTIENT-INC\\LinuxUsers
-
-###
 #
+# Recursively sets ownership and permissions.
+#
+# TODO: Support default configuration by "source ${config}"
+
+set -e
+
+
+###############
+# Basic usage
+#
+# Arguments:
+#   None
+# Returns:
+#   None
+###############
 usage() {
   cat >&2 <<EOF
-Usage: $(basename "$0") [-gh]
+Usage: $(basename "$0") [-ghu]
 	Recursively sets file permissions for web development.
 
 Arguments:
-	-g GROUP  Set group to GROUP, otherwise uses default group ${GROUP}
-	-h        Show helps
-
+	-g GROUP  Sets group to GROUP, otherwise uses the user's primary group
+	-h        Show help
+	-u USER   Sets user to USER, otherwise uses current user
 EOF
 }
 
-###
+
+################################
+# Get primary group for a user
+# Arguments:
+#   User name or id
+# Returns:
+#   string: Group name
+################################
+get_primary_group() {
+  id -n -g "$1"
+}
+
+
+####################
+# Main
 #
+# Arguments:
+#   None
+# Returns:
+#   None
+####################
 main() {
   local group
+  local user
 
-  group="${GROUP}"
-
-  while getopts ":g:h" opt; do
+  while getopts ":g:hu:" opt; do
     case "${opt}" in
+      g)
+        group="${OPTARG}"
+        ;;
       h)
         usage
         exit
         ;;
-      g)
-        group="${OPTARG}"
+      u)
+        user="${OPTARG}"
+        if [[ -z "${group:+unassigned}" ]]; then
+          group="$(get_primary_group "${user}")"
+        fi
         ;;
       \?)
         echo "Invalid option: -${OPTARG}" >&2
+        usage
         exit 1
         ;;
       :)
@@ -42,8 +78,18 @@ main() {
     esac
   done
 
-  echo "Setting user and group to ${USR}:${group}"
-  find . -exec chown "${USR}:${group}" {} + \
+  # Assign sane defaults
+  if [[ -z "${user:+unassigned}" ]]; then
+    user="$(whoami)"
+  fi
+
+  if [[ -z "${group:+unassigned}" ]]; then
+    group="$(get_primary_group "${user}")"
+  fi
+
+  # Set permissions
+  echo "Setting user and group to ${user}:${group}"
+  find . -exec chown "${user}:${group}" {} +
 
   echo "Setting directory permissions"
   find . -type d -exec chmod 2775 {} +
