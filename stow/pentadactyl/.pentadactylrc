@@ -65,6 +65,7 @@ highlight -append Hint font-family: "Ubuntu Mono"; font-size: 11px !important;
 
 " Disable pentadactyl on Google Docs
 autocmd LocationChange docs.google.com :normal! <C-z>
+autocmd LocationChange docs.google.com :normal! gi
 
 """""""""""
 " Commands
