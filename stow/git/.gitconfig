@@ -7,8 +7,8 @@
 	default = tracking
 [core]
 	editor = vim
-	excludesfile = /Users/jbylsma/.gitignore_global
 	autocrlf = input
+	excludesfile = ~/.gitignore_global
 [mergetool]
 	keepBackup = false
 [alias]
