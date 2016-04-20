@@ -1,5 +1,9 @@
 " Disable LustyJuggler
 let g:loaded_lustyjuggler = 1
 
+" 2016-04-19: Improve CtrlP
+let g:ctrlp_cmd = 'CtrlPBuffer'
+let g:ctrlp_by_filename = 1
+
 " Suppress LustyExplorer's message
 set hidden
