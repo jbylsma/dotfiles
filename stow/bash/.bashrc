@@ -37,6 +37,8 @@ unset DIRS
 
 # Set bash's vi mode
 set -o vi
+export EDITOR="vim"
+
 
 # Aliases
 alias ack='ack --pager="less -SFRX"'
