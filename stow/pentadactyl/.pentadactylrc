@@ -29,11 +29,13 @@ set! browser.panorama.animate_zoom=false
 " Enable "Do Not Track" header
 set! privacy.donottrackheader.enabled=true
 
-" Don't use <C-v> for individual pass throughs.
-" Good for Linux. Still having problems in Gmail compose mode.
-" TODO: Make this Linux specific
-imap -builtin <C-c> <C-v><C-c>
-imap -builtin <C-v> <C-v><C-v>
+" Globally enable copying and pasting mappings in Linux
+javascript <<EOF
+  if (services.runtime.OS == 'Linux') {
+    dactyl.execute('map -modes=n,v,i,t,c -builtin <C-c> <Pass>');
+    dactyl.execute('map -modes=n,v,i,t,c -builtin <C-v> <Pass>');
+  }
+EOF
 
 " Disable certain keys
 javascript <<EOF
