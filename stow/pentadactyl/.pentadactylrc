@@ -61,10 +61,47 @@ EOF
 " Force the status line to display when toggling fullscreen.
 au Fullscreen .* :set guioptions+=s
 
-" Set up fonts
-highlight FontFixed font-family: "Ubuntu Mono" !important; font-size: 13px;
-highlight -append FontCode font-family: "Ubuntu Mono" !important;
-highlight -append Hint font-family: "Ubuntu Mono"; font-size: 11px !important;
+" Set up fixed width fonts
+javascript <<EOF
+  var selectors,
+      styles;
+
+  selectors = {
+    'font-family': ['FontCode', 'FontFixed', 'Hint'],
+    'font-size': ['FontFixed', 'Hint'],
+    'font-weight': ['FontCode', 'FontFixed', 'Hint'],
+  };
+
+  styles = false;
+
+  switch (services.runtime.OS) {
+    case 'Darwin':
+      styles = {
+        'font-family': 'Menlo',
+        'font-size': '13px',
+        'font-weight': 'normal',
+      };
+      break;
+    case 'Linux':
+      styles = {
+        'font-family': 'Ubuntu Mono',
+        'font-size': '13px',
+      };
+      break;
+  }
+
+  Object.getOwnPropertyNames(selectors).forEach(function(prop) {
+    var css;
+
+    if (styles.hasOwnProperty(prop)) {
+      css = prop + ':' + styles[prop] + ' !important';
+
+      selectors[prop].forEach(function(name) {
+        dactyl.execute('highlight -append ' + name + ' ' + css);
+      });
+    }
+  });
+EOF
 
 " Disable pentadactyl on Google Docs
 autocmd PageLoadPre docs.google.com :normal! <C-z>
