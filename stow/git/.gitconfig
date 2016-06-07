@@ -15,7 +15,7 @@
   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
   s = status
 [merge]
-  tool = gvimdiff
+  tool = vimdiff
   conflictstyle = diff3
 [include]
   path = ~/.gitconfig.local
