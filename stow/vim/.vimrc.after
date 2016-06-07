@@ -38,6 +38,10 @@ map <Leader>n :NERDTree<CR>
 " Ignore ctags files
 set wildignore+=tags
 
+" 2016-06-02
+" Include man filetype plugin
+runtime! ftplugin/man.vim
+
 if filereadable(expand("~/.vimrc.after.local"))
   source ~/.vimrc.after.local
 endif
