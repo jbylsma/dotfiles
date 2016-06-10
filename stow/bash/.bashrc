@@ -109,6 +109,20 @@ function dcd {
   fi
 }
 
+# Update terminal variables from tmux
+function tue {
+  while IFS= read -r foo; do
+    if [[ "${foo:0:1}" != "-" ]]; then
+      echo "Updating $(cut -d= -f1 <<< ${foo})"
+      declare -x "${foo}"
+    else
+      echo "Removing ${foo:1}"
+      unset "${foo:1}"
+    fi
+  done < <(tmux show-environment)
+}
+
+
 # Disable Wine debugger everywhere
 export WINEDEBUG=-all
 
