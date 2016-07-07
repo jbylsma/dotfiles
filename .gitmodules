@@ -16,9 +16,6 @@
 [submodule "vim/.janus/vim-airline"]
 	path = stow/vim/.janus/vim-airline
 	url = https://github.com/bling/vim-airline.git
-[submodule "stow/vim/.janus/ag.vim"]
-	path = stow/vim/.janus/ag.vim
-	url = https://github.com/rking/ag.vim.git
 [submodule "stow/vim/.janus/vim-extradite.git"]
 	path = stow/vim/.janus/vim-extradite.git
 	url = https://github.com/int3/vim-extradite.git

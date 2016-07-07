@@ -42,6 +42,14 @@ set wildignore+=tags
 " Include man filetype plugin
 runtime! ftplugin/man.vim
 
+" 2016-07-07
+" Ack: Don't switch to first result, use Ag
+cnoreabbrev Ack Ack!
+
+if executable('ag')
+  let g:ackprg = 'ag --nogroup --nocolor --column'
+endif
+
 if filereadable(expand("~/.vimrc.after.local"))
   source ~/.vimrc.after.local
 endif
