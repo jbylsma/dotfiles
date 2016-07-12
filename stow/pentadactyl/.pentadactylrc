@@ -103,9 +103,12 @@ javascript <<EOF
   });
 EOF
 
-" Disable pentadactyl on Google Docs
-autocmd PageLoadPre docs.google.com :normal! <C-z>
-autocmd LocationChange docs.google.com :normal! <C-]>
+" Disable pentadactyl on specific Google Docs types
+" TODO: Documents: Likes to capture the Document title input instead of the document itself.
+" TODO: Spreadsheets: Lots of error message in commandline, probably because the first input returns null
+autocmd PageLoadPre ^https?://docs.google.com/(document|spreadsheets)/.*/edit :normal! <C-z>
+autocmd LocationChange ^https?://docs.google.com/(document|spreadsheets)/.*/edit :normal! gi
+
 
 """""""""""
 " Commands
