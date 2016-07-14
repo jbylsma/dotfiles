@@ -113,7 +113,7 @@ function dcd {
 function tue {
   while IFS= read -r foo; do
     if [[ "${foo:0:1}" != "-" ]]; then
-      echo "Updating $(cut -d= -f1 <<< ${foo})"
+      echo "Updating $(cut -d= -f1 <<< ${foo}) to $(cut -d= -f2 <<< ${foo})"
       declare -x "${foo}"
     else
       echo "Removing ${foo:1}"
