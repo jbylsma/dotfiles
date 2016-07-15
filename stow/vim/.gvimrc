@@ -1,4 +1,4 @@
-source $HOME/.vimrc.after
+source $HOME/.vimrc
 
 " Enable console dialogs. Disable the toolbar and GUI tabs.
 set guioptions+=c
@@ -17,5 +17,5 @@ let g:molokai_original=1
 colo molokai
 
 if filereadable(expand("~/.gvimrc.after.local"))
-  source ~/.gvimrc.after.local
+  source ~/.gvimrc.local
 endif

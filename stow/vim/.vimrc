@@ -50,6 +50,6 @@ if executable('ag')
   let g:ackprg = 'ag --nogroup --nocolor --column'
 endif
 
-if filereadable(expand("~/.vimrc.after.local"))
-  source ~/.vimrc.after.local
+if filereadable(expand("~/.vimrc.local"))
+  source ~/.vimrc.local
 endif
