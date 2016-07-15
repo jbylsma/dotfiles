@@ -103,6 +103,8 @@ if executable('ag')
   let g:ackprg = 'ag --nogroup --nocolor --column'
 endif
 
+set hidden
+
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
