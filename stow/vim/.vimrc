@@ -51,9 +51,6 @@ Plug 'int3/vim-extradite'
 
 call plug#end()
 
-set number
-set nowrap
-
 " Theme
 set background=dark
 colorscheme molokai
