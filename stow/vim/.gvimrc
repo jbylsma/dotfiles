@@ -16,6 +16,6 @@ endif
 let g:molokai_original=1
 colo molokai
 
-if filereadable(expand("~/.gvimrc.after.local"))
+if filereadable(expand("~/.gvimrc.local"))
   source ~/.gvimrc.local
 endif
