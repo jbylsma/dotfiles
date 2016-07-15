@@ -1,3 +1,59 @@
+call plug#begin('~/.vim/plugged')
+
+" Colors
+Plug 'vim-scripts/molokai'
+
+" Languages
+Plug 'chrisbra/csv.vim'
+Plug 'tpope/vim-git'
+Plug 'tpope/vim-haml'
+Plug 'pangloss/vim-javascript'
+Plug 'elzr/vim-json'
+Plug 'groenewege/vim-less'
+Plug 'tpope/vim-liquid'
+Plug 'tpope/vim-markdown'
+Plug 'mustache/vim-mustache-handlebars'
+Plug 'vim-ruby/vim-ruby'
+Plug 'cakebaker/scss-syntax.vim'
+
+"Plugins
+Plug 'mileszs/ack.vim'
+Plug 'ap/vim-css-color'
+Plug 'kien/ctrlp.vim'
+Plug 'Lokaltog/vim-easymotion'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-eunuch'
+Plug 'tpope/vim-fugitive'
+Plug 'sjl/gundo.vim'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'chrisbra/NrrwRgn'
+Plug 'scrooloose/nerdcommenter'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-surround'
+Plug 'scrooloose/syntastic'
+Plug 'majutsushi/tagbar'
+Plug 'tpope/vim-unimpaired'
+Plug 'airblade/vim-gitgutter'
+Plug 'bronson/vim-trailing-whitespace'
+Plug 'vim-scripts/vimwiki'
+Plug 'thinca/vim-visualstar'
+Plug 'sh-dude/ZoomWin'
+
+" Non-Janus plugins
+Plug 'rizzatti/dash.vim'
+" Plug 'sjbach/lusty'
+Plug 'chikamichi/mediawiki.vim'
+Plug 'godlygeek/tabular'
+Plug 'joonty/vdebug'
+Plug 'bling/vim-airline'
+Plug 'int3/vim-extradite'
+
+call plug#end()
+
+set number
+set nowrap
+
 " Theme
 set background=dark
 colorscheme molokai
