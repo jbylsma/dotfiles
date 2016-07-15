@@ -44,17 +44,6 @@ update_dotfiles() {
 }
 
 #
-update_janus() {
-  local janus_dir
-
-  janus_dir="${HOME}/.vim"
-
-  title "Janus"
-  cd "${janus_dir}"
-  rake
-}
-
-#
 update_brew() {
   title "Brew"
 
@@ -109,7 +98,6 @@ update_composer() {
 #
 main() {
   update_dotfiles
-  update_janus
   update_brew
   update_dactyl
   update_composer
