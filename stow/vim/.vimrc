@@ -83,10 +83,6 @@ au BufNewFile,BufRead *.install set filetype=php
 au BufNewFile,BufRead *.test set filetype=php
 au BufNewFile,BufRead *.inc set filetype=php
 
-" 2014-08-30
-" Janus uses :NERDTreeMirror whenever NT is invoked. Override.
-map <Leader>n :NERDTree<CR>
-
 " 2016-05-05
 " Ignore ctags files
 set wildignore+=tags
@@ -96,14 +92,22 @@ set wildignore+=tags
 runtime! ftplugin/man.vim
 
 " 2016-07-07
-" Ack: Don't switch to first result, use Ag
-cnoreabbrev Ack Ack!
-
+" Ack: If available, use Ag
 if executable('ag')
   let g:ackprg = 'ag --nogroup --nocolor --column'
 endif
 
 set hidden
+
+" Aliases
+noremap <Leader>tb :TagbarToggle<CR>
+noremap <Leader>a :Ack 
+
+" Fugitive aliases
+noremap <Leader>gc :Gcommit<CR>
+noremap <Leader>gd :Gdiff<CR>
+noremap <Leader>gs :Gstatus<CR>
+noremap <Leader>gw :Gwrite<CR>
 
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
