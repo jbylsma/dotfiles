@@ -97,6 +97,9 @@ if executable('ag')
   let g:ackprg = 'ag --nogroup --nocolor --column'
 endif
 
+" CtrlP
+let g:ctrlp_clear_cache_on_exit = 0
+
 set hidden
 
 " Aliases
