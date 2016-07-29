@@ -112,7 +112,17 @@ function dcd {
 
 # Update terminal variables from tmux
 function tue {
-  eval "$(tmux show env -s)"
+  eval "$(
+    while IFS= read -r var; do
+      if [[ "${var:0:1}" != "-" ]]; then
+        key="$(cut -d= -f1 <<< "${var}")"
+        val="$(cut -d= -f2 <<< "${var}")"
+        echo "${key}=\"${val}\"; export ${key}"
+      else
+        echo "unset ${var:1}"
+      fi
+    done < <(tmux show-environment)
+  )"
 }
 
 
