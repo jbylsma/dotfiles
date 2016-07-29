@@ -111,15 +111,7 @@ function dcd {
 
 # Update terminal variables from tmux
 function tue {
-  while IFS= read -r foo; do
-    if [[ "${foo:0:1}" != "-" ]]; then
-      echo "Updating $(cut -d= -f1 <<< ${foo}) to $(cut -d= -f2 <<< ${foo})"
-      declare -x "${foo}"
-    else
-      echo "Removing ${foo:1}"
-      unset "${foo:1}"
-    fi
-  done < <(tmux show-environment)
+  eval "$(tmux show env -s)"
 }
 
 
