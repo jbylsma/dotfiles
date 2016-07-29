@@ -101,6 +101,7 @@ endif
 let g:ctrlp_clear_cache_on_exit = 0
 
 set hidden
+set modeline
 
 " Aliases
 noremap <Leader>tb :TagbarToggle<CR>
