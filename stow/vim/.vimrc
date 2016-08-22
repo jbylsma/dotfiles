@@ -53,7 +53,7 @@ call plug#end()
 
 " Theme
 set background=dark
-colorscheme molokai
+silent! colorscheme molokai
 
 " 2015-02-16
 " Turn on visual bell

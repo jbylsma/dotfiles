@@ -1,2 +1,5 @@
 " tmux-resurrect session info
 stow/tmux/.tmux/resurrect
+
+" VimPlug netrw history file
+stow/vim/.vim/.netrwhist
