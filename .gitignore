@@ -3,3 +3,6 @@ stow/tmux/.tmux/resurrect
 
 " VimPlug netrw history file
 stow/vim/.vim/.netrwhist
+
+" Vim spelling dictionaries
+stow/vim/.vim/spell
