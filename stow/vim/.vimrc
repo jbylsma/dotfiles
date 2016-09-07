@@ -67,12 +67,6 @@ set splitright
 " Make ctags search recursively
 set tags=./tags,tags;$HOME
 
-" Override gundo mapping with vdebug
-if (exists("*Vdebug_load_keymaps"))
-  call Vdebug_load_keymaps(g:vdebug_keymap)
-  let vdebug_options['break_on_open'] = 0
-endif
-
 "Disable aggressive PHP checking
 " let g:syntastic_phpcs_disable=1
 let g:syntastic_php_checkers=['php']
