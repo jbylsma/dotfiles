@@ -20,7 +20,7 @@ shopt -s histappend
 if [ -n "$PS1" ]; then
   # If background jobs, set path color to red, otherwise green.
   # If SSH, set host color to red, otherwise bold cyan.
-  export PS1="\[\033[\$( [ ! -z \$(jobs -p) ] && echo -n '31' || echo -n '32' )m\][\w]\[\033[0m\]\n\[\033[\$( [ ! -z \${SSH_CONNECTION+x} ] && echo -n '31' || echo -n '1;36' )m\]\u@\h\[\033[1;33m\]$ \[\033[0m\]"
+  export PS1="\[\033[\$( [ ! -z \"\$(jobs -p)\" ] && echo -n '31' || echo -n '32' )m\][\w]\[\033[0m\]\n\[\033[\$( [ ! -z \${SSH_CONNECTION+x} ] && echo -n '31' || echo -n '1;36' )m\]\u@\h\[\033[1;33m\]$ \[\033[0m\]"
 fi
 export CLICOLOR=1
 
