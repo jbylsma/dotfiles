@@ -1,3 +1,5 @@
+let mapleader = ' '
+
 call plug#begin('~/.vim/plugged')
 
 " Colors
