@@ -12,6 +12,8 @@
 [mergetool]
 	keepBackup = false
 [alias]
+  b = branch
+  co = checkout
   d = diff
   diff-recursive = !git --no-pager diff --color=always --ignore-submodules && \
     git --no-pager submodule foreach --recursive git diff --color=always
