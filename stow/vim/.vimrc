@@ -1,5 +1,10 @@
 let mapleader = ' '
 
+" If available, use Ag
+if executable('ag')
+  let g:ackprg = 'ag --nogroup --nocolor --column'
+endif
+
 call plug#begin('~/.vim/plugged')
 
 " Colors
@@ -87,27 +92,8 @@ set wildignore+=tags
 " Include man filetype plugin
 runtime! ftplugin/man.vim
 
-" 2016-07-07
-" Ack: If available, use Ag
-if executable('ag')
-  let g:ackprg = 'ag --nogroup --nocolor --column'
-endif
-
-" CtrlP
-let g:ctrlp_clear_cache_on_exit = 0
-
 set hidden
 set modeline
-
-" Aliases
-noremap <Leader>tb :TagbarToggle<CR>
-noremap <Leader>a :Ack 
-
-" Fugitive aliases
-noremap <Leader>gc :Gcommit<CR>
-noremap <Leader>gd :Gdiff<CR>
-noremap <Leader>gs :Gstatus<CR>
-noremap <Leader>gw :Gwrite<CR>
 
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
