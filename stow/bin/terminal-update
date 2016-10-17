@@ -52,7 +52,7 @@ update_brew() {
     return
 
   brew update
-  brew upgrade --all
+  brew upgrade
 }
 
 git_commit_get() {
