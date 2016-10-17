@@ -29,9 +29,12 @@ set! browser.panorama.animate_zoom=false
 " Enable "Do Not Track" header
 set! privacy.donottrackheader.enabled=true
 
-" Globally enable copying and pasting mappings in Linux
+" Allow Ctrl-C escaping in macOS, and copy/pasting in others
 javascript <<EOF
-  if (services.runtime.OS == 'Linux') {
+  if (services.runtime.OS == 'Darwin') {
+    dactyl.execute('map -modes=n,v,i,t,c -builtin <C-c> <Esc>');
+  }
+  else {
     dactyl.execute('map -modes=n,v,i,t,c -builtin <C-c> <Pass>');
     dactyl.execute('map -modes=n,v,i,t,c -builtin <C-v> <Pass>');
   }
