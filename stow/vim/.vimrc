@@ -92,6 +92,12 @@ set wildignore+=tags
 " Include man filetype plugin
 runtime! ftplugin/man.vim
 
+" 2016-12-13
+" Set up default folding
+" http://superuser.com/a/171716/162501
+set foldmethod=syntax
+set nofoldenable
+
 set hidden
 set modeline
 
