@@ -13,6 +13,9 @@ set! general.smoothScroll=false
 " Use blank page for home
 set! browser.startup.homepage=about:blank
 
+" Force prompt when quitting
+set! browser.showQuitWarning=true
+
 " Use Google for search
 set! browser.search.countryCode=US
 set! browser.search.defaultenginename=Google
