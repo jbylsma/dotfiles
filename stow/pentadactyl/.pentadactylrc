@@ -110,9 +110,13 @@ javascript <<EOF
 EOF
 
 " Disable pentadactyl on specific Google Docs types
-" TODO: Documents: Likes to capture the Document title input instead of the document itself.
+" TODO: Documents: Likes to capture the Document title input instead of the document itself
+"       Maybe the inputs for the actual Documents are created after this fires?
 " TODO: Spreadsheets: Lots of error message in commandline, probably because the first input returns null
 autocmd PageLoadPre ^https?://docs.google.com/(document|presentation|spreadsheets)/.*/edit :normal! <C-z>
+
+" TODO: I think this gets called too early on a cold load.
+"       The title field gets focused and there's no way to manipulate the actual data without a reload
 autocmd LocationChange ^https?://docs.google.com/(document|presentation|spreadsheets)/.*/edit :normal! gi
 
 
