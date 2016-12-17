@@ -121,12 +121,15 @@ autocmd LocationChange ^https?://docs.google.com/(document|presentation|spreadsh
 """""""""""
 
 " Flush browser DNS
-command flushdns set! network.dnsCacheExpiration=0 | set! network.dnsCacheExpiration&
+command! flushdns set! network.dnsCacheExpiration=0 | set! network.dnsCacheExpiration&
 
 " Enable Reader mode and create command
 set! reader.parse-on-load.enabled=true
-command reader execute "open about:reader?url=" + content.location.href
+command! reader execute "open about:reader?url=" + content.location.href
 
+" Toggle Javascript
+" https://github.com/remiprev/pentadactyl-files/blob/master/.pentadactylrc
+command! jstoggle :js (function() { var p = "javascript.enabled"; prefs.set(p, !prefs.get(p)); dactyl.echo(p+" is now set to "+prefs.get(p)+"\n") })()
 " Tab Group commands
 
 " Create new tab group
