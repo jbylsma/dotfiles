@@ -5,6 +5,10 @@ if executable('ag')
   let g:ackprg = 'ag --nogroup --nocolor --column'
 endif
 
+if filereadable(expand("~/.vimrc.before"))
+  source ~/.vimrc.before
+endif
+
 call plug#begin('~/.vim/plugged')
 
 " Colors
@@ -101,6 +105,6 @@ set nofoldenable
 set hidden
 set modeline
 
-if filereadable(expand("~/.vimrc.local"))
-  source ~/.vimrc.local
+if filereadable(expand("~/.vimrc.after"))
+  source ~/.vimrc.after
 endif
