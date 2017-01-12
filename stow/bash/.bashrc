@@ -110,6 +110,28 @@ function dcd {
   fi
 }
 
+# Quickly change to the Git top level dir
+function gcd {
+  local path
+
+  if ! which git >/dev/null 2>&1; then
+    echo "Drush not found"
+    exit 1
+  fi
+
+  path="$(git rev-parse --show-toplevel 2>/dev/null)"
+
+  if [[ $? -eq 0 ]]; then
+    if ! cd "${path}"; then
+      echo "Could not change to directory ${path}."
+      return 1
+    fi
+  else
+    echo "Could not determine Git toplevel"
+    return 1
+  fi
+}
+
 # Update terminal variables from tmux
 function tue {
   eval "$(
