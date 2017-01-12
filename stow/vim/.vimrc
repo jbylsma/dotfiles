@@ -102,6 +102,15 @@ runtime! ftplugin/man.vim
 set foldmethod=syntax
 set nofoldenable
 
+" Fix arrow keys under screen-* terms
+if &term =~ '^screen'
+  " tmux will send xterm-style keys when its xterm-keys option is on
+  execute "set <xUp>=\e[1;*A"
+  execute "set <xDown>=\e[1;*B"
+  execute "set <xRight>=\e[1;*C"
+  execute "set <xLeft>=\e[1;*D"
+endif
+
 set hidden
 set modeline
 
