@@ -101,11 +101,11 @@ function dcd {
 
   if [[ $? -eq 0 ]]; then
     if ! cd "${path}"; then
-      echo "Could not change to directory ${path}."
+      echo "Could not change to directory ${path}." >&2
       return 1
     fi
   else
-    echo "Target '${target}' not found."
+    echo "Target '${target}' not found." >&2
     return 1
   fi
 }
@@ -115,7 +115,7 @@ function gcd {
   local path
 
   if ! which git >/dev/null 2>&1; then
-    echo "Drush not found"
+    echo "Git not found"
     exit 1
   fi
 
@@ -123,11 +123,11 @@ function gcd {
 
   if [[ $? -eq 0 ]]; then
     if ! cd "${path}"; then
-      echo "Could not change to directory ${path}."
+      echo "Could not change to directory ${path}." >&2
       return 1
     fi
   else
-    echo "Could not determine Git toplevel"
+    echo "Could not determine Git toplevel" >&2
     return 1
   fi
 }
