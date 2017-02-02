@@ -56,7 +56,8 @@ Plug 'rizzatti/dash.vim'
 " Plug 'sjbach/lusty'
 Plug 'chikamichi/mediawiki.vim'
 Plug 'godlygeek/tabular'
-Plug 'joonty/vdebug'
+Plug 'joonty/vdebug', { 'on': 'VdebugOn' }
+command! VdebugOn  call plug#load('vdebug')
 Plug 'bling/vim-airline'
 Plug 'int3/vim-extradite'
 
