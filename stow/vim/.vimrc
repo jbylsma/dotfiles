@@ -93,9 +93,9 @@ set wildignore+=tags
 runtime! ftplugin/man.vim
 
 " 2016-12-13
-" Set up default folding
-" http://superuser.com/a/171716/162501
-set foldmethod=syntax
+" Set up default folding, but don't fold by default
+" foldmethod=syntax is too slow for large files
+set foldmethod=indent
 set nofoldenable
 
 " Fix arrow keys under screen-* terms
