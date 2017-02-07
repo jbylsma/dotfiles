@@ -79,11 +79,6 @@ set splitright
 " Make ctags search recursively
 set tags=./tags,tags;$HOME
 
-"Disable aggressive PHP checking
-" let g:syntastic_phpcs_disable=1
-let g:syntastic_php_checkers=['php']
-let g:syntastic_php_checkers=['php', 'phpmd']
-
 "Use PHP syntax with files
 au BufNewFile,BufRead *.install set filetype=php
 au BufNewFile,BufRead *.test set filetype=php
