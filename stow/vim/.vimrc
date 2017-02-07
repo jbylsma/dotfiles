@@ -110,6 +110,9 @@ endif
 set hidden
 set modeline
 
+" Set up better tab completion
+set wildmode=longest,list
+
 if filereadable(expand("~/.vimrc.after"))
   source ~/.vimrc.after
 endif
