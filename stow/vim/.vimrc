@@ -113,6 +113,9 @@ set modeline
 " Set up better tab completion
 set wildmode=longest,list
 
+" Open up a shell starting in the current file's path
+:noremap zz :execute '!cd ' . shellescape(expand("%:p:h")) . ' && ' . &shell <CR>
+
 if filereadable(expand("~/.vimrc.after"))
   source ~/.vimrc.after
 endif
