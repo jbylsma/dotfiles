@@ -46,6 +46,7 @@ alias ack='ack --pager="less -SFRX"'
 alias ag='ag --pager="less -SFRX"'
 alias d='dirs -v'
 alias grep='grep -I --color=auto'
+alias less='less -SR'
 
 if _which mvim && ! _which gvim; then
   alias gvim='mvim'
