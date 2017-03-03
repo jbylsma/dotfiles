@@ -1,5 +1,14 @@
+vimfx.addCommand({
+  name: 'view_source',
+  description: 'View source',
+  mode: 'normal',
+}, ({vim}) => {
+  vim.window.BrowserViewSource(vim.window.gBrowser.selectedBrowser);
+})
+
 let options = {
   "prevent_autofocus": true,
+  "custom.mode.normal.view_source": "gf",
   "mode.normal.focus_search_bar": "",
   "mode.normal.copy_current_url": "y",
   "mode.normal.go_up_path": "",
