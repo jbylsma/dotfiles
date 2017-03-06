@@ -9,7 +9,7 @@ vimfx.addCommand({
 let options = {
   "prevent_autofocus": true,
   "custom.mode.normal.view_source": "gf",
-  "mode.normal.focus_search_bar": "",
+  "mode.normal.focus_search_bar": "s",
   "mode.normal.copy_current_url": "y",
   "mode.normal.go_up_path": "",
   "mode.normal.go_to_root": "",
