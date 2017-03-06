@@ -2036,6 +2036,8 @@
 	<string>4AB55062-4226-42C4-A827-0429C8A3B86C</string>
 	<key>NoSyncLastTipTime</key>
 	<real>475602960.282112</real>
+	<key>NoSyncNeverAskAboutSettingAlternateMouseScroll</key>
+	<true/>
 	<key>NoSyncPermissionToShowTip</key>
 	<true/>
 	<key>NoSyncSuppressAnnyoingBellOffer</key>
@@ -2104,6 +2106,8 @@
 	</dict>
 	<key>PrefsCustomFolder</key>
 	<string>/Users/jbylsma/usr/src/dotfiles/iterm2</string>
+	<key>Print In Black And White</key>
+	<true/>
 	<key>PromptOnQuit</key>
 	<true/>
 	<key>QuitWhenAllWindowsClosed</key>
@@ -2171,6 +2175,6 @@
 	<key>findRegex_iTerm</key>
 	<false/>
 	<key>iTerm Version</key>
-	<string>3.0.2</string>
+	<string>3.0.11</string>
 </dict>
 </plist>
