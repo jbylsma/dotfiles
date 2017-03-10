@@ -149,6 +149,29 @@ function tue {
   )"
 }
 
+# Switch user to root using env
+# Let's you preserve bash conf while switching users
+function sure {
+  local cmd
+  local vars
+
+  vars=( HOME SHELL )
+  for ((i=${#vars[@]}-1; i>=0; i--)); do
+    if [[ -z "${!vars[$i]}" ]]; then
+      echo "${vars[$i]} not set" >&2
+      return 1
+    fi
+  done
+
+  cmd="env HOME=${HOME} ${SHELL}"
+  # Make bash request a login shell
+  if [[ "$(basename "${SHELL}")" = 'bash' ]]; then
+    cmd="${cmd} -l"
+  fi
+
+  sudo su root -c "${cmd}"
+}
+
 
 # Disable Wine debugger everywhere
 export WINEDEBUG=-all
