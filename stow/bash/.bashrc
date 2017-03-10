@@ -95,7 +95,7 @@ function dcd {
 
   if ! which drush >/dev/null 2>&1; then
     echo "Drush not found"
-    exit 1
+    return 1
   fi
 
   target="${1:-root}"
@@ -117,8 +117,8 @@ function gcd {
   local path
 
   if ! which git >/dev/null 2>&1; then
-    echo "Git not found"
-    exit 1
+    echo "Git not found" >&2
+    return 1
   fi
 
   path="$(git rev-parse --show-toplevel 2>/dev/null)"
