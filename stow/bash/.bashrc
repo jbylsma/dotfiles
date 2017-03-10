@@ -28,9 +28,9 @@ export CLICOLOR=1
 DIRS=( $HOME/usr/bin $HOME/bin /usr/local/sbin /usr/local/bin )
 for ((i=${#DIRS[@]}-1; i>=0; i--)); do
   DIR=${DIRS[$i]}
-  if [ -d $DIR ]; then
-    PATH=${DIR}:$(echo ${PATH} | sed -e "s|${DIR}||g" -e "s|:\{2,\}|:|g" -e 's|^:||')
-    PATH=$(echo ${PATH} | sed -e 's|:$||')
+  if [ -d "${DIR}" ]; then
+    PATH="${DIR}:$(echo ${PATH} | sed -e "s|${DIR}||g" -e "s|:\{2,\}|:|g" -e 's|^:||')"
+    PATH=$(echo "${PATH}" | sed -e 's|:$||')
   fi
 done
 export PATH
@@ -63,7 +63,7 @@ if _which brew; then
 
   # Use a GitHub API Token so Homebrew gets a higher rate limit.
   if [ -f "${BREW_GITHUB_TOKEN}" ]; then
-    read HOMEBREW_GITHUB_API_TOKEN < "${BREW_GITHUB_TOKEN}"
+    read -r HOMEBREW_GITHUB_API_TOKEN < "${BREW_GITHUB_TOKEN}"
     export HOMEBREW_GITHUB_API_TOKEN
   elif [ -n "$PS1" ]; then
     echo "GitHub API token for Homebrew does not exist."
