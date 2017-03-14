@@ -7,7 +7,9 @@ function _which() {
 # Reset PATH on OS X keep it from being clobbered in tmux
 # See https://github.com/yyuu/pyenv/issues/85
 if [ -x /usr/libexec/path_helper ]; then
+   #shellcheck disable=SC2123
   PATH=''
+   #shellcheck disable=SC1091
   source /etc/profile
 fi
 
@@ -30,7 +32,7 @@ for ((i=${#DIRS[@]}-1; i>=0; i--)); do
   DIR=${DIRS[$i]}
   if [ -d "${DIR}" ]; then
     PATH="${DIR}:$(echo ${PATH} | sed -e "s|${DIR}||g" -e "s|:\{2,\}|:|g" -e 's|^:||')"
-    PATH=$(echo "${PATH}" | sed -e 's|:$||')
+    PATH="${PATH%:}"
   fi
 done
 export PATH
@@ -99,9 +101,7 @@ function dcd {
   fi
 
   target="${1:-root}"
-  path="$(drush dd --local-only "${target}" 2>/dev/null)"
-
-  if [[ $? -eq 0 ]]; then
+  if path="$(drush dd --local-only "${target}" 2>/dev/null)"; then
     if ! cd "${path}"; then
       echo "Could not change to directory ${path}." >&2
       return 1
@@ -123,7 +123,7 @@ function gcd {
 
   path="$(git rev-parse --show-toplevel 2>/dev/null)"
 
-  if [[ $? -eq 0 ]]; then
+  if path="$(git rev-parse --show-toplevel 2>/dev/null)"; then
     if ! cd "${path}"; then
       echo "Could not change to directory ${path}." >&2
       return 1
