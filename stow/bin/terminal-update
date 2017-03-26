@@ -59,31 +59,6 @@ git_commit_get() {
   git rev-parse "${1}"
 }
 
-#
-update_dactyl() {
-  local dactyl_dir
-  local dactyl_branch
-
-  dactyl_branch="origin/master"
-  dactyl_dir="${HOME}/usr/src/dactyl"
-
-  title "Pentadactyl"
-
-  # Make sure dactyl exists
-  test ! -d "${dactyl_dir}" && \
-    echo "Dactyl directory could not be found." >&2 && \
-    return
-
-  cd "${dactyl_dir}"
-  git fetch origin
-  if [[ "$(git_commit_get HEAD)" != "$(git_commit_get "${dactyl_branch}")" ]]; then
-    echo "Updating Pentadactyl"
-    git pull
-  else
-    echo "Already up-to-date."
-  fi
-}
-
 update_composer() {
   title "Composer"
 
@@ -99,7 +74,6 @@ update_composer() {
 main() {
   update_dotfiles
   update_brew
-  update_dactyl
   update_composer
   echo -e "\n${0} completed"
 }
