@@ -73,10 +73,22 @@ update_dotfiles() {
 }
 
 #
+update_vimplug() {
+  title "vim-plug"
+
+  test ! -f "${HOME}/.vim/autoload/plug.vim" && \
+    echo "vim-plug not found" >&2 && \
+    return
+
+  vim +PlugUpgrade +PlugUpdate +qall
+}
+
+#
 main() {
   update_dotfiles
   update_brew
   update_composer
+  update_vimplug
   echo -e "\n${0} completed"
 }
 main
