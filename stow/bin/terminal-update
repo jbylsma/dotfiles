@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 #
-function _which() {
-  which "$@" >/dev/null 2>&1
+_git_commit_get() {
+  git rev-parse "${1}"
 }
 
 #
@@ -20,6 +20,35 @@ title() {
 }
 
 #
+_which() {
+  which "$@" >/dev/null 2>&1
+}
+
+#
+update_brew() {
+  title "Brew"
+
+  ! _which brew && \
+    echo "brew not found" >&2 && \
+    return
+
+  brew update
+  brew upgrade
+}
+
+#
+update_composer() {
+  title "Composer"
+
+  ! _which composer && \
+    echo "composer not found" >&2 && \
+    return
+
+  composer self-update
+  composer global update
+}
+
+#
 update_dotfiles() {
   local dotfiles_branch
   local dotfiles_dir
@@ -30,44 +59,17 @@ update_dotfiles() {
   title "dotfiles"
 
   test ! -d "${dotfiles_dir}" && \
-    echo "dotfiles directory could not be found." >&2 && \
+    echo "dotfiles directory not found" >&2 && \
     return
 
   cd "${dotfiles_dir}"
   git fetch origin
-  if [[ "$(git_commit_get HEAD)" != "$(git_commit_get "${dotfiles_branch}")" ]]; then
-    echo "Updating new dotfiles"
+  if [[ "$(_git_commit_get HEAD)" != "$(_git_commit_get "${dotfiles_branch}")" ]]; then
+    echo "Updating dotfiles"
     git pull
   else
-    echo "Already up-to-date."
+    echo "Already up-to-date"
   fi
-}
-
-#
-update_brew() {
-  title "Brew"
-
-  ! _which brew && \
-    echo "Brew not found" >&2 && \
-    return
-
-  brew update
-  brew upgrade
-}
-
-git_commit_get() {
-  git rev-parse "${1}"
-}
-
-update_composer() {
-  title "Composer"
-
-  ! _which composer && \
-    echo "composer not found" >&2 && \
-    return
-
-  composer self-update
-  composer global update
 }
 
 #
