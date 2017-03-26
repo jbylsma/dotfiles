@@ -7,7 +7,7 @@ _git_commit_get() {
 }
 
 #
-title() {
+_title() {
   local char
   local title
 
@@ -26,7 +26,7 @@ _which() {
 
 #
 update_brew() {
-  title "Brew"
+  _title "Brew"
 
   ! _which brew && \
     echo "brew not found" >&2 && \
@@ -38,7 +38,7 @@ update_brew() {
 
 #
 update_composer() {
-  title "Composer"
+  _title "Composer"
 
   ! _which composer && \
     echo "composer not found" >&2 && \
@@ -56,7 +56,7 @@ update_dotfiles() {
   dotfiles_branch="origin/master"
   dotfiles_dir="${HOME}/usr/src/dotfiles"
 
-  title "dotfiles"
+  _title "dotfiles"
 
   test ! -d "${dotfiles_dir}" && \
     echo "dotfiles directory not found" >&2 && \
@@ -74,7 +74,7 @@ update_dotfiles() {
 
 #
 update_vimplug() {
-  title "vim-plug"
+  _title "vim-plug"
 
   test ! -f "${HOME}/.vim/autoload/plug.vim" && \
     echo "vim-plug not found" >&2 && \
