@@ -169,7 +169,7 @@ function sure {
     cmd="${cmd} -l"
   fi
 
-  sudo su root -c "${cmd}"
+  sudo -E su root -c "${cmd}"
 }
 
 
