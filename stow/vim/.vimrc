@@ -50,16 +50,14 @@ Plug 'bronson/vim-trailing-whitespace'
 Plug 'vim-scripts/vimwiki'
 Plug 'thinca/vim-visualstar'
 Plug 'sh-dude/ZoomWin'
-
-" Non-Janus plugins
 Plug 'rizzatti/dash.vim'
-" Plug 'sjbach/lusty'
 Plug 'chikamichi/mediawiki.vim'
 Plug 'godlygeek/tabular'
 Plug 'joonty/vdebug', { 'on': 'VdebugOn' }
 command! VdebugOn  call plug#load('vdebug')
 Plug 'bling/vim-airline'
 Plug 'int3/vim-extradite'
+Plug 'kshenoy/vim-signature'
 
 call plug#end()
 
