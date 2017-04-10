@@ -1,0 +1,63 @@
+#!/bin/bash
+# Simple, Pomodoro task timer that require specifying your task
+set -e
+set -u
+
+declare minutes=25
+declare task
+
+function help {
+  echo "Simple, Pomodoro-esqe task timer. Requires you to specify your task before starting."
+  echo
+  usage
+}
+
+function usage {
+  echo "Usage: $(basename "${0}") [-h] [-m minutes] task"
+}
+
+function timer {
+  local start_time
+  start_time="${1}"
+
+  sleep $((minutes * 1))
+  terminal-notifier -title "${task} timer complete" -message "Started at ${start_time}"
+}
+
+function main {
+  if ! which terminal-notifier >/dev/null; then
+    echo "$(basename "$0") requires terminal-notifier" >&2
+    exit 1
+  fi
+
+  while getopts ":hm:" o; do
+    case "${o}" in
+      h)
+        help
+        exit
+        ;;
+      m)
+        minutes="${OPTARG}"
+        ;;
+    esac
+  done
+  shift $((OPTIND-1))
+
+  # Message is required
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  task="${1}"
+
+  # Minutes must be a positive integer
+  if [[ ! "${minutes}" =~ ^[1-9]+[0-9]*$ ]]; then
+    echo "Invalid minutes: ${minutes}" >&2
+    exit 1
+  fi
+
+  timer "$(date +%R%p)" >/dev/null & disown
+  echo "${task} timer set for $(date -v +"${minutes}"M +%R%p)."
+}
+main "$@"
