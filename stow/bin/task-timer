@@ -20,7 +20,7 @@ function timer {
   local start_time
   start_time="${1}"
 
-  sleep $((minutes * 1))
+  sleep $((minutes * 60))
   terminal-notifier -title "${task} timer complete" -message "Started at ${start_time}"
 }
 
@@ -58,6 +58,6 @@ function main {
   fi
 
   timer "$(date +%R%p)" >/dev/null & disown
-  echo "${task} timer set for $(date -v +"${minutes}"M +%R%p)."
+  terminal-notifier -title "${task} timer started" -message "Finishes at $(date -v +"${minutes}"M +%R%p)"
 }
 main "$@"
