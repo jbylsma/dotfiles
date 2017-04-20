@@ -16,6 +16,12 @@ function usage {
   echo "Usage: $(basename "${0}") [-h] [-m minutes] task"
 }
 
+function timestamp {
+  local timestamp
+  timestamp="$(date "$@" "+%l:%M%p")"
+  echo "${timestamp## }"
+}
+
 function timer {
   local start_time
   start_time="${1}"
@@ -57,7 +63,7 @@ function main {
     exit 1
   fi
 
-  timer "$(date +%R%p)" >/dev/null & disown
-  terminal-notifier -title "${task} timer started" -message "Finishes at $(date -v +"${minutes}"M +%R%p)"
+  timer "$(timestamp)" >/dev/null & disown
+  terminal-notifier -title "${task} timer started" -message "Finishes at $(timestamp -v +"${minutes}"M)"
 }
 main "$@"
