@@ -65,6 +65,7 @@ command! VdebugOn  call plug#load('vdebug')
 Plug 'bling/vim-airline'
 Plug 'int3/vim-extradite'
 Plug 'kshenoy/vim-signature'
+Plug 'godlygeek/csapprox'
 
 call plug#end()
 
