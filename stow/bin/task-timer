@@ -1,41 +1,107 @@
 #!/bin/bash
-# Simple, Pomodoro task timer that require specifying your task
+# Simple, Pomodoro task timer.
 set -e
 set -u
 
-declare minutes=25
-declare task
+declare -r  DEFAULT_MINUTES=25
+declare -ra NOTIFY_CMD_VALUES=( "terminal-notifier" "notify-send" )
+declare     notify_cmd
 
+###
+#
+###
 function help {
-  echo "Simple, Pomodoro-esqe task timer. Requires you to specify your task before starting."
+  echo "Simple, Pomodoro-esqe task timer. Requires you to say what you're going to do."
+  echo "Works with OS X (terminal-notifier) and Linux (notify-send)."
   echo
   usage
 }
 
+###
+#
+###
 function usage {
   echo "Usage: $(basename "${0}") [-h] [-m minutes] task"
 }
 
-function timestamp {
+###
+#
+###
+function format_timestamp {
+  local minutes
   local timestamp
+
+  minutes="${1:-}"
+
+  ## If specified, set time offset
+  if [[ -n "${minutes}" ]]; then
+    # GNU date has --version, BSD doesn't
+    if date --version >/dev/null 2>&1; then
+      set -- -d "+${minutes} minutes"
+    else
+      set -- -v "+${minutes}M"
+    fi
+  fi
+
   timestamp="$(date "$@" "+%l:%M%p")"
   echo "${timestamp## }"
 }
 
-function timer {
-  local start_time
-  start_time="${1}"
+###
+#
+###
+function notify {
+  local title
+  local message
 
-  sleep $((minutes * 60))
-  terminal-notifier -title "${task} timer complete" -message "Started at ${start_time}"
+  title="${1}"
+  message="${2}"
+
+  case "${notify_cmd}" in
+    "terminal-notifier")
+      "${notify_cmd}" -title "${title}" -message "${message}"
+      ;;
+
+    "notify-send")
+      "${notify_cmd}" "${title}" "${message}"
+      ;;
+  esac
 }
 
+###
+#
+###
+function set_timer {
+  local start_time="${1}"
+  local task="${2}"
+
+  sleep $((minutes * 60))
+  notify "${task} timer complete" "Started at ${start_time}"
+}
+
+###
+#
+###
 function main {
-  if ! which terminal-notifier >/dev/null; then
-    echo "$(basename "$0") requires terminal-notifier" >&2
+  local minutes
+  local task
+
+  minutes="${DEFAULT_MINUTES}"
+
+  # Determine notification command
+  for cmd in "${NOTIFY_CMD_VALUES[@]}"; do
+    if which "${cmd}" >/dev/null 2>&1; then
+      declare -r notify_cmd="${cmd}"
+      break
+    fi
+  done
+
+  if [[ -z "${notify_cmd}" ]]; then
+    echo "No suitable notifications commands found" >&2
     exit 1
   fi
 
+  # Parse option arguments
   while getopts ":hm:" o; do
     case "${o}" in
       h)
@@ -49,7 +115,7 @@ function main {
   done
   shift $((OPTIND-1))
 
-  # Message is required
+  # Task is required
   if [[ $# -lt 1 ]]; then
     usage >&2
     exit 1
@@ -63,7 +129,8 @@ function main {
     exit 1
   fi
 
-  timer "$(timestamp)" >/dev/null & disown
-  terminal-notifier -title "${task} timer started" -message "Finishes at $(timestamp -v +"${minutes}"M)"
+  # Set timer and create notify
+  set_timer "$(format_timestamp)" "${task}" >/dev/null & disown
+  notify "${task} timer started" "Finishes at $(format_timestamp "${minutes}")"
 }
 main "$@"
