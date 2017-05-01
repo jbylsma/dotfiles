@@ -1,5 +1,5 @@
-# Private function for checking if program is in path
-function _which() {
+# Private function for quietly checking for command
+function which {
   command which "$@" >/dev/null 2>&1
   return $?
 }
@@ -50,7 +50,7 @@ alias d='dirs -v'
 alias grep='grep -I --color=auto'
 alias less='less -SR'
 
-if _which mvim && ! _which gvim; then
+if which mvim && ! which gvim; then
   alias gvim='mvim'
 fi
 
@@ -59,7 +59,7 @@ if [[ -f "/Applications/GitX.app/Contents/Resources/gitx" ]]; then
 fi
 
 # Homebrew specific rules
-if _which brew; then
+if which brew; then
   BREW_PREFIX="$(brew --prefix)"
   BREW_GITHUB_TOKEN="${HOME}/.homebrew_github_api_token"
 
@@ -176,8 +176,8 @@ function sure {
 # Disable Wine debugger everywhere
 export WINEDEBUG=-all
 
-# Unset private _which function
-unset -f _which
+# Unset private which function
+unset -f which
 
 # Source local (non-shared) configuration.
 [[ -f "${HOME}/.bashrc.local" ]] && source "${HOME}/.bashrc.local"
