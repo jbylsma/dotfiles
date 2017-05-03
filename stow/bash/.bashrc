@@ -1,4 +1,4 @@
-# Private function for checking if program is in path
+# Private function for quietly checking for command
 function _which() {
   command which "$@" >/dev/null 2>&1
   return $?
