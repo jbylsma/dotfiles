@@ -37,7 +37,7 @@ Plug 'cakebaker/scss-syntax.vim'
 "Plugins
 Plug 'mileszs/ack.vim'
 Plug 'ap/vim-css-color'
-Plug 'kien/ctrlp.vim'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'Lokaltog/vim-easymotion'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
