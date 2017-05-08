@@ -118,7 +118,13 @@ set modeline
 " Set up better tab completion
 set wildignore+=tags
 set wildmode=longest,list
-set completeopt=menu,menuone,preview,noselect
+
+set completeopt=menu,menuone,preview
+if version > 704
+  set completeopt+=noselect
+else
+  set completeopt+=longest
+endif
 
 " Open up a shell starting in the current file's path
 :noremap zz :execute '!cd ' . shellescape(expand("%:p:h")) . ' && ' . &shell <CR>
