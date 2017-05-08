@@ -66,6 +66,8 @@ Plug 'bling/vim-airline'
 Plug 'int3/vim-extradite'
 Plug 'kshenoy/vim-signature'
 Plug 'godlygeek/csapprox'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 
 call plug#end()
 
@@ -90,15 +92,9 @@ au BufNewFile,BufRead *.install set filetype=php
 au BufNewFile,BufRead *.test set filetype=php
 au BufNewFile,BufRead *.inc set filetype=php
 
-" 2016-05-05
-" Ignore ctags files
-set wildignore+=tags
-
-" 2016-06-02
 " Include man filetype plugin
 runtime! ftplugin/man.vim
 
-" 2016-12-13
 " Set up default folding, but don't fold by default
 " foldmethod=syntax is too slow for large files
 set foldmethod=indent
@@ -117,7 +113,9 @@ set hidden
 set modeline
 
 " Set up better tab completion
+set wildignore+=tags
 set wildmode=longest,list
+set completeopt=menu,menuone,preview,noselect
 
 " Open up a shell starting in the current file's path
 :noremap zz :execute '!cd ' . shellescape(expand("%:p:h")) . ' && ' . &shell <CR>
