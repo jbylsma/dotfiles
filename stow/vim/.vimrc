@@ -5,6 +5,9 @@ if executable('ag')
   let g:ackprg = 'ag --nogroup --nocolor --column'
 endif
 
+" Override UltiSnips mappings
+let g:UltiSnipsListSnippets='<s-tab>'
+
 if filereadable(expand("~/.vimrc.before"))
   source ~/.vimrc.before
 endif
