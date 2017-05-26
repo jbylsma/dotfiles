@@ -22,7 +22,7 @@ endif
 call plug#begin('~/.vim/plugged')
 
 " Colors
-Plug 'vim-scripts/molokai'
+Plug 'tomasr/molokai'
 
 " Languages
 Plug 'chrisbra/csv.vim'
