@@ -68,7 +68,6 @@ command! VdebugOn call plug#load('vdebug')
 Plug 'bling/vim-airline'
 Plug 'int3/vim-extradite'
 Plug 'kshenoy/vim-signature'
-Plug 'godlygeek/csapprox'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
@@ -76,6 +75,7 @@ call plug#end()
 
 " Theme
 set background=dark
+let g:rehash256 = 1
 silent! colorscheme molokai
 
 " 2015-02-16
