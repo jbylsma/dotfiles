@@ -49,6 +49,7 @@ alias ag='ag --pager="less -SFRX"'
 alias d='dirs -v'
 alias grep='grep -I --color=auto'
 alias less='less -SR'
+alias vij='vim -c "set ft=json"'
 
 if _which mvim && ! _which gvim; then
   alias gvim='mvim'
