@@ -1,16 +1,16 @@
 [color]
-	status = auto
-	branch = auto
-	interactive = auto
-	diff = auto
+  status = auto
+  branch = auto
+  interactive = auto
+  diff = auto
 [push]
-	default = tracking
+  default = tracking
 [core]
-	editor = vim
-	autocrlf = input
-	excludesfile = ~/.gitignore_global
+  editor = vim
+  autocrlf = input
+  excludesfile = ~/.gitignore_global
 [mergetool]
-	keepBackup = false
+  keepBackup = false
 [alias]
   b = branch
   co = checkout
