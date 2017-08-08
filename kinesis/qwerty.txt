@@ -23,25 +23,21 @@
 [up]>[down]
 [down]>[up]
 
-* Use lower-right slash as OS X power key
-[intl-\]>[shutdn]
-
-**
-* CapsLock configuration
-* Normal mode         | Escape
-* Normal mode + Shift | CapsLock
-* Keypad mode         | Return to normal mode
-**
-[caps]>[escape]
+* Escape Keypad with Capslock
 [kp-caps]>[kptoggle]
-{rshift}{caps}>{caps}
 
 * Bind audio controls in Keypad mode
 [kp-F4]>[prev]
 [kp-F5]>[play]
 [kp-F6]>[next]
 
+* Bind display controls in Keypad mode
+* Works for macOS
+[kp-F1]>[scroll]
+[kp-F2]>[pause]
+
 * Use audio controls in Normal mode
+* Scroll seems to save intermittently. Try resaving by itself.
 [scroll]>[vol-]
 [pause]>[vol+]
 [prtscr]>[mute]
