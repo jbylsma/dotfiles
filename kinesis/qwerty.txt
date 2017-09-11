@@ -43,7 +43,7 @@
 [prtscr]>[mute]
 
 * Foot pedal bindings
-[lp-kptab]>[lctrl]
+[lp-tab]>[lctrl]
 [mp-kpshf]>[lalt]
 [rp-kpent]>[lwin]
 
