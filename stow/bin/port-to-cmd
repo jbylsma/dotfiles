@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -e
+
+function usage () {
+  echo "Usage: $(basename "$0") {port}" >&2
+}
+
+function main() {
+  local port
+
+  if [[ $# -ne 1 ]]; then
+    usage
+    exit 1
+  fi
+
+  port="$1"
+  if ! [[ "${port}" =~ ^[0-9]+$ ]]; then
+    usage
+    exit 1
+  fi
+
+  pid="$(netstat -lp --numeric-ports | \
+    awk -v port=":${port}$" '$4~ port && $6 == "LISTEN" { split($7, a, "/"); print a[1]; }')"
+
+  if [[ -z "${pid}" ]]; then
+    echo "No program found for port ${port}"
+    exit 1
+  fi
+
+  cat "/proc/${pid}/cmdline"
+  echo
+}
+
+main "$@"
