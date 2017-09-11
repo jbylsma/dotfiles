@@ -42,6 +42,11 @@
 [pause]>[vol+]
 [prtscr]>[mute]
 
+* Foot pedal bindings
+[lp-kptab]>[lctrl]
+[mp-kpshf]>[lalt]
+[rp-kpent]>[lwin]
+
 * SizeUp bindings
 {kp-a}>{-ralt}{-rwin}{-rctrl}{left}{+rwin}{+rctrl}{+ralt}
 {kp-s}>{-lalt}{-lctrl}{-lwin}{down}{+lwin}{+lalt}{+lctrl}
