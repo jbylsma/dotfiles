@@ -1,12 +1,21 @@
 **
 * Kinesis Advantage2 configuration
 *
-* All comments in this config should be removed automatically after being loaded.
+* To load this layout:
+*   1. Switch to the Windows thumb key mode (Progm+F7)
+*   2. Mount the Kinesis virtual drive (Progm+F1)
+*   3. Run `./prepare-mapping < qwerty.txt > /{Kinesis mount point}/active/qwerty.txt'
+*   4. Unmount the Kinesis virtual drive (Progm+F1)
 *
-* Use Windows mode for this layout
-* + The Advantage2 default thumb key mode is Windows.
-* + When created mapping, you must use the default Windows thumb keys.
-* + PC thumb key mode binds the WindowsR key to AltR in both normal and keypad mode.
+* All comments in this config must be removed before being loaded. The Kinesis
+* will attempt to filter out comments, but parsing issues may cause the loaded
+* configuration to be rejected.
+*
+* This layout uses the Windows thumb key mode, which is also the default
+* Kinesis thumb key mode. Although the mapping remaps the Windows key to Alt,
+* it retains the Windows key in keypad mode. It is necessary to reload the
+* layout if the thumb key mode has been switched, as thumb key mode switching
+* also unbind scrolls.
 *
 * When remapping keys via the program keys, the input order is destination, source.
 **
