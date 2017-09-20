@@ -38,7 +38,7 @@ function main() {
     exit 1
   fi
 
-  cat "/proc/${pid}/cmdline"
+  sed -e 's|\x0|\n|g' < "/proc/${pid}/cmdline" | less
   echo
 }
 
