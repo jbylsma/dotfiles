@@ -30,16 +30,20 @@ function main() {
     exit 1
   fi
 
-  pid="$(sudo netstat -lp --numeric-ports | \
-    awk -v port=":${port}$" '$4~ port && $6 == "LISTEN" { split($7, a, "/"); print a[1]; }')"
+  pid="$(sudo lsof -i ":${port}" | awk '$0~ / \(LISTEN\)$/ { print $2 }')"
 
   if [[ -z "${pid}" ]]; then
     echo "No program found for port ${port}"
     exit 1
   fi
 
-  sed -e 's|\x0|\n|g' < "/proc/${pid}/cmdline" | less
-  echo
+  # Check for /proc, then parse ps (for OS X)
+  if [[ -d "/proc" ]]; then
+    sed -e 's|\x0| |g' < "/proc/${pid}/cmdline"
+  else
+    ps -p "${pid}" -o command | \
+      awk 'NR > 1'
+  fi
 }
 
 main "$@"
