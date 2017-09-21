@@ -40,6 +40,7 @@ function main() {
   # Check for /proc, then parse ps (for OS X)
   if [[ -d "/proc" ]]; then
     sed -e 's|\x0| |g' < "/proc/${pid}/cmdline"
+    echo
   else
     ps -p "${pid}" -o command | \
       awk 'NR > 1'
