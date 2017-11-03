@@ -2,6 +2,8 @@ let mapleader=" "
 
 set surround
 
+nmap <C-W>o :action HideAllWindows<CR>
+
 map [c :action VcsShowPrevChangeMarker<CR>
 map ]c :action VcsShowNextChangeMarker<CR>
 map [` :action GotoPreviousBookmark<CR>
