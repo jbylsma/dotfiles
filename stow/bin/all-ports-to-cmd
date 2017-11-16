@@ -9,7 +9,7 @@ set -e
 # Get all open ports
 ######################
 function get_open_ports {
-  sudo lsof -Pn -i4 | \
+  sudo lsof -Pni | \
     awk '$NF ~ "(LISTEN)" { gsub("^.+:", "", $(NF - 1)); print $(NF - 1); }' | \
     sort -nu
 }
