@@ -30,7 +30,7 @@ function main() {
     exit 1
   fi
 
-  pid="$(sudo lsof -i ":${port}" | awk '$0~ / \(LISTEN\)$/ { print $2 }')"
+  pid="$(sudo lsof -i ":${port}" | awk '$0~ / \(LISTEN\)$/ { print $2; exit; }')"
 
   if [[ -z "${pid}" ]]; then
     echo "No program found for port ${port}"
