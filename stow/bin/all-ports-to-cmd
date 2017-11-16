@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#
+# Show all listening processes and their ports
+#
+
+set -e
+
+######################
+# Get all open ports
+######################
+function get_open_ports {
+  sudo lsof -Pn -i4 | \
+    awk '$NF ~ "(LISTEN)" { gsub("^.+:", "", $(NF - 1)); print $(NF - 1); }' | \
+    sort -nu
+}
+
+########
+# Main
+########
+function main() {
+  while read -r port; do
+    echo "*** ${port} ***"
+    port-to-cmd "${port}" 2>&1
+  done < <(get_open_ports)
+}
+main "$@"
