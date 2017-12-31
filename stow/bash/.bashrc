@@ -1,5 +1,5 @@
 # Private function for quietly checking for command
-function _which() {
+function _which {
   command which "$@" >/dev/null 2>&1
   return $?
 }
