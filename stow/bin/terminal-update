@@ -14,9 +14,9 @@ _title() {
   char='*'
   title="$1"
 
-  printf "\n%$((${#title} + 4))s\n" | tr ' ' "${char}"
-  printf "%s* ${title} *\n"
-  printf "%$((${#title} + 4))s\n" | tr ' ' "${char}"
+  printf "\\n%$((${#title} + 4))s\\n" | tr ' ' "${char}"
+  printf "%s${char} ${title} ${char}\\n"
+  printf "%$((${#title} + 4))s\\n" | tr ' ' "${char}"
 }
 
 #
@@ -89,6 +89,6 @@ main() {
   update_brew
   update_composer
   update_vimplug
-  echo -e "\n${0} completed"
+  echo -e "\\n${0} completed"
 }
 main
