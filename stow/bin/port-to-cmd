@@ -37,6 +37,8 @@ function main() {
     exit 1
   fi
 
+  echo -n "${pid}	"
+
   # Check for /proc, then parse ps (for OS X)
   if [[ -d "/proc" ]]; then
     sed -e 's|\x0| |g' < "/proc/${pid}/cmdline"
