@@ -24,9 +24,11 @@
 * Home     | MetaL (Windows)
 * PageUp   | MetaR (Windows)
 * WindowsR | AltR
+* End      | PageUp
 [home]>[lwin]
 [pup]>[rwin]
 [rwin]>[ralt]
+[end]>[pup]
 
 * Use Vim vertical arrow keys ordering
 [up]>[down]
