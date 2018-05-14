@@ -1,6 +1,6 @@
 hide-destination: no
 hide-source: no
 log-scale: no
-port-display: destination-only
+port-display: on
 port-resolution: no
 show-totals: yes
