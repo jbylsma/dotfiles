@@ -70,8 +70,13 @@ command! VdebugOn call plug#load('vdebug')
 Plug 'bling/vim-airline'
 Plug 'int3/vim-extradite'
 Plug 'kshenoy/vim-signature'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+
+" ultisnips requires Python, but there's no reason to load vim-snippets
+" without ultisnips
+if python
+  Plug 'SirVer/ultisnips'
+  Plug 'honza/vim-snippets'
+endif
 
 call plug#end()
 
