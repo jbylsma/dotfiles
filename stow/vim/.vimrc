@@ -74,7 +74,7 @@ Plug 'kshenoy/vim-signature'
 
 " ultisnips requires Python, but there's no reason to load vim-snippets
 " without ultisnips
-if python
+if has('python')
   Plug 'SirVer/ultisnips'
   Plug 'honza/vim-snippets'
 endif
