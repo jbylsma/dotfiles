@@ -33,7 +33,9 @@ update_brew() {
     return
 
   brew update
+  set +e
   brew upgrade
+  set -e
 }
 
 #
