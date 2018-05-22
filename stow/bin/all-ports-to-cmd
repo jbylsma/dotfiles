@@ -2,7 +2,6 @@
 #
 # Show all listening processes and their ports
 #
-
 set -e
 
 ######################
@@ -19,7 +18,7 @@ function get_open_ports {
 ########
 function main() {
   while read -r port; do
-    echo "*** ${port} ***"
+    printf "%s\\t" "${port}"
     port-to-cmd "${port}" 2>&1
   done < <(get_open_ports)
 }
