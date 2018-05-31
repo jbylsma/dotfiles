@@ -22,5 +22,4 @@ if has("autocmd")
   au BufReadPost * if &filetype !~ '^git\c' && line("'\"") > 0 && line("'\"") <= line("$")
     \| exe "normal! g`\"" | endif
 
-  au FileType vimwiki setlocal textwidth=80 nolist spell
 endif
