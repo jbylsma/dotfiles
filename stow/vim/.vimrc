@@ -8,8 +8,14 @@ endif
 " Override UltiSnips mappings
 let g:UltiSnipsListSnippets='<s-tab>'
 
+" Last chance to override things
 if filereadable(expand("~/.vimrc.before"))
   source ~/.vimrc.before
+endif
+
+" If configured, use Dropbox for vimwiki
+if exists("g:dotfiles_vimwiki_dropbox")
+  let g:vimwiki_list = [{'path': '~/Dropbox/vimwiki/'}]
 endif
 
 " Automatically install VimPlug if it's missing
