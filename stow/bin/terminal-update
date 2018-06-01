@@ -87,10 +87,29 @@ update_vimplug() {
 
 #
 main() {
-  update_dotfiles
-  update_brew
-  update_composer
-  update_vimplug
+  local type
+  declare -a types
+
+  types=(
+    dotfiles
+    brew
+    composer
+    vimplug
+  )
+
+  # The first argument is used for restricting updates to a single type
+  if [ $# -gt 0 ]; then
+    declare -f "update_$1" >/dev/null || \
+      ( echo "Unknown update type: $1" && \
+      exit 1 )
+
+    types=("$1")
+  fi
+
+
+  for type in "${types[@]}"; do
+    "update_${type}"
+  done
   echo -e "\\n${0} completed"
 }
-main
+main "$@"
