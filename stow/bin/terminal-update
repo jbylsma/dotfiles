@@ -75,7 +75,7 @@ update_dotfiles() {
 }
 
 #
-update_vimplug() {
+update_vim() {
   _title "vim-plug"
 
   test ! -f "${HOME}/.vim/autoload/plug.vim" && \
@@ -94,7 +94,7 @@ main() {
     dotfiles
     brew
     composer
-    vimplug
+    vim
   )
 
   # The first argument is used for restricting updates to a single type
