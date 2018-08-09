@@ -1,19 +1,26 @@
 #!/bin/bash
 set -e
 
-if [[ "$#" -ne "1" ]]
-then
-  basename=`basename "$0"`
-  echo "Usage: $basename  {database name}"
-  exit 1
-fi
+usage() {
+  echo "Usage: $(basename "$0") {database name}"
+}
 
-db="$1"
-user="$db"@localhost;
-echo "$(cat <<EOF
-CREATE DATABASE $db;
-CREATE USER $user;
-GRANT ALL ON $db.* TO $user;
-FLUSH PRIVILEGES;
+main() {
+  local db user
+
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  db="\`$1\`"
+  user="${db}"@localhost;
+
+  cat <<EOF
+  CREATE DATABASE ${db};
+  CREATE USER ${user};
+  GRANT ALL ON ${db}.* TO ${user};
+  FLUSH PRIVILEGES;
 EOF
-)"
+}
+main "$@"
