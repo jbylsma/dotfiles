@@ -9,6 +9,8 @@ nmap <C-W>o :action HideAllWindows<CR>
 " Bracket mappings
 map [c :action VcsShowPrevChangeMarker<CR>
 map ]c :action VcsShowNextChangeMarker<CR>
+map [q :action GotoPreviousError<CR>
+map ]q :action GotoNextError<CR>
 map [` :action GotoPreviousBookmark<CR>
 map ]` :action GotoNextBookmark<CR>
 
