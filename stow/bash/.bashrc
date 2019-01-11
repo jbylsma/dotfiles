@@ -1,6 +1,6 @@
 # Private function for quietly checking for command
 function _which {
-  command which "$@" >/dev/null 2>&1
+  command -v "$@" >/dev/null 2>&1
   return $?
 }
 
@@ -101,7 +101,7 @@ function dcd {
   local path
   local target
 
-  if ! which drush >/dev/null 2>&1; then
+  if ! _which drush >/dev/null 2>&1; then
     echo "Drush not found"
     return 1
   fi
@@ -122,7 +122,7 @@ function dcd {
 function gcd {
   local path
 
-  if ! which git >/dev/null 2>&1; then
+  if ! _which git >/dev/null 2>&1; then
     echo "Git not found" >&2
     return 1
   fi
