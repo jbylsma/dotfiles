@@ -54,6 +54,11 @@ if _which mvim && ! _which gvim; then
   alias gvim='mvim'
 fi
 
+# If ls supports the --color argument, alias ls to use it.
+if ls --color /dev/null >/dev/null 2>&1; then
+  alias ls='ls --color'
+fi
+
 # Homebrew specific rules
 if _which brew; then
   BREW_PREFIX="$(brew --prefix)"
