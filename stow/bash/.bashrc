@@ -46,7 +46,6 @@ export EDITOR="vim"
 # Aliases
 alias ack='ack --pager="less -SFRX"'
 alias ag='ag --pager="less -SFRX"'
-alias d='dirs -v'
 alias grep='grep -I --color=auto'
 alias less='less -SR'
 alias vij='vim -c "set ft=json"'
