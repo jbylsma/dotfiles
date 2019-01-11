@@ -7,9 +7,9 @@ function _which {
 # Reset PATH on OS X keep it from being clobbered in tmux
 # See https://github.com/yyuu/pyenv/issues/85
 if [ -x /usr/libexec/path_helper ]; then
-   #shellcheck disable=SC2123
+  #shellcheck disable=SC2123
   PATH=''
-   #shellcheck disable=SC1091
+  #shellcheck disable=SC1091
   source /etc/profile
 fi
 
@@ -19,7 +19,7 @@ export HISTFILESIZE=
 shopt -s histappend
 
 # Terminal configuration
-if [ -n "$PS1" ]; then
+if [ -n "${PS1}" ]; then
   # If background jobs, set path color to red, otherwise green.
   # If SSH, set host color to red, otherwise bold cyan.
   export PS1="\[\e[\$( [ ! -z \"\$(jobs -p)\" ] && echo -n '31' || echo -n '32' )m\][\w]\[\e[0m\]\n\[\e[\$( [ ! -z \${SSH_CONNECTION+x} ] && echo -n '31' || echo -n '1;36' )m\]\u@\h\[\e[1;33m\]$ \[\e[0m\]"
@@ -27,9 +27,9 @@ fi
 export CLICOLOR=1
 
 # Add some additional paths ($HOME, Homebrew)
-DIRS=( $HOME/usr/bin $HOME/bin /usr/local/sbin /usr/local/bin )
+DIRS=( "${HOME}/usr/bin" "${HOME}/bin" "/usr/local/sbin" "/usr/local/bin" )
 for ((i=${#DIRS[@]}-1; i>=0; i--)); do
-  DIR=${DIRS[$i]}
+  DIR="${DIRS[${i}]}"
   if [ -d "${DIR}" ]; then
     PATH="${DIR}:$(echo ${PATH} | sed -e "s|${DIR}||g" -e "s|:\{2,\}|:|g" -e 's|^:||')"
     PATH="${PATH%:}"
@@ -68,7 +68,7 @@ if _which brew; then
   if [ -f "${BREW_GITHUB_TOKEN}" ]; then
     read -r HOMEBREW_GITHUB_API_TOKEN < "${BREW_GITHUB_TOKEN}"
     export HOMEBREW_GITHUB_API_TOKEN
-  elif [ -n "$PS1" ]; then
+  elif [ -n "${PS1}" ]; then
     echo "GitHub API token for Homebrew does not exist."
     echo "Consider creating ${BREW_GITHUB_TOKEN}."
   fi
@@ -88,7 +88,7 @@ fi
 
 # Default bc scale
 if [ -f "${HOME}/.bcrc" ]; then
-  export BC_ENV_ARGS=$HOME/.bcrc
+  export BC_ENV_ARGS="${HOME}/.bcrc"
 fi
 
 # Disable Wine debugger everywhere
@@ -163,8 +163,8 @@ function sure {
 
   vars=( HOME SHELL )
   for ((i=${#vars[@]}-1; i>=0; i--)); do
-    if [[ -z "${!vars[$i]}" ]]; then
-      echo "${vars[$i]} not set" >&2
+    if [[ -z "${!vars[${i}]}" ]]; then
+      echo "${vars[${i}]} not set" >&2
       return 1
     fi
   done
