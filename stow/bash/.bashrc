@@ -42,7 +42,6 @@ unset DIRS
 set -o vi
 export EDITOR="vim"
 
-
 # Aliases
 alias ack='ack --pager="less -SFRX"'
 alias ag='ag --pager="less -SFRX"'
@@ -50,12 +49,9 @@ alias grep='grep -I --color=auto'
 alias less='less -SR'
 alias vij='vim -c "set ft=json"'
 
+# If MacVim is present but gvim isn't, map gvim back to mvim
 if _which mvim && ! _which gvim; then
   alias gvim='mvim'
-fi
-
-if [[ -f "/Applications/GitX.app/Contents/Resources/gitx" ]]; then
-  alias gitx="/Applications/GitX.app/Contents/Resources/gitx"
 fi
 
 # Homebrew specific rules
@@ -88,6 +84,11 @@ fi
 # Default bc scale
 if [ -f "${HOME}/.bcrc" ]; then
   export BC_ENV_ARGS=$HOME/.bcrc
+fi
+
+# Disable Wine debugger everywhere
+if _which wine; then
+  export WINEDEBUG=-all
 fi
 
 # Quickly change to the webroot of Drupal site
@@ -171,10 +172,6 @@ function sure {
 
   sudo -E su root -c "${cmd}"
 }
-
-
-# Disable Wine debugger everywhere
-export WINEDEBUG=-all
 
 # Unset private _which function
 unset -f _which
