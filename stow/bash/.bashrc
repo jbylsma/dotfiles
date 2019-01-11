@@ -80,6 +80,7 @@ if _which brew; then
 
   # Add Bash completion
   if [ -f "${BREW_PREFIX}/etc/bash_completion" ]; then
+    # shellcheck disable=SC1090
     . "${BREW_PREFIX}/etc/bash_completion"
   fi
 
@@ -182,4 +183,7 @@ function sure {
 unset -f _which
 
 # Source local (non-shared) configuration.
-[[ -f "${HOME}/.bashrc.local" ]] && source "${HOME}/.bashrc.local"
+# shellcheck disable=SC1090
+if [[ -f "${HOME}/.bashrc.local" ]]; then
+  source "${HOME}/.bashrc.local"
+fi
