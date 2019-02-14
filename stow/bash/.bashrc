@@ -102,7 +102,7 @@ function dcd {
   local path
   local target
 
-  if ! _which drush >/dev/null 2>&1; then
+  if ! command -v drush >/dev/null 2>&1; then
     echo "Drush not found"
     return 1
   fi
@@ -123,7 +123,7 @@ function dcd {
 function gcd {
   local path
 
-  if ! _which git >/dev/null 2>&1; then
+  if ! command -v git >/dev/null 2>&1; then
     echo "Git not found" >&2
     return 1
   fi
