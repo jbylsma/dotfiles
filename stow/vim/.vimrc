@@ -75,7 +75,7 @@ Plug 'godlygeek/tabular'
 Plug 'joonty/vdebug', { 'on': 'VdebugOn' }
 command! VdebugOn call plug#load('vdebug')
 Plug 'bling/vim-airline'
-Plug 'int3/vim-extradite'
+Plug 'junegunn/gv.vim'
 Plug 'kshenoy/vim-signature'
 
 " ultisnips requires Python, but there's no reason to load vim-snippets
