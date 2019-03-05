@@ -82,7 +82,7 @@ update_vim() {
     echo "vim-plug not found" >&2 && \
     return
 
-  vim +PlugUpgrade +PlugUpdate +qall
+  vim +PlugUpgrade +PlugClean\! +PlugUpdate +qall
 }
 
 #
