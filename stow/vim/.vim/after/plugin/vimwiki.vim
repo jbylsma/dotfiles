@@ -5,3 +5,5 @@ let g:vimwiki_folding='list'
 if has("autocmd")
   au FileType vimwiki setlocal textwidth=80 nolist spell colorcolumn=80
 endif
+
+:call vimwiki#vars#init()
