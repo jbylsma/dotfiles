@@ -1,5 +1,16 @@
 let mapleader = ' '
 
+" Use 24-bit colors if available
+" Reference termguicolors and xterm-true-color
+if has('termguicolors') && !has('gui_running')
+
+  set termguicolors
+  if &term =~# '^screen'
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  endif
+endif
+
 " If available, use Ag
 if executable('ag')
   let g:ackprg = 'ag --nogroup --nocolor --column'
