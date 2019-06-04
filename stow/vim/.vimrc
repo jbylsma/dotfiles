@@ -83,6 +83,7 @@ command! VdebugOn call plug#load('vdebug')
 Plug 'bling/vim-airline'
 Plug 'junegunn/gv.vim'
 Plug 'kshenoy/vim-signature'
+Plug 'junegunn/vim-peekaboo'
 
 " ultisnips requires Python, but there's no reason to load vim-snippets
 " without ultisnips
