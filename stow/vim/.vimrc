@@ -3,7 +3,6 @@ let mapleader = ' '
 " Use 24-bit colors if available
 " Reference termguicolors and xterm-true-color
 if has('termguicolors') && !has('gui_running')
-
   set termguicolors
   if &term =~# '^screen'
     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
@@ -145,6 +144,9 @@ if version > 704
 else
   set completeopt+=longest
 endif
+
+" Use low updatetime to trigger CursorHold faster
+set updatetime=100
 
 " Open up a shell starting in the current file's path
 :noremap zz :execute '!cd ' . shellescape(expand("%:p:h")) . ' && ' . &shell <CR>
