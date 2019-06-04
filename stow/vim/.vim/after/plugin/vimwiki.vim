@@ -7,4 +7,5 @@ if exists("g:dotfiles_vimwiki_dropbox")
   autocmd User vimwiki let g:vimwiki_list = [{'path': '~/Dropbox/vimwiki/'}]
 endif
 
+autocmd User vimwiki call vimwiki#vars#init()
 autocmd User vimwiki echom 'Vimwiki has been loaded'
