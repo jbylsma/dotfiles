@@ -50,7 +50,7 @@ Plug 'mustache/vim-mustache-handlebars'
 Plug 'vim-ruby/vim-ruby'
 Plug 'cakebaker/scss-syntax.vim'
 
-"Plugins
+" Plugins
 Plug 'mileszs/ack.vim'
 Plug 'ap/vim-css-color'
 Plug 'ctrlpvim/ctrlp.vim'
@@ -93,65 +93,6 @@ if has('python') || has('python3')
 endif
 
 call plug#end()
-
-" Theme
-set background=dark
-let g:rehash256 = 1
-silent! colorscheme molokai
-
-" 2015-02-16
-" Turn on visual bell
-set visualbell
-
-" 2015-02-12
-" Split nicely
-set splitbelow
-set splitright
-
-" Make ctags search recursively
-set tags=./tags,tags;$HOME
-
-"Use PHP syntax with files
-au BufNewFile,BufRead *.install set filetype=php
-au BufNewFile,BufRead *.test set filetype=php
-au BufNewFile,BufRead *.inc set filetype=php
-
-" Include man filetype plugin
-runtime! ftplugin/man.vim
-
-" Set up default folding, but don't fold by default
-" foldmethod=syntax is too slow for large files
-set foldmethod=indent
-set nofoldenable
-
-" Fix arrow keys under screen-* terms
-if &term =~ '^screen'
-  " tmux will send xterm-style keys when its xterm-keys option is on
-  execute "set <xUp>=\e[1;*A"
-  execute "set <xDown>=\e[1;*B"
-  execute "set <xRight>=\e[1;*C"
-  execute "set <xLeft>=\e[1;*D"
-endif
-
-set hidden
-set modeline
-
-" Set up better tab completion
-set wildignore+=tags
-set wildmode=longest,list
-
-set completeopt=menu,menuone,preview
-if version > 704
-  set completeopt+=noselect
-else
-  set completeopt+=longest
-endif
-
-" Use low updatetime to trigger CursorHold faster
-set updatetime=100
-
-" Open up a shell starting in the current file's path
-:noremap zz :execute '!cd ' . shellescape(expand("%:p:h")) . ' && ' . &shell <CR>
 
 if filereadable(expand("~/.vimrc.after"))
   source ~/.vimrc.after
