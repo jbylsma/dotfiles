@@ -15,7 +15,7 @@ if &term =~ '^screen'
 endif
 
 " Open up a shell starting in the current file's path
-:noremap zz :execute '!cd ' . shellescape(expand("%:p:h")) . ' && ' . &shell <CR>
+noremap zz :execute '!cd ' . shellescape(expand("%:p:h")) . ' && ' . &shell <CR>
 
 " After whitespace, insert the current directory into a command-line path
 cnoremap <expr> <C-P> getcmdline()[getcmdpos()-2] ==# ' ' ? expand('%:p:h') : "\<C-P>"

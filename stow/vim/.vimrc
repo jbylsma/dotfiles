@@ -49,6 +49,7 @@ Plug 'tpope/vim-markdown'
 Plug 'mustache/vim-mustache-handlebars'
 Plug 'vim-ruby/vim-ruby'
 Plug 'cakebaker/scss-syntax.vim'
+Plug 'chikamichi/mediawiki.vim'
 
 " Plugins
 Plug 'mileszs/ack.vim'
@@ -76,7 +77,6 @@ command! VimwikiOn call plug#load('vimwiki')
 Plug 'thinca/vim-visualstar'
 Plug 'sh-dude/ZoomWin'
 Plug 'rizzatti/dash.vim'
-Plug 'chikamichi/mediawiki.vim'
 Plug 'godlygeek/tabular'
 Plug 'joonty/vdebug', { 'on': 'VdebugOn' }
 command! VdebugOn call plug#load('vdebug')
