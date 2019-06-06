@@ -38,6 +38,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'fatih/molokai'
 
 " Languages
+Plug 'vim-scripts/apachestyle'
 Plug 'chrisbra/csv.vim'
 Plug 'tpope/vim-git'
 Plug 'tpope/vim-haml'
