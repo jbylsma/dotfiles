@@ -7,7 +7,21 @@
 #   Port {external port}
 
 Host *
-  UserKnownHostsFile /dev/null
-  StrictHostKeyChecking no
+  # Any keys added through SSH should use confirm, which prompts the user to
+  # confirm key usage.
+  AddKeysToAgent confirm
+
+  # Send a message every X seconds to maintain an open connection
+  ServerAliveInterval 60
+
+  # Start shared sessions automatically.
   ControlMaster auto
+
+  # Set path for control sockets for shared sessions.
   ControlPath ~/.ssh/sessions/ssh-%r@%h:%p
+
+  # Keep shared session connections of X seconds after SSH session is closed.
+  # Useful when creating many connections like SCPing multiple files.
+  ControlPersist 5
+
+# vi:ft=sshconfig
