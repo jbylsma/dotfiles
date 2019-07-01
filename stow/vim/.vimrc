@@ -1,15 +1,5 @@
 let mapleader = ' '
 
-" Use 24-bit colors if available
-" Reference termguicolors and xterm-true-color
-if has('termguicolors') && !has('gui_running')
-  set termguicolors
-  if &term =~# '^screen'
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-  endif
-endif
-
 " If available, use Ag
 if executable('ag')
   let g:ackprg = 'ag --nogroup --nocolor --column'
@@ -21,6 +11,16 @@ let g:UltiSnipsListSnippets='<s-tab>'
 " Last chance to override things
 if filereadable(expand("~/.vimrc.before"))
   source ~/.vimrc.before
+endif
+
+" Use 24-bit colors
+" Reference termguicolors and xterm-true-color
+if exists('dotfiles_use_true_colors') && has('termguicolors') && !has('gui_running')
+  set termguicolors
+  if &term =~# '^screen'
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  endif
 endif
 
 " Automatically install VimPlug if it's missing
