@@ -2,11 +2,11 @@
 
 ## MacOS key and passphrase handling
 
-Passphrases should _not_ be stored in the user's keychains. If a passphrase is
-stored in a keychain, a SSH session could skip any key confirmation by passing
-`-o UseKeychain=yes`. Unfortunately, this means that passphrases must be
-typed whenever they are added to the SSH agent. That's just the price of
-security!
+Passphrases _cannot_ be stored in the user's keychains if you want to use
+identity confirmation. If a passphrase is stored in a keychain, a SSH session
+could skip any key confirmation by passing `-o UseKeychain=yes`. Unfortunately,
+this means that passphrases must be manually entered whenever they are added to
+the SSH agent. That's just the price of security!
 
 On MacOS, requests for keys added to SSH agent with the confirm option will
 fail because the default helper program `/usr/libexec/ssh-askpass` does not
