@@ -86,13 +86,6 @@ Plug 'junegunn/gv.vim'
 Plug 'kshenoy/vim-signature'
 Plug 'junegunn/vim-peekaboo'
 
-" ultisnips requires Python, but there's no reason to load vim-snippets
-" without ultisnips
-if has('python') || has('python3')
-  Plug 'SirVer/ultisnips'
-  Plug 'honza/vim-snippets'
-endif
-
 call plug#end()
 
 if filereadable(expand("~/.vimrc.after"))
