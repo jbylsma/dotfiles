@@ -180,6 +180,13 @@ function sure {
   sudo -E su root -c "${cmd}"
 }
 
+# Decode URL encoding
+# https://stackoverflow.com/a/37840948
+urldecode() {
+  : "${*//+/ }"
+  echo -e "${_//%/\\x}"
+}
+
 # Unset private _which function
 unset -f _which
 
