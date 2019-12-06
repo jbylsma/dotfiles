@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+if [[ $UID -eq 0 ]]; then
+  echo "$(basename "$0") must be run as a non-root user" >&2
+  exit 1
+fi
+
+echo "Starting session"
+cd "${HOME}"
+tmux_session="!${USER}"
+sure tmux new-session -s "${tmux_session}" -n "${USER}" -d \"exec su - ${USER}\" \\\; \
+  new-window -n "Main" \\\; \
+  attach-session -t "${tmux_session}"
