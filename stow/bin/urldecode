@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+
+# Decode URL encoding
+# https://stackoverflow.com/a/37840948
+
+: "${*//+/ }"
+echo -e "${_//%/\\x}"
