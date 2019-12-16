@@ -4,7 +4,7 @@
 * To load this layout:
 *   1. Switch to the Windows thumb key mode (Progm+F7)
 *   2. Mount the Kinesis virtual drive (Progm+F1)
-*   3. Run `./prepare-mapping < qwerty.txt > /{Kinesis mount point}/active/qwerty.txt'
+*   3. Run `./prepare-mapping <qwerty.txt >/{Kinesis mount point}/active/qwerty.txt'
 *   4. Unmount the Kinesis virtual drive (Progm+F1)
 *
 * All comments in this config must be removed before being loaded. The Kinesis
@@ -17,7 +17,7 @@
 * layout if the thumb key mode has been switched, as thumb key mode switching
 * also unbind scrolls.
 *
-* When remapping keys via the program keys, the input order is destination, source.
+* When remapping keys via the program keys, the input order is location token, action token.
 **
 
 * Extend Windows thumb key mode
@@ -33,6 +33,9 @@
 * Use Vim vertical arrow keys ordering
 [up]>[down]
 [down]>[up]
+
+* Left pipe to insert
+[intl-\]>[kp-insert]
 
 * Escape Keypad with Capslock
 [kp-caps]>[kptoggle]
