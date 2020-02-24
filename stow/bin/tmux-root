@@ -1,13 +1,24 @@
 #!/usr/bin/env bash
+# Open up a tmux root session with a pane for the non-root user
+set -e
 
-if [[ $UID -eq 0 ]]; then
-  echo "$(basename "$0") must be run as a non-root user" >&2
-  exit 1
+tmux_user=""
+if [[ "$UID" -eq 0 ]]; then
+  if [[ -n "${SUDO_USER}" ]]; then
+    tmux_user="${SUDO_USER}"
+  else
+    echo "Could not determine non-root user" >&2
+    exit 1
+  fi
+else
+  tmux_user="${USER}"
 fi
 
-echo "Starting session"
+session_name="!${tmux_user}"
+
 cd "${HOME}"
-tmux_session="!${USER}"
-sure tmux new-session -s "${tmux_session}" -n "${USER}" -d \"exec su - ${USER}\" \\\; \
-  new-window -n "Main" \\\; \
-  attach-session -t "${tmux_session}"
+sure \
+  tmux attach-session -t "${session_name}" \|\| \
+  tmux new-session -s "${session_name}" -n "${tmux_user}" -d \"exec su - ${tmux_user}\" \\\; \
+    new-window -n "Main" \\\; \
+    attach-session -t "${session_name}"
