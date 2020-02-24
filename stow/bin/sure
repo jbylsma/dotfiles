@@ -9,15 +9,15 @@ for ((i=${#vars[@]}-1; i>=0; i--)); do
   fi
 done
 
-cmd="env HOME=${HOME}"
+cmd=""
 if [[ $# -gt 0 ]]; then
-  cmd+=" $@"
+  cmd+="$@"
 else
-  cmd+=" ${SHELL}"
+  cmd+="${SHELL}"
   # Make bash request a login shell
   if [[ "$(basename "${SHELL}")" = 'bash' ]]; then
     cmd+=" -l"
   fi
 fi
 
-sudo -E su root -c "${cmd}"
+sudo -E su root -c "export HOME=\"${HOME}\"; ${cmd}"
