@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Quickly SSH to a server with tmux-root
+set -e
+
+usage() {
+  echo "Usage: $(basename $0) {ssh_server}"
+  echo "Requires tmux-root to be in the server's bin path."
+}
+
+main() {
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  ssh -t "$1" tmux-root
+}
+main "$@"
