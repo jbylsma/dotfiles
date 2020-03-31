@@ -1,1 +1,1 @@
-let g:markdown_fenced_languages = ['html', 'sql', 'sh', 'bash=sh']
+let g:markdown_fenced_languages = ['javascript', 'html', 'sql', 'sh', 'bash=sh']
