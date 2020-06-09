@@ -73,8 +73,6 @@ Plug 'majutsushi/tagbar'
 Plug 'tpope/vim-unimpaired'
 Plug 'airblade/vim-gitgutter'
 Plug 'bronson/vim-trailing-whitespace'
-Plug 'vimwiki/vimwiki', { 'on': 'VimwikiOn' }
-command! VimwikiOn call plug#load('vimwiki')
 Plug 'thinca/vim-visualstar'
 Plug 'sh-dude/ZoomWin'
 Plug 'rizzatti/dash.vim'
