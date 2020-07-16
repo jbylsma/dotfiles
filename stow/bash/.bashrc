@@ -47,6 +47,7 @@ alias ack='ack --pager="less -SFRX"'
 alias ag='ag --pager="less -SFRX"'
 alias grep='grep -I --color=auto'
 alias less='less -SR'
+alias psw='ps -wwf'
 alias vij='vim -c "set ft=json"'
 alias lsof='lsof -anP'
 
