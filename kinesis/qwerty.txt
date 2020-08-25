@@ -50,11 +50,14 @@
 [kp-F1]>[scroll]
 [kp-F2]>[pause]
 
-* Use audio controls in Normal mode
+* Swap audio controls into Normal mode
 * Scroll seems to save intermittently. Try resaving by itself.
 [scroll]>[vol-]
 [pause]>[vol+]
 [prtscr]>[mute]
+[vol-]>[scroll]
+[vol+]>[pause]
+[mute]>[prtscr]
 
 * Foot pedal bindings
 [lp-tab]>[lctrl]
