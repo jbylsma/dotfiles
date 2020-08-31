@@ -14,7 +14,7 @@ main() {
   fi
 
   host=${@: -1}
-	set -- "${@:1:$(($#-1))}"
+  set -- "${@:1:$(($#-1))}"
   ssh -t "${host}" tmux-root
 }
 main "$@"
