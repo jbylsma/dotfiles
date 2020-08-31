@@ -28,3 +28,5 @@
   conflictstyle = diff3
 [include]
   path = ~/.gitconfig.local
+[pull]
+	ff = only
