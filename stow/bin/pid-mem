@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Show memory usage for pid
+# Only works on OSes with /proc (not MacOS)
+set -e
+
+function usage {
+  echo "Usage: $(basename "$0") pid"
+}
+
+function main {
+  local pid
+
+  if [[ "$#" -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  if [[ ! -d /proc ]]; then
+    echo "OS must support /proc" >&2
+    exit 1
+  fi
+
+  pid="$1"
+
+  if [[ ! "${pid}" =~ ^[1-9]+[0-9]*$  || ! -d "/proc/${pid}" ]]; then
+    echo "Invalid pid" >&2
+    exit 1
+  fi
+
+  file="/proc/${pid}/smaps"
+  if [[ ! -f "${file}" ]]; then
+    echo "OS must support smaps for pid" >&2
+    exit 1
+  fi
+
+  awk -f <(cat - <<-'EOD'
+  # Convert kilobytes to gigabytes
+  function convert(k) {
+    if (k == 0) {
+      return 0
+    }
+
+    m = k / 1024
+    if (m < 1024) {
+      return sprintf("%.2fM", m)
+    }
+
+    g = m / 1024
+    return sprintf("%.2fG", g)
+  }
+
+  BEGIN {
+    types = "^(Rss|Shared|Private|Swap|Pss)"
+  }
+
+  $1 ~ types {
+    split(substr($1, 1, length($1) - 1), label_parts, "_")
+    label=label_parts[1]
+    type_totals[label] = type_totals[label] + $2
+  }
+
+  END {
+    for (i in type_totals) {
+      printf "%s\t%s\n", i, convert(type_totals[i])
+    }
+  }
+	EOD
+  ) "${file}"
+}
+main "$@"
