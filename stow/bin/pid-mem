@@ -3,6 +3,29 @@
 # Only works on OSes with /proc (not MacOS)
 set -e
 
+function help {
+  cat - <<-'EOD'
+Rss - Resident Set Size
+RSS is the total number of pages, shared or not, currently mapped into the
+process. So Shared_Clean + Shared_Dirty would be the shared part of the RSS
+(i.e. the part of RSS that is also mapped into other processes), and
+Private_Clean + Private_Dirty the private part of RSS (i.e. only mapped in this
+process).
+
+---
+
+Pss - Proportional Share Size
+Private pages are summed up as is, and each shared mapping's size is divided by
+the number of processes that share it.
+
+If a process had 100k private pages, 500k pages shared with one other process,
+and 500k shared with four other processes, the PSS would be:
+
+100k + (500k / 2) + (500k / 5) = 450k
+
+EOD
+}
+
 function usage {
   echo "Usage: $(basename "$0") pid"
 }
