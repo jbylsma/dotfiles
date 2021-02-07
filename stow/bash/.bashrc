@@ -99,6 +99,9 @@ if _which wine; then
   export WINEDEBUG=-all
 fi
 
+# Override SSH timeout
+unset TMOUT
+
 # Quickly change to the webroot of Drupal site
 function dcd {
   local path
