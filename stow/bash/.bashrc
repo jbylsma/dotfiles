@@ -75,6 +75,9 @@ if _which brew; then
     echo "Consider creating ${BREW_GITHUB_TOKEN}."
   fi
 
+  # Don't automatically update brew before install, update, and tap.
+  export HOMEBREW_NO_AUTO_UPDATE=1
+
   # Use Brew's vim for the Editor
   if [ -f "${BREW_PREFIX}/bin/vim" ]; then
     export EDITOR="${BREW_PREFIX}/bin/vim"
