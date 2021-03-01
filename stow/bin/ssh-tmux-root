@@ -13,8 +13,7 @@ main() {
     exit 1
   fi
 
-  host=${@: -1}
-  set -- "${@:1:$(($#-1))}"
+  host="${1}"
   ssh -t "${host}" 'bash -lc tmux-root'
 }
 main "$@"
