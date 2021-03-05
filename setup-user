@@ -1,0 +1,18 @@
+mkdir -p ~/usr/src
+cd ~/usr/src
+curl -LO 'http://ftp.gnu.org/gnu/stow/stow-2.3.1.tar.gz'
+tar -zxvf ./stow-2.3.1.tar.gz
+cd stow-2.3.1
+./configure --prefix=$HOME/usr
+make install
+cd ~/usr/src
+git clone https://github.com/jbylsma/dotfiles.git
+cd dotfiles/stow
+rm ~/.bashrc ~/.bash_profile
+~/usr/bin/stow -t ~ bash
+~/usr/bin/stow -t ~ git
+~/usr/bin/stow -t ~ misc
+~/usr/bin/stow -t ~ tmux
+~/usr/bin/stow -t ~ vim
+~/usr/bin/stow -t ~/usr/bin bin
+vim
