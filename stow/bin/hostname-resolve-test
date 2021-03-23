@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Tests if a hostname resolves.
+# Primarily used for SSH against hostnames that have different configuration by network location.
+# Very unscientific and probably error-prone.
+set -e
+
+usage() {
+  echo "Usage: $(basename "$0") [hostname] {server}"
+}
+
+main() {
+  local hostname
+  local server
+
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  hostname="$1"
+  server="${2}"
+
+  if [[ -n "${server}" ]]; then
+    nc -z -w1 "${server}" 53 >/dev/null 2>&1 || exit 1
+  fi
+
+  test -n "$(dig ${server:+"@${server}"} "${hostname}" +short +timeout=0)"
+}
+main "$@"
