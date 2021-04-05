@@ -38,8 +38,6 @@ main () {
 
   package="$1"
 
-  trap 'cleanup' EXIT
-
   for i in "${DOWNLOADER_BINS[@]}"; do
     if type -f "${i}" >/dev/null 2>&1; then
       bin="${i}"
@@ -59,13 +57,15 @@ main () {
     fi
   done
 
+  package_dir="./${package}.rpm"
+
   if [[ -d "${package_dir}" ]]; then
     echo "Directory ${package_dir} already exists" >&2
     exit 1
   fi
 
-  package_dir="./${package}.rpm"
   tmp_dir="$(mktemp -d)"
+  trap 'cleanup' EXIT
 
   set +e
   echo 'Downloading package' >&2
