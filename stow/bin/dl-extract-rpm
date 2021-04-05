@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+set -e
+
+tmp_dir=
+package_dir=
+
+declare -ra REQUIRED_BINS=(
+  rpm2cpio
+  cpio
+)
+
+declare -ra DOWNLOADER_BINS=(
+  dnf
+  yumdownload
+)
+
+cleanup () {
+  for dir in "${tmp_dir}" "${package_dir}"; do
+    if [[ -z ${dir} && -d "${dir}" ]]; then
+      rm -r "${dir}"
+    fi
+  done
+}
+
+usage () {
+  echo "Usage: $(basename "$0") [package name]"
+}
+
+main () {
+  local bin
+  local package
+  local package_file
+
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  package="$1"
+
+  trap 'cleanup' EXIT
+
+  for i in "${DOWNLOADER_BINS[@]}"; do
+    if type -f "${i}" >/dev/null 2>&1; then
+      bin="${i}"
+      break
+    fi
+  done
+
+  if [[ -z "${bin}" ]]; then
+    echo 'No supported RPM downloaders found' >&2
+    exit 1
+  fi
+
+  for i in "${REQUIRED_BINS[@]}"; do
+    if ! type -f "${i}" >/dev/null 2>&1; then
+      echo "Required executable not found: ${i}" >&2
+      exit 1
+    fi
+  done
+
+  package_dir="${package}.rpm"
+
+  if [[ -d "${package_dir}" ]]; then
+    echo "Directory ${package_dir} already exists" >&2
+    exit 1
+  fi
+
+  tmp_dir="$(mktemp -d)"
+
+  set +e
+  echo 'Downloading package' >&2
+  case "${bin}" in
+    dnf)
+      dnf download --downloaddir="${tmp_dir}" "${package}" >/dev/null 2>&1
+      ;;
+
+    yumdownloader)
+      yumdownloader --destdir "${tmp_dir}" "${package}" >/dev/null 2>&1
+      ;;
+
+    *)
+      echo 'RPM downloader not defined' >&2
+      exit 1
+      ;;
+  esac
+  set -e
+
+  package_file="$(find "${tmp_dir}" -type f)"
+  if [[ -z "${package_file}" ]]; then
+    echo "Package ${package} could not be downloaded" >&2
+    exit 1
+  fi
+
+  echo 'Extracting package' >&2
+  mkdir "${package_dir}"
+  rpm2cpio "${package_file}" |cpio -i -D "${package_dir}" -dm >/dev/null 2>&1
+  echo "Successfully extracted ${package} to ${package_dir}"
+  unset package_dir
+}
+main "$@"
