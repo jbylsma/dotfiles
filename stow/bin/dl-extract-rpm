@@ -16,7 +16,7 @@ declare -ra DOWNLOADER_BINS=(
 
 cleanup () {
   for dir in "${tmp_dir}" "${package_dir}"; do
-    if [[ -z ${dir} && -d "${dir}" ]]; then
+    if [[ -n "${dir}" && -d "${dir}" ]]; then
       rm -r "${dir}"
     fi
   done
@@ -59,7 +59,7 @@ main () {
     fi
   done
 
-  package_dir="${package}.rpm"
+  package_dir="./${package}.rpm"
 
   if [[ -d "${package_dir}" ]]; then
     echo "Directory ${package_dir} already exists" >&2
@@ -94,7 +94,11 @@ main () {
 
   echo 'Extracting package' >&2
   mkdir "${package_dir}"
-  rpm2cpio "${package_file}" |cpio -i -D "${package_dir}" -dm >/dev/null 2>&1
+  cd "${package_dir}"
+  rpm2cpio "${package_file}" |cpio -idm >/dev/null 2>&1 || (
+    echo "Failed to extract ${package} to ${package_dir}" 2>&1
+    exit 1
+  )
   echo "Successfully extracted ${package} to ${package_dir}"
   unset package_dir
 }
