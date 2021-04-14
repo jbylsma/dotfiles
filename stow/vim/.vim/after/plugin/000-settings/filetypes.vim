@@ -7,6 +7,9 @@ au FileType apache exe 'runtime! indent/apachestyle.vim'
 " Set default indentation based on stock Apache conf
 au FileType apache setlocal tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
+" Man
+au FileType man setlocal tabstop=8 nolist
+
 " Markdown
 au FileType markdown setlocal colorcolumn=80 textwidth=80 spell
 
