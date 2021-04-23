@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# Open a firewalld TCP port or port range for the current SSH IP
+set -e
+
+readonly TIMEOUT_DEFAULT='1h'
+
+usage() {
+  cat - <<EOD
+Usage: $(basename "$0") {-hr} [-t <timeout>] port|port-range
+Open a firewalld TCP port or port range for the current SSH session's IP.
+
+  -h  Display usage text
+  -r  Close port instead of opening
+  -t  Specify timeout for port. Default is ${TIMEOUT_DEFAULT}
+EOD
+}
+
+get_rich_rule() {
+  local client_ip="$1"
+  local port="$2"
+  echo 'rule family="ipv4" source address="'"${client_ip}"'" port port="'"${port}"'" protocol="tcp" accept'
+}
+
+main() {
+  local client_ip
+  local port
+  local remove_rule
+  local timeout
+  local zone
+
+  remove_rule=0
+  timeout="${TIMEOUT_DEFAULT}"
+
+  while getopts ":ht:r" o; do
+    case "${o}" in
+      h)
+        usage
+        exit
+        ;;
+      t)
+        timeout="${OPTARG}"
+        ;;
+      r)
+        remove_rule=1
+        ;;
+      *)
+        usage >&2
+        exit 1
+        ;;
+    esac
+  done
+  shift $((OPTIND-1))
+
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  command -v 'firewall-cmd' >/dev/null 2>&1 || (
+    echo 'firewall-cmd not found' >&2
+    exit 1
+  )
+
+  firewall-cmd --state >/dev/null 2>&1 || (
+    echo 'firewalld not running' >&2
+    exit 1
+  )
+
+  if [[ -z "${SSH_CONNECTION}" ]]; then
+    echo 'SSH_CONNECTION not available' >&2
+    exit 1
+  fi
+
+  client_ip="$(echo "${SSH_CONNECTION}" |cut -d' ' -f1)"
+  port="$1"
+  zone="$(firewall-cmd --get-default-zone)"
+
+  if [[ "${remove_rule}" -eq 0 ]]; then
+    firewall-cmd \
+      --zone="${zone}" \
+      --add-rich-rule="$(get_rich_rule "${client_ip}" "${port}")" \
+      --timeout="${timeout}"
+  else
+    firewall-cmd \
+      --zone="${zone}" \
+      --remove-rich-rule="$(get_rich_rule "${client_ip}" "${port}")"
+  fi
+}
+main "$@"
