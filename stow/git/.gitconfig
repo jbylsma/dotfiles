@@ -18,7 +18,7 @@
   diff-recursive = !git --no-pager diff --color=always --ignore-submodules && \
     git --no-pager submodule foreach --recursive git diff --color=always
   f = fetch --prune --tags
-  fa = f --all
+  fa = fetch --prune --tags --all
   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
   lga = log --all --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
   s = status
