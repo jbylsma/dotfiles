@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-vars=( HOME SHELL )
-for ((i=${#vars[@]}-1; i>=0; i--)); do
-  if [[ -z "${!vars[${i}]}" ]]; then
-    echo "${vars[${i}]} not set" >&2
+declare -a required_envs=( HOME PATH SHELL )
+for env in "${required_envs[@]}"; do
+  if [[ -z "${!env}" ]]; then
+    echo "${env} not set" >&2
     return 1
   fi
 done
@@ -20,4 +20,4 @@ else
   fi
 fi
 
-sudo -E su root -c "export HOME=\"${HOME}\"; ${cmd}"
+sudo -E su root -c "export HOME=\"${HOME}\" PATH=\"${PATH}\"; ${cmd}"
