@@ -12,10 +12,6 @@ if has("gui_macvim")
   set guifont=Ubuntu_Mono:h18
 endif
 
-" Set a nice theme
-let g:molokai_original=1
-colo molokai
-
 if filereadable(expand("~/.gvimrc.local"))
   source ~/.gvimrc.local
 endif
