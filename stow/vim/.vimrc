@@ -15,7 +15,7 @@ endif
 
 " Use 24-bit colors
 " Reference termguicolors and xterm-true-color
-if exists('dotfiles_use_true_colors') && has('termguicolors') && !has('gui_running')
+if has('termguicolors') && !has('gui_running')
   set termguicolors
   if &term =~# '^screen'
     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
