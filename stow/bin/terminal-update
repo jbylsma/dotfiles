@@ -46,6 +46,12 @@ update_composer() {
     echo "composer not found" >&2 && \
     return
 
+  composer_path="$(command -v "composer")"
+  if [ "${composer_path}" == "${composer_path##${HOME}}" ]; then
+    echo "Non-local composer found" >&2 && \
+    return
+  fi
+
   composer self-update
   composer global update
 }
