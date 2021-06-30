@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-declare -a required_envs=( HOME PATH SHELL )
+declare -a required_envs=( HOME SHELL )
 for env in "${required_envs[@]}"; do
   if [[ -z "${!env}" ]]; then
     echo "${env} not set" >&2
@@ -20,4 +20,4 @@ else
   fi
 fi
 
-sudo -E su root -c "export HOME=\"${HOME}\" PATH=\"${PATH}\"; ${cmd}"
+sudo -E su root -c "export HOME=\"${HOME}\"; ${cmd}"
