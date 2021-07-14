@@ -41,11 +41,3 @@
 [lp-tab]>[lctrl]
 [mp-kpshf]>[lalt]
 [rp-kpent]>[lwin]
-
-* SizeUp bindings
-{kp-a}>{-ralt}{-rwin}{-rctrl}{left}{+rwin}{+rctrl}{+ralt}
-{kp-s}>{-lalt}{-lctrl}{-lwin}{down}{+lwin}{+lalt}{+lctrl}
-{kp-d}>{-lctrl}{-lalt}{-lwin}{up}{+lalt}{+lctrl}{+lwin}
-{kp-f}>{-ralt}{-rwin}{-rctrl}{right}{+rwin}{+rctrl}{+ralt}
-{kp-z}>{-rctrl}{-ralt}{-rwin}{m}{+ralt}{+rwin}{+rctrl}
-{kp-c}>{-rwin}{-ralt}{-rctrl}{c}{+ralt}{+rwin}{+rctrl}
