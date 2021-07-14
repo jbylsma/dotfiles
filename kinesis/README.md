@@ -39,7 +39,7 @@ To load this layout:
 
 1. Switch to the Windows thumb key mode (`progm+F7`)
 2. Mount the Kinesis virtual drive `(progm+F1`)
-3. Run `./prepare-mapping <qwerty.txt >/{Kinesis mount point}/active/qwerty.txt'
+3. Run `./prepare-mapping <qwerty.txt >/{Kinesis mount point}/active/qwerty.txt`
 4. Unmount the Kinesis virtual drive (`progm+F1`)
 
 ## Thumb Key Mappings
