@@ -1,0 +1,20 @@
+# Load peripheral settings and monitor for changes
+# A delay is needed when starting X
+sleep 1 && "${HOME}/usr/bin/config-peripherals" &
+inputplug -c "${HOME}/usr/bin/config-peripherals"
+
+# Add the user's bin to path if it exists
+LOCAL_BIN="${HOME}/usr/bin"
+if [ -d "${LOCAL_BIN}" ]; then
+  export PATH="${LOCAL_BIN}:${PATH}"
+fi
+unset LOCAL_BIN
+
+# Enable touch mode for Firefox
+export MOZ_USE_XINPUT2=1
+
+# Firefox requires that gestures are disabled
+xsetwacom --list devices |\
+  awk '$0 ~ /^Wacom Pen and multitouch sensor Finger touch/ { system("xsetwacom --set " $9 " Gesture off"); }'
+
+# vim: ft=sh

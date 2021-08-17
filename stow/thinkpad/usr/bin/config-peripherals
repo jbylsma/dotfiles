@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -e
+
+main() {
+  # Tweak keyboard repeat rate
+  xset r rate 300 50
+
+  # Tweak mouse speeds
+  xset mouse 5/1 5
+
+  # Modify keyboard mappings for all keyboards
+  xkbcomp \
+    -w 0 \
+    "${HOME}/.config/xkbcomp/custom-all.xkb" \
+    "${DISPLAY}"
+
+  # Modify keyboard mappings for all keyboards
+  TP_KEYBOARD_ID="$(xinput --list --id-only 'AT Translated Set 2 keyboard')"
+  if [ -n "${TP_KEYBOARD_ID}" ]; then
+    xkbcomp \
+      -w 0 \
+      -i "${TP_KEYBOARD_ID}" \
+      "${HOME}/.config/xkbcomp/custom-thinkpad.xkb" \
+      "${DISPLAY}"
+  fi
+}
+main "$@"
