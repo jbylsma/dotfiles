@@ -8,6 +8,9 @@ main() {
   # Tweak mouse speeds
   xset mouse 5/1 5
 
+  # Disable speaker
+  xset b off
+
   # Modify keyboard mappings for all keyboards
   xkbcomp \
     -w 0 \
