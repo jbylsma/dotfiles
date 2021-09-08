@@ -53,6 +53,12 @@ update_composer() {
   fi
 
   composer self-update
+  if composer global status >/dev/null 2>&1; then
+    composer global update
+  else
+    echo "Composer could not find global project" >&2 && \
+    return
+  fi
   composer global update
 }
 
