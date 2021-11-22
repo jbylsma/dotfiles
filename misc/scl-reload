@@ -1,0 +1,10 @@
+# Reloads all enabled SCLs
+# Usage: source scl-reload
+
+_scls_current="${X_SCLS}"
+export -n X_SCLS
+unset X_SCLS
+while read -r collection; do
+  source scl_source enable "${collection}"
+done < <(tr -s ' ' \\n <<< "${_scls_current}")
+unset tmp
