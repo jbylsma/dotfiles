@@ -38,8 +38,6 @@ done
 export PATH
 unset DIRS
 
-# Set bash's vi mode
-set -o vi
 export EDITOR="vim"
 
 # enable bash completion in interactive shells
