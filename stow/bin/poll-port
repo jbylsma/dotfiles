@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Poll a server to see when a port starts responding.
+set -e
+
+readonly UPDATE_INTERVAL=2
+
+usage() {
+  echo "Usage: $(basename "$0") {-ah} server port"
+  echo
+  echo '-a: For supported systems, announce when a port is available'
+  echo '-h: Show help'
+}
+
+ping_port() {
+  local port
+  local server
+  port="$1"
+  server="$2"
+
+  echo 'port test' |\
+    nc -w1 "${server}" "${port}" >/dev/null 2>&1
+}
+
+main() {
+  local announce=false
+  local server
+  local port
+
+  while getopts ':ah' o; do
+    case "${o}" in
+      a)
+        announce=true
+        ;;
+      h)
+        usage
+        exit
+        ;;
+      *)
+        usage >&2
+        exit 1
+        ;;
+    esac
+  done
+  shift $((OPTIND-1))
+
+  if [[ $# -lt 2 ]]; then
+    usage 1>&2
+    exit 1
+  fi
+
+  server="$1"
+  port="$2"
+  if [[ ! $port =~ ^[1-9]+[0-9]*$ ]]; then
+    echo "Invalid port: ${port}" >&2
+    exit 1
+  fi
+
+  while true; do
+    clear
+    date
+
+    if ping_port "${port}" "${server}"; then
+      echo "${server} is available on port ${port}"
+
+      # Make that Mac talk
+      if [[ "${announce}" = true ]] && type say >/dev/null 2>&1 ; then
+        say "${server} is available on port ${port}" &
+      fi
+      break
+    else
+      echo "${server} is not available on port ${port}"
+      sleep "${UPDATE_INTERVAL}"
+    fi
+  done
+}
+
+main "$@"
