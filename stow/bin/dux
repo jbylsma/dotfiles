@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Run du against all children of a directory, excluding outside mounts
+# Linux-specific because BSD du doesn't support excluding files
+# Use caution; not fool-proof on paths
+set -e
+
+usage() {
+  echo "Usage: $(basename "$0") [du arguments] {dir}"
+}
+
+get_full_path() {
+  local path
+  path="$1"
+
+  if [[ "${path}" = '/' ]]; then
+    echo '/'
+    return
+  fi
+
+  dir="$(cd "$(dirname "${path}")"; echo "${PWD}")"
+  if [[ "${dir}" != '/' ]]; then
+    dir="${dir}/"
+  fi
+  file="$(basename "${path}")"
+
+  echo "${dir}${file}"
+}
+
+get_mounts__linux() {
+  awk '$5 != "/" { print $5; }' /proc/self/mountinfo |\
+    sort
+}
+
+main() {
+  local dir
+  local full_dir
+  local mounts
+  local -a excludes
+
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+  dir="${@: -1}"
+  set -- "${@: 1: $#-1}"
+
+  if [[ ! -d "${dir}" ]]; then
+    echo "Invalid directory: ${dir}" >&2
+    exit
+  fi
+  full_dir="$(get_full_path "${dir}")"
+
+  if [[ -f /proc/self/mountinfo ]]; then
+    mounts="$(get_mounts__linux)"
+  else
+    echo "Currently only supported on Linux" >&2
+    exit 1
+  fi
+
+  while read -r mount; do
+    if [[ "${full_dir}" -ef "${mount}" ]]; then
+      continue
+    fi
+
+    # TODO: Could allow edge cases like hard links
+    if [[ "${mount}" =~ ^${full_dir} ]]; then
+      excludes+=("${mount}")
+    fi
+  done <<<"${mounts}"
+
+  du "$@" -xX <(for exclude in "${excludes[@]}"; do echo "${exclude}"; done) "${dir}/"*
+
+}
+main "$@"
