@@ -17,13 +17,16 @@ get_full_path() {
     return
   fi
 
-  dir="$(cd "$(dirname "${path}")"; echo "${PWD}")"
-  if [[ "${dir}" != '/' ]]; then
-    dir="${dir}/"
-  fi
-  file="$(basename "${path}")"
+  base_dir="$(cd "$(dirname "${path}")"; echo "${PWD}")"
 
-  echo "${dir}${file}"
+  dir="$(basename "${path}")"
+
+  if [[ "${dir}" != '.' ]]; then
+    echo "${base_dir}/${dir}"
+  else
+    echo "${base_dir}"
+  fi
+
 }
 
 get_mounts__linux() {
@@ -68,7 +71,7 @@ main() {
     fi
   done <<<"${mounts}"
 
-  du "$@" -xX <(for exclude in "${excludes[@]}"; do echo "${exclude}"; done) "${dir}/"*
+  du "$@" -xX <(for exclude in "${excludes[@]}"; do echo "${exclude}"; done) "${dir%%/}/"*
 
 }
 main "$@"
