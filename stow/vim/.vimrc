@@ -83,6 +83,7 @@ Plug 'bling/vim-airline'
 Plug 'junegunn/gv.vim'
 Plug 'kshenoy/vim-signature'
 Plug 'junegunn/vim-peekaboo'
+Plug 'wesQ3/vim-windowswap'
 
 call plug#end()
 
