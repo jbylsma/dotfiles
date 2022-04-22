@@ -22,7 +22,11 @@ get_full_path() {
   dir="$(basename "${path}")"
 
   if [[ "${dir}" != '.' ]]; then
-    echo "${base_dir}/${dir}"
+    if [[ "${base_dir}" = '/' ]]; then
+      echo "/${dir}"
+    else
+      echo "${base_dir}/${dir}"
+    fi
   else
     echo "${base_dir}"
   fi
