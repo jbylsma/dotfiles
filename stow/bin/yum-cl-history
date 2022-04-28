@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Quickly display
+# Quickly display the full, untrucated command line history through yum
 set -e
 
 readonly yum='yum -C --noplugins'
