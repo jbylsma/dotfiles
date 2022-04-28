@@ -45,7 +45,14 @@ main() {
    awk_fields+='|User'
   fi
 
-  seq "$(current_yum_id)" -1 1 |\
+  current_id="$(current_yum_id)"
+  if [[ ! "${current_id}" =~ ^[1-9]+[0-9]*$ ]]; then
+    echo "Could not determine current yum history ID" >&2
+    exit 1
+  fi
+
+  # shellcheck disable=SC2086
+  seq "${current_id}" -1 1 |\
     xargs ${yum} history info 2>/dev/null |\
     awk -v fields="${awk_fields}" -f <(cat - <<-'EOD'
       $0 ~ "^("fields")\\s+:" {
