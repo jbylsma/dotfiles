@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Quickly display
+set -e
+
+readonly yum='yum -C --noplugins'
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] [-u]"
+}
+
+current_yum_id() {
+  ${yum} history info 2>/dev/null |\
+    awk '$0 ~ "^Transaction ID :" { print $NF; }'
+}
+
+main() {
+  local include_user
+  include_user=false
+
+  if ! command -v yum >/dev/null 2>&1; then
+    echo "yum not found" >&2
+    exit 1
+  fi
+
+  while getopts ":hu" o; do
+    case "${o}" in
+      h)
+        usage
+        exit
+        ;;
+      u)
+        include_user=true
+        ;;
+      *)
+        usage >&2
+        exit 1
+        ;;
+    esac
+  done
+  # If the last option had an argument, remove it.
+  shift $((OPTIND-1))
+
+  awk_fields='Transaction ID|Command Line|Begin time'
+  if [[ "${include_user}" == true ]]; then
+   awk_fields+='|User'
+  fi
+
+  seq "$(current_yum_id)" -1 1 |\
+    xargs ${yum} history info 2>/dev/null |\
+    awk -v fields="${awk_fields}" -f <(cat - <<-'EOD'
+      $0 ~ "^("fields")\\s+:" {
+        i=index($0, ":")
+        if (i != 0) {
+          if ($0 ~ "^Transaction ID") {
+            printf "\n";
+          }
+          else {
+            printf "\t";
+          }
+
+          out=substr($0, i + 2)
+          sub("^\\s+", "", out)
+          printf "%s", out
+      }
+    }
+EOD
+)
+}
+main "$@"
