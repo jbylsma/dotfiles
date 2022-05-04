@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Restow common packages typically deployed on all servers
+set -e
+
+readonly STOW_DIR="${HOME}/usr/src/dotfiles/stow"
+readonly DEFAULT_TARGET_DIR="${HOME}"
+readonly -a PACKAGES=(
+  bash
+  bin
+  git
+  misc
+  tmux
+  vim
+)
+
+main() {
+  for package in "${PACKAGES[@]}"; do
+    case "${package}" in
+      bin)
+        target="${HOME}/usr/bin"
+        ;;
+      *)
+        target="${DEFAULT_TARGET_DIR}"
+        ;;
+    esac
+    stow -d "${STOW_DIR}" -t "${target}" -R "${package}"
+  done
+}
+main "$@"
