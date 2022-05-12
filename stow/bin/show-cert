@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+# Show certificate data for a hostname
+set -e
+
+usage() {
+  cat - <<-EOD
+Usage: $(basename "$0") [-afh] hostname [server]
+
+  By default, show the summary of the first certificate in the chain.
+
+  The server argument is used if the hostname should not be use the default DNS resolution.
+
+  -a Show for all certificates in the chain
+  -f Show the full certificate output
+  -h Show this usage information
+EOD
+}
+
+_get_cert() {
+  local server
+  local hostname
+  server="$1"
+  hostname="$2"
+  shift 2
+
+  echo 'Q' | \
+    openssl s_client \
+    "$@" \
+    -connect "${server}:443" \
+    -servername "${hostname}"
+}
+
+get_first_cert() {
+  local server
+  local hostname
+  server="$1"
+  hostname="$2"
+  _get_cert "${server}" "${hostname}"
+}
+
+get_all_certs() {
+  local server
+  local hostname
+  server="$1"
+  hostname="$2"
+  _get_cert "${server}" "${hostname}" -showcerts
+}
+
+extract_certs() {
+  gawk -f <(cat - <<-'EOD'
+    BEGIN {
+      cert = ""
+      process_cert = 0
+      count = 0
+    }
+
+    {
+      if ($0 == "-----BEGIN CERTIFICATE-----") {
+        process_cert = 1
+      }
+
+      if (process_cert == 1) {
+        cert = cert "\n" $0
+      }
+
+      if ($0 == "-----END CERTIFICATE-----") {
+        process_cert = 0
+        count += 1
+
+        print "***"
+        print "*** CERTIFICATE " count
+        print "***"
+
+        command="openssl x509 -noout -text"
+        print cert | command
+        close(command)
+
+        cert = ""
+
+        next
+      }
+    }
+EOD
+)
+}
+
+main() {
+  local hostname
+  local server
+
+  local mode="summary"
+  local scope="first"
+
+  while getopts ":afh" o; do
+    case "${o}" in
+      a)
+        scope="all"
+        ;;
+      f)
+        mode="full"
+        ;;
+      h)
+        usage
+        exit
+        ;;
+      *)
+        echo "Invalid option" >&2
+        usage >&2
+        exit 1
+        ;;
+    esac
+  done
+
+  shift "$((OPTIND - 1))"
+
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  hostname="$1"
+
+  if [[ -n "$2" ]]; then
+    server="$2"
+  else
+    server="${hostname}"
+  fi
+
+  case "${scope}" in
+    first)
+      cmd="get_first_cert"
+      ;;
+    all)
+      cmd="get_all_certs"
+      ;;
+    *)
+      echo "Invalid mode" >&2
+      exit 1
+      ;;
+  esac
+
+  case "${mode}" in
+    summary)
+      "${cmd}" "${server}" "${hostname}"
+      ;;
+
+    full)
+      "${cmd}" "${server}" "${hostname}" |\
+        extract_certs
+      ;;
+  esac
+
+}
+main "$@"
