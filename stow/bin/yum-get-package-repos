@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Parse the Yum DB to retrieve all repos packages
+set -e
+
+declare -rx YUM_DB='/var/lib/yum/yumdb'
+declare -rx SHA_LENGTH=42
+
+if [[ ! -d "${YUM_DB}" ]]; then
+  echo "Yum DB not found, ${YUM_DB}" >&2
+  exit 1
+fi
+
+_echo() {
+  path="$1"
+  package="${path:$(( ${#YUM_DB} + 3 + $SHA_LENGTH ))}"
+  printf '%s\t%s\n' "$(cat "${path}/from_repo")" "${package}"
+}
+export -f _echo
+find "${YUM_DB}" -mindepth 2 -maxdepth 2 -type d -print0 |\
+  xargs -0 -n1 -P0 -I{} bash -c '_echo "$@"' _ {}
