@@ -3,7 +3,8 @@
 set -e
 
 declare -rx YUM_DB='/var/lib/yum/yumdb'
-declare -rx SHA_LENGTH=42
+declare -rx SHA_LENGTH=40
+declare -rx PATH_PREFIX_LENGTH=$(( ${#YUM_DB} + 3 + $SHA_LENGTH + 1))
 
 if [[ ! -d "${YUM_DB}" ]]; then
   echo "Yum DB not found, ${YUM_DB}" >&2
@@ -12,7 +13,7 @@ fi
 
 _echo() {
   path="$1"
-  package="${path:$(( ${#YUM_DB} + 3 + $SHA_LENGTH ))}"
+  package="${path:${PATH_PREFIX_LENGTH}}"
   printf '%s\t%s\n' "$(cat "${path}/from_repo")" "${package}"
 }
 export -f _echo
