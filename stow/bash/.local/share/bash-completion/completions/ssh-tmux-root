@@ -1,0 +1,4 @@
+_ssh_tmux_root()
+{
+  _xfunc ssh _ssh
+} && complete -F _ssh_tmux_root ssh-tmux-root

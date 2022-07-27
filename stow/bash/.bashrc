@@ -173,11 +173,6 @@ function tue {
   )"
 }
 
-# Use SSH completion for ssh-tmux-root
-if _which ssh-tmux-root; then
-  complete -F _ssh ssh-tmux-root
-fi
-
 # Unset private _which function
 unset -f _which
 
