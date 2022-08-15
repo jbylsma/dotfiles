@@ -1,0 +1,1 @@
+bindsym $mod+$alt+c [con_id="__focused__"] move position center

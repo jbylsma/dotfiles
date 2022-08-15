@@ -1,0 +1,2 @@
+XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/:$HOME/.local/share/
+export XDG_DATA_DIRS

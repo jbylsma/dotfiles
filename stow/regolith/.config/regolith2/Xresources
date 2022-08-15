@@ -1,0 +1,3 @@
+gtk.theme_name: Adwaita
+i3xrocks.action.volume.left: regolith-control-center sound --class=floating_window
+regolith.look.path: /usr/share/regolith-look/default
