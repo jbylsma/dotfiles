@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Create a Firefox instance with a throwaway profile
+set -e
+
+tmp_dir="$(mktemp --tmpdir -d firefox-throwaway.XXXXXXXXXX)"
+trap 'rm -r "${tmp_dir}"' EXIT
+exec firefox --new-instance --profile "${tmp_dir}"
