@@ -1,0 +1,1 @@
+bindsym $mod+s exec --no-startup-id regolith-control-center --class=floating_window sound
