@@ -9,9 +9,9 @@ cd ~/usr/src
 git clone https://github.com/jbylsma/dotfiles.git
 cd dotfiles/stow
 rm ~/.bashrc ~/.bash_profile
+~/usr/bin/stow -t ~ misc
 ~/usr/bin/stow -t ~ bash
 ~/usr/bin/stow -t ~ git
-~/usr/bin/stow -t ~ misc
 ~/usr/bin/stow -t ~ tmux
 ~/usr/bin/stow -t ~ vim
 ~/usr/bin/stow -t ~/usr/bin bin
