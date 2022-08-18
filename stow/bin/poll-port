@@ -62,9 +62,14 @@ main() {
     if ping_port "${port}" "${server}"; then
       echo "${server} is available on port ${port}"
 
-      # Make that Mac talk
-      if [[ "${announce}" = true ]] && type say >/dev/null 2>&1 ; then
-        say "${server} is available on port ${port}" &
+      # Speak success
+      if [[ "${announce}" = true ]]; then
+        message="${server} is available on port ${port}"
+        if type say >/dev/null 2>&1; then
+          say "${message}"
+        elif type espeak-ng >/dev/null 2>&1; then
+          espeak-ng "${message}"
+        fi
       fi
       break
     else
