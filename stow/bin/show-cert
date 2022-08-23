@@ -47,7 +47,7 @@ get_all_certs() {
 }
 
 extract_certs() {
-  gawk -f <(cat - <<-'EOD'
+  awk -f <(cat - <<-'EOD'
     BEGIN {
       cert = ""
       process_cert = 0
