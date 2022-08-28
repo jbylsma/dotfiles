@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# sure: Switch user, retain environment
 set -e
 
 declare -a required_envs=( HOME SHELL )
