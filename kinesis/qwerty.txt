@@ -18,16 +18,6 @@
 * Escape Keypad with Capslock
 [kp-caps]>[kptoggle]
 
-* Bind audio controls in Keypad mode
-[kp-F4]>[prev]
-[kp-F5]>[play]
-[kp-F6]>[next]
-
-* Bind display controls in Keypad mode
-* Works for macOS
-[kp-F1]>[scroll]
-[kp-F2]>[pause]
-
 * Swap audio controls into Normal mode
 * Scroll seems to save intermittently. Try resaving by itself.
 [scroll]>[vol-]
