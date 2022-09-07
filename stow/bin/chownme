@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Changes a file's ownership to the current user, with awareness of sudo
+set -e
+
+function usage {
+  echo "Usage: $(basename "$0") [-gh] files"
+}
+
+function main {
+  local set_group
+  local gid
+  local uid
+  local owner
+
+  while getopts ":gh" opt; do
+    case "${opt}" in
+      g)
+        set_group=1
+        ;;
+      h)
+        usage
+        exit
+        ;;
+      \?)
+        echo "Invalid option: -${OPTARG}" >&2
+        usage >&2
+        exit 1
+        ;;
+    esac
+  done
+  shift "$((OPTIND - 1))"
+
+  if [[ -n "${SUDO_UID}" ]]; then
+    uid="${SUDO_UID}"
+  else
+    uid="${UID}"
+  fi
+
+  owner="${uid}"
+  if [[ "${set_group}" == 1 ]]; then
+    gid="$(id -gn "${uid}")"
+    owner+=":${gid}"
+  fi
+
+  chown "${owner}" "${@}"
+}
+main "$@"
