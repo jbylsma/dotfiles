@@ -1,2 +1,3 @@
+for_window [class="Cheese"] floating enable
 for_window [class="Gnome-calculator"] floating enable
 for_window [class="Gnome-tweaks"] floating enable
