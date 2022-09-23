@@ -5,22 +5,22 @@ set surround
 set easymotion
 
 " Use :actionlist to find IDE actions for mapping
-nmap <C-W>o :action HideAllWindows<CR>
+nmap <C-W>o <Action>(HideAllWindows)
 
 " Bracket mappings
-map [c :action VcsShowPrevChangeMarker<CR>
-map ]c :action VcsShowNextChangeMarker<CR>
-map [q :action GotoPreviousError<CR>
-map ]q :action GotoNextError<CR>
-map [` :action GotoPreviousBookmark<CR>
-map ]` :action GotoNextBookmark<CR>
+map [c <Action>(VcsShowPrevChangeMarker)
+map ]c <Action>(VcsShowNextChangeMarker)
+map [q <Action>(GotoPreviousError)
+map ]q <Action>(GotoNextError)
+map [` <Action>(GotoPreviousBookmark)
+map ]` <Action>(GotoNextBookmark)
 
 " Git
-map <Leader>gw :action Git.Add<CR>
-map <Leader>gs :action Vcs.Show.Local.Changes<CR>
-map <Leader>gd :action Compare.SameVersion<CR>
-map <Leader>gc :action CheckinProject<CR>
-map <Leader>gb :action Annotate<CR>
+map <Leader>gw <Action>(Git.Add)
+map <Leader>gs <Action>(Vcs.Show.Local.Changes)
+map <Leader>gd <Action>(Compare.SameVersion)
+map <Leader>gc <Action>(CheckinProject)
+map <Leader>gb <Action>(Annotate)
 
 " Debug
-map <Leader>ve :action PhpListenDebugAction<CR>
+map <Leader>ve <Action>(PhpListenDebugAction)
