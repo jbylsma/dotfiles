@@ -1,5 +1,8 @@
 ## Modify // Center Window // <><Alt> c ##
 bindsym $mod+$alt+c [con_id="__focused__"] move position center
 
-## Modify // Window Sticky Toggle // <><Alt> s ##
-bindsym $mod+$alt+s sticky toggle
+## Modify // Window Sticky Toggle // <><Shift> s ##
+bindsym $mod+Shift+s sticky toggle
+
+## Modify // Border Toggle // <> b ##
+bindsym $mod+b border toggle

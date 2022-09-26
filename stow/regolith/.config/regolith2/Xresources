@@ -2,3 +2,6 @@ gtk.theme_name: Adwaita
 i3xrocks.action.volume.left: regolith-control-center --class=floating_window sound
 regolith.look.path: /usr/share/regolith-look/default
 i3-wm.program.launcher.cmd: env PATH="$PATH:$HOME/usr/bin" ilia -p terminal
+
+i3-wm.binding.sleep: _disable-sleep
+i3-wm.binding.bluetooth: _disable-bluetooth
