@@ -112,7 +112,7 @@ if _which wine; then
 fi
 
 # Override SSH timeout
-unset TMOUT
+unset TMOUT 2>/dev/null
 
 # Quickly change to the webroot of Drupal site
 function dcd {
