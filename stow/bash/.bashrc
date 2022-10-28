@@ -158,6 +158,13 @@ function gcd {
   fi
 }
 
+# Alias SSH connections forcing password entry. Useful for testing a reset password.
+function pssh {
+  ssh -S none -o PreferredAuthentications=keyboard-interactive,password "$@"
+}
+# Use SSH for completion
+_pssh() { _xfunc ssh _ssh; } && complete -F _pssh pssh
+
 # Update terminal variables from tmux
 function tue {
   eval "$(
