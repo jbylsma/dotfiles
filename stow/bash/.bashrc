@@ -165,6 +165,23 @@ function pssh {
 # Use SSH for completion
 _pssh() { _xfunc ssh _ssh; } && complete -F _pssh pssh
 
+# Reload all enabled SCLs, useful in tmux sessions
+function scl-reload {
+  local _scls_current
+  if ! command -v scl_source >/dev/null 2>&1; then
+    echo "SCL not found" >&2
+    return 1
+  fi
+
+  _scls_current="${X_SCLS}"
+  export -n X_SCLS
+  unset X_SCLS
+  while read -r collection; do
+    source scl_source enable "${collection}"
+  done < <(tr -s ' ' \\n <<< "${_scls_current}")
+  unset _scls_current
+}
+
 # Update terminal variables from tmux
 function tue {
   eval "$(
