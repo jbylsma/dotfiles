@@ -18,7 +18,4 @@ session_name="!${tmux_user}"
 
 cd "${HOME}"
 sure \
-  tmux attach-session -t "${session_name}" \|\| \
-  tmux new-session -s "${session_name}" -n "${tmux_user}" -d \"exec su - ${tmux_user}\" \\\; \
-    new-window -n "Main" \\\; \
-    attach-session -t "${session_name}"
+  tmux new-session -A -s "${session_name}" -n "Main"
