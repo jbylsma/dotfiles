@@ -29,6 +29,9 @@ i3-wm.binding.bluetooth: _disable-bluetooth
 #define color_ltyellow #F9F06B
 #define color_ltcyan   #5CCFE6
 
+regolith.wallpaper.color.primary: #3D3846
+regolith.wallpaper.color.secondary: #3D3846
+
 i3-wm.client.focused.color.border: color_dark_4
 i3-wm.client.focused.color.background: #1A5FB4
 i3-wm.client.focused.color.text: color_light_1
