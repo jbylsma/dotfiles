@@ -7,14 +7,14 @@ i3-wm.binding.sleep: _disable-sleep
 i3-wm.binding.bluetooth: _disable-bluetooth
 
 ! Copy definitions from regolith-look/default/root
-#define color_dark_4   #2F2F2F
-#define color_dark_3   #393939
-#define color_dark_2   #9A9996
+#define color_light_1  #FFFFFF
+#define color_light_2  #F6F5F4
+#define color_light_3  #DEDDDA
+#define color_light_4  #C0BFBC
 #define color_dark_1   #B8B8B8
-#define color_light_4   #C0BFBC
-#define color_light_3   #DEDDDA
-#define color_light_2   #F6F5F4
-#define color_light_1   #FFFFFF
+#define color_dark_2   #9A9996
+#define color_dark_3   #393939
+#define color_dark_4   #2F2F2F
 #define color_yellow   #F6D32D
 #define color_orange   #FF7800
 #define color_red      #E01B24
@@ -29,14 +29,17 @@ i3-wm.binding.bluetooth: _disable-bluetooth
 #define color_ltyellow #F9F06B
 #define color_ltcyan   #5CCFE6
 
-regolith.wallpaper.color.primary: #3D3846
-regolith.wallpaper.color.secondary: #3D3846
+#define color_adwaita_dark_3 #3D3846
+#define color_adwaita_blue_5 #1A5FB4
+
+regolith.wallpaper.color.primary: color_adwaita_dark_3
+regolith.wallpaper.color.secondary: color_adwaita_dark_3
 
 i3-wm.client.focused.color.border: color_dark_4
-i3-wm.client.focused.color.background: #1A5FB4
+i3-wm.client.focused.color.background: color_adwaita_blue_5
 i3-wm.client.focused.color.text: color_light_1
 i3-wm.client.focused.color.indicator: color_ltblue
-i3-wm.client.focused.color.child_border: color_blue
+i3-wm.client.focused.color.child_border: color_adwaita_blue_5
 
 i3-wm.client.focused_inactive.color.border: color_dark_1
 i3-wm.client.focused_inactive.color.background: color_dark_3
