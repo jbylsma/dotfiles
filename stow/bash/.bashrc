@@ -27,7 +27,7 @@ fi
 export CLICOLOR=1
 
 # Add some additional paths ($HOME, Homebrew)
-DIRS=( "${HOME}/usr/bin" "${HOME}/bin" "/usr/local/sbin" "/usr/local/bin" )
+DIRS=( "${HOME}/usr/bin" "${HOME}/bin" "${HOME}/.local/bin" "/usr/local/sbin" "/usr/local/bin" )
 for ((i=${#DIRS[@]}-1; i>=0; i--)); do
   DIR="${DIRS[${i}]}"
   if [ -d "${DIR}" ]; then
