@@ -2,11 +2,43 @@
 set -e
 
 usage() {
-  echo "Usage: $(basename "$0") {database name}"
+  cat <<EOD
+Usage: $(basename "$0") [-dh] {database name}
+Generate a user and database initialization for MySQL
+
+Arguments:
+	-d Generates deinitialization instead of initialization
+	-h Show help
+EOD
 }
 
 main() {
-  local db user
+  local db
+  local init
+  local user
+
+  init=true
+
+  while getopts ":dh" opt; do
+    case "${opt}" in
+      d)
+        init=false
+        ;;
+      h)
+        usage
+        exit
+        ;;
+      \?)
+        echo "Invalid option: -${OPTARG}" >&2
+        usage >&2
+        exit 1
+        ;;
+      :)
+        echo "Option -${OPTARG} requires an argument" >&2
+        exit 1
+    esac
+  done
+  shift $((OPTIND-1))
 
   if [[ $# -lt 1 ]]; then
     usage >&2
@@ -14,13 +46,21 @@ main() {
   fi
 
   db="\`$1\`"
-  user="${db}"@localhost;
+  user="${db}@localhost";
 
-  cat <<EOF
-  CREATE DATABASE ${db};
-  CREATE USER ${user};
-  GRANT ALL ON ${db}.* TO ${user};
-  FLUSH PRIVILEGES;
+  if [[ "${init}" == "true" ]]; then
+    cat <<EOF
+CREATE DATABASE ${db};
+CREATE USER ${user};
+GRANT ALL ON ${db}.* TO ${user};
+FLUSH PRIVILEGES;
 EOF
+  else
+  cat <<EOF
+DROP DATABASE ${db};
+DROP USER ${user};
+FLUSH PRIVILEGES;
+EOF
+  fi
 }
 main "$@"
