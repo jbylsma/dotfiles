@@ -1,8 +1,10 @@
 let mapleader = ' '
 
-" If available, use Ag
-if executable('ag')
-  let g:ackprg = 'ag --nogroup --nocolor --column'
+" If available, use Ripgrep or Silver Searcher
+if executable('rg')
+  let g:ackprg = 'rg --vimgrep'
+elseif executable('ag')
+  let g:ackprg = 'ag --vimgrep'
 endif
 
 " Override UltiSnips mappings
