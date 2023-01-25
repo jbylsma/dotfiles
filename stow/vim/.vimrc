@@ -74,7 +74,7 @@ command! SyntasticOn call plug#load('syntastic')
 Plug 'majutsushi/tagbar'
 Plug 'tpope/vim-unimpaired'
 Plug 'airblade/vim-gitgutter'
-Plug 'bronson/vim-trailing-whitespace'
+Plug 'ntpeters/vim-better-whitespace'
 Plug 'thinca/vim-visualstar'
 Plug 'sh-dude/ZoomWin'
 Plug 'rizzatti/dash.vim'
