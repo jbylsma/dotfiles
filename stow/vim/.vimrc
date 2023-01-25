@@ -69,8 +69,7 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
-Plug 'scrooloose/syntastic', { 'on': 'SyntasticOn' }
-command! SyntasticOn call plug#load('syntastic')
+Plug 'dense-analysis/ale'
 Plug 'majutsushi/tagbar'
 Plug 'tpope/vim-unimpaired'
 Plug 'airblade/vim-gitgutter'
