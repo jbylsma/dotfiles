@@ -77,7 +77,6 @@ Plug 'airblade/vim-gitgutter'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'thinca/vim-visualstar'
 Plug 'sh-dude/ZoomWin'
-Plug 'rizzatti/dash.vim'
 Plug 'godlygeek/tabular'
 Plug 'joonty/vdebug', { 'on': 'VdebugOn' }
 command! VdebugOn call plug#load('vdebug')
