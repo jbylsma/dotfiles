@@ -64,7 +64,9 @@ Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
 Plug 'mbbill/undotree'
-Plug 'mg979/vim-visual-multi'
+if version >= 800
+  Plug 'mg979/vim-visual-multi'
+endif
 Plug 'chrisbra/NrrwRgn'
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-repeat'
