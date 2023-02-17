@@ -49,7 +49,14 @@ endif
 set tags=./tags,tags;$HOME
 
 " Backup and swap files
+if !isdirectory($HOME . '/.vim/_backup')
+  call mkdir($HOME . '/.vim/_backup')
+endif
 set backupdir^=~/.vim/_backup//
+
+if !isdirectory($HOME . '/.vim/_temp')
+  call mkdir($HOME . '/.vim/_temp')
+endif
 set directory^=~/.vim/_temp//
 
 " GUI
