@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -e
+
+readonly SWAP_OPTION='caps:swapescape'
+
+get_options() {
+  setxkbmap -query |\
+    awk '$1 ~ "options:" { print $2; }'
+}
+
+main() {
+  local options
+
+  if ! which setxkbmap >/dev/null 2>&1; then
+    echo 'setxkbmap not found' >&2
+    exit 1
+  fi
+
+  options=$(get_options)
+
+  if [[ $options =~ $SWAP_OPTION ]]; then
+    echo 'Toggle Caps Lock/Esc swap off' >&2
+    setxkbmap -option ''
+    setxkbmap -option "$(sed -Ee "s|,?${SWAP_OPTION}||" -e 's|^,||' <<< "${options}")"
+  else
+    echo 'Toggle Caps Lock/Esc swap on' >&2
+    setxkbmap -option "${SWAP_OPTION}"
+  fi
+
+  get_options >&2
+}
+main "$@"
