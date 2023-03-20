@@ -10,6 +10,9 @@ i3-wm.binding.launcher.window: Shift+space
 i3-wm.binding.sleep: _disable-sleep
 i3-wm.binding.bluetooth: _disable-bluetooth
 
+i3-wm.gaps.inner.size: 0
+i3-wm.gaps.outer.size: 0
+
 ! Copy definitions from regolith-look/default/root
 #define color_light_1  #FFFFFF
 #define color_light_2  #F6F5F4
