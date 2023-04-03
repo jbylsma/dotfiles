@@ -165,6 +165,11 @@ function pssh {
 # Use SSH for completion
 _pssh() { _xfunc ssh _ssh; } && complete -F _pssh pssh
 
+# Run ps restricted to the current user
+function psu {
+  ps -u "$(whoami)" "$@"
+}
+
 # Reload all enabled SCLs, useful in tmux sessions
 function scl-reload {
   local _scls_current
