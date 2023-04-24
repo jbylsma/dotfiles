@@ -55,7 +55,7 @@ update_composer() {
   composer self-update
 
   if ! composer global info >/dev/null 2>&1; then
-    echo "Composer could not find global project" >&3 && \
+    echo "Composer could not find global project" >&2 && \
     return
   fi
 
