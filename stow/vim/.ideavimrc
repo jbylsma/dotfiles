@@ -5,7 +5,7 @@ set surround
 set easymotion
 
 " Use :actionlist to find IDE actions for mapping
-nmap <C-W>o <Action>(HideAllWindows)
+nmap <C-W>o <Action>(MaximizeEditorInSplit)
 
 " Bracket mappings
 map [c <Action>(VcsShowPrevChangeMarker)
