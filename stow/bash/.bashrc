@@ -162,12 +162,21 @@ function gcd {
 function pssh {
   ssh -S none -o PreferredAuthentications=keyboard-interactive,password "$@"
 }
-# Use SSH for completion
-_pssh() { _xfunc ssh _ssh; } && complete -F _pssh pssh
+function _pssh { _xfunc ssh _ssh; } && complete -F _pssh pssh
 
 # Run ps restricted to the current user
 function psu {
   ps -u "$(whoami)" "$@"
+}
+
+# Abbreviate dig +short with completion capabilities
+function digs {
+  dig "$@" +short
+}
+complete -p dig >/dev/null 2>&1 && {
+  read -r _ type completion _ < <(complete -p dig)
+  complete "${type}" "${completion}" digs
+  unset type completion
 }
 
 # Reload all enabled SCLs, useful in tmux sessions
