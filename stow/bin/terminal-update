@@ -85,10 +85,7 @@ update_dotfiles() {
     echo "Already up-to-date"
   fi
 
-  # If restow-common is in its expected location, run it.
-  test -x "${HOME}/usr/bin/restow-common" && \
-    "${HOME}/usr/bin/restow-common"
-
+  "${HOME}/usr/src/dotfiles/stow/bin/restow-common"
 }
 
 #
