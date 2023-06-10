@@ -1,0 +1,10 @@
+exec_always --no-startup-id xset b off
+exec_always --no-startup-id xset r rate 250 30
+
+exec --no-startup-id keepassxc
+exec --no-startup-id workrave
+
+# Gnome keyring starts without DISPLAY being set, which prevents SSH key usage
+# confirmation from working. Reloading the keyring will have DISPLAY set but
+# will require the keyring to be unlocked again.
+exec --no-startup-id gnome-keyring-daemon --replace

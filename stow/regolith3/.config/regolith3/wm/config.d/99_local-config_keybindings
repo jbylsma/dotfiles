@@ -1,0 +1,2 @@
+## Modify // Sound Settings // <> s ##
+bindsym $mod+s exec --no-startup-id regolith-control-center sound
