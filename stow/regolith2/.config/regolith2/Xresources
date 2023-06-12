@@ -1,6 +1,5 @@
-gtk.theme_name: Adwaita
 i3xrocks.action.volume.left: regolith-control-center --class=floating_window sound
-regolith.look.path: /usr/share/regolith-look/default
+regolith.look.path: .config/regolith2/looks/jb
 i3-wm.program.launcher.cmd: env PATH="$PATH:$HOME/usr/bin" ilia -p terminal
 
 i3-wm.binding.launcher.app:  space
@@ -9,53 +8,3 @@ i3-wm.binding.launcher.window: Shift+space
 
 i3-wm.binding.sleep: _disable-sleep
 i3-wm.binding.bluetooth: _disable-bluetooth
-
-i3-wm.gaps.inner.size: 0
-i3-wm.gaps.outer.size: 0
-
-! Copy definitions from regolith-look/default/root
-#define color_light_1  #FFFFFF
-#define color_light_2  #F6F5F4
-#define color_light_3  #DEDDDA
-#define color_light_4  #C0BFBC
-#define color_dark_1   #B8B8B8
-#define color_dark_2   #9A9996
-#define color_dark_3   #393939
-#define color_dark_4   #2F2F2F
-#define color_yellow   #F6D32D
-#define color_orange   #FF7800
-#define color_red      #E01B24
-#define color_magenta  #75507B
-#define color_violet   #9141AC
-#define color_blue     #3584E4
-#define color_cyan     #95E6CB
-#define color_green    #33D17A
-#define color_brown    #986A44
-#define color_ltblue   #99C1F1
-#define color_ltgreen  #8FF0A4
-#define color_ltyellow #F9F06B
-#define color_ltcyan   #5CCFE6
-
-#define color_adwaita_dark_3 #3D3846
-#define color_adwaita_blue_5 #1A5FB4
-
-regolith.wallpaper.color.primary: color_adwaita_dark_3
-regolith.wallpaper.color.secondary: color_adwaita_dark_3
-
-i3-wm.client.focused.color.border: color_dark_4
-i3-wm.client.focused.color.background: color_adwaita_blue_5
-i3-wm.client.focused.color.text: color_light_1
-i3-wm.client.focused.color.indicator: color_ltblue
-i3-wm.client.focused.color.child_border: color_adwaita_blue_5
-
-i3-wm.client.focused_inactive.color.border: color_dark_1
-i3-wm.client.focused_inactive.color.background: color_dark_3
-i3-wm.client.focused_inactive.color.text: color_light_1
-i3-wm.client.focused_inactive.color.indicator: color_dark_3
-i3-wm.client.focused_inactive.color.child_border: color_dark_2
-
-i3-wm.client.unfocused.color.border: color_dark_4
-i3-wm.client.unfocused.color.background: color_dark_2
-i3-wm.client.unfocused.color.text: color_light_1
-i3-wm.client.unfocused.color.indicator: color_dark_3
-i3-wm.client.unfocused.color.child_border: color_dark_2
