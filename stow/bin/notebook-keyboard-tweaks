@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -e
+
+readonly SCHEMA='org.gnome.desktop.input-sources'
+readonly KEY='xkb-options'
+readonly OPTIONS="['lv3:menu_switch', 'altwin:prtsc_rwin', 'caps:swapescape']"
+
+function g () {
+  local action
+  action="$1"
+  shift
+
+  gsettings "${action}" \
+    "${SCHEMA}" \
+    "${KEY}" \
+    "$@"
+}
+
+main() {
+  if [[ $(g get) != "${OPTIONS}" ]]; then
+    echo "Setting laptop keyboard tweaks" >&2
+    g set "${OPTIONS}"
+  else
+    echo "Resetting keyboard tweaks" >&2
+    g reset
+  fi
+}
+main "$@"
