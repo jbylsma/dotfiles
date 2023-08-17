@@ -1,0 +1,191 @@
+#!/usr/bin/env bash
+set -e
+
+readonly REDHAT_FILE='/etc/redhat-release'
+
+function usage () {
+  echo "Usage: $(basename "$0") [-hv]"
+}
+
+function get_redhat_release () {
+  awk -f <(cat - <<-'EOD'
+    NR == 1 {
+      v=substr($(NF - 1), 1, 1)
+      if (v ~ "[1-9][0-9]*") {
+        print v
+      }
+    }
+EOD
+  ) "${REDHAT_FILE}"
+}
+
+function get_repos () {
+  local redhat_release
+  redhat_release="$1"
+
+  case "${redhat_release}" in
+    7)
+      yum -q -C --noplugins repolist all |\
+        sed -E 's#^(\!|\*)##' |\
+        awk -f <(cat - <<-'EOD'
+          $NF == "disabled" {
+            status="disabled"
+          }
+          $(NF - 1) == "enabled:" {
+            status="enabled"
+          }
+          $NF == "disabled" || $(NF - 1) == "enabled:" {
+            split($1, a, "/")
+            print a[1], status
+          }
+EOD
+        ) |\
+        sort
+      ;;
+    8)
+      dnf -q repolist all |\
+        awk -f <(cat - <<-'EOD'
+          NR > 1 {
+            print $1, $NF
+          }
+EOD
+      ) |\
+      sort
+      ;;
+  esac
+}
+
+function get_disabled_repos () {
+  local redhat_release
+  redhat_release="$1"
+
+  get_repos "${redhat_release}" |\
+    awk '$2 == "disabled" { print $1; }'
+}
+
+function get_packages () {
+  local redhat_release
+  redhat_release="$1"
+
+  case "${redhat_release}" in
+    7)
+      repoquery --installed --qf='%{ui_from_repo} %{name}' '*' |\
+        awk -f <(cat - <<-'EOD'
+        {
+          if ($1 == "installed") {
+            repo="!manual"
+          }
+          else {
+            split($1, a, "/")
+            repo=substr(a[1], 2)
+            if (length(repo) == 0) {
+              repo="!missing"
+            }
+          }
+
+          {
+            print repo, $2
+          }
+        }
+EOD
+        ) |\
+        sort
+      ;;
+    8)
+      # Doesn't include RHEL repos (??)
+      repoquery -q --installed --qf='%{from_repo}\t%{name}' '*' |\
+        awk -F$'\t' -f <(cat - <<-'EOD'
+        {
+          if ($1 == "@commandline") {
+            repo="!manual"
+          }
+          else {
+            split($1, a, "/")
+            repo=a[1]
+            if (length(repo) == 0) {
+              repo="!missing"
+            }
+          }
+
+          {
+            print repo, $2
+          }
+        }
+EOD
+        ) |\
+        sort
+      ;;
+  esac
+}
+
+function main () {
+  local verbose=false
+  while getopts ":hv" o; do
+    case "${o}" in
+      h)
+        usage
+        exit
+        ;;
+      v)
+        verbose=true
+        ;;
+      *)
+        usage >&2
+        exit 1
+        ;;
+    esac
+  done
+
+  if [[ ! -f "${REDHAT_FILE}" ]]; then
+    echo "Could not find release file: ${REDHAT_FILE}" >&2
+    exit 1
+  fi
+
+  redhat_release="$(get_redhat_release)"
+  if [[ -z "${redhat_release}" ]]; then
+    echo "Could not determine RedHat version: ${REDHAT_FILE}" >&2
+    exit 1
+  fi
+
+  case "${redhat_release}" in
+    7 | 8)
+      :
+      ;;
+    *)
+      echo "Unsupported RedHat version: ${redhat_release}" >&2
+      exit 1
+      ;;
+  esac
+
+  readonly PACKAGES="$(get_packages "${redhat_release}")"
+
+  echo 'Disabled yum repositories with installed packages'
+  echo '-------------------------------------------------'
+  while read -r repo; do
+    repo_pkgs="$(awk -v repo="${repo}" '$1 == repo { print $2; }' <<<"${PACKAGES}")"
+    if [[ "${repo_pkgs}" == "" ]]; then
+      continue
+    fi
+
+    printf "%s\t%s\n" "${repo}" "$(wc -l <<<"${repo_pkgs}")"
+    if [[ "${verbose}" == "true" ]]; then
+      while read -r pkg; do
+        printf '\t%s\n' "${pkg}"
+      done <<<"${repo_pkgs}"
+    fi
+  done < <(get_disabled_repos "${redhat_release}")
+  echo
+
+  echo 'Installed packages with missing repositories'
+  echo '--------------------------------------------'
+  awk '$1 == "!missing" { print $2; }' <<<"${PACKAGES}" |\
+    sort
+  echo
+
+  echo 'Manually installed packages'
+  echo '---------------------------'
+  awk '$1 == "!manual" { print $2; }' <<<"${PACKAGES}" |\
+    sort
+  echo
+}
+main "$@"
