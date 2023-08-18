@@ -4,7 +4,19 @@ set -e
 readonly REDHAT_FILE='/etc/redhat-release'
 
 function usage () {
-  echo "Usage: $(basename "$0") [-hv]"
+  echo "Usage: $(basename "$0") [-hp]"
+}
+
+function help () {
+  cat <<EOD
+Reports on the following:
+* Disabled repositories with installed packages
+* Installed packages with missing repositories
+* Manually installed packages
+
+-h Prints help
+-p Prints packages that have either disabled or missing repositories
+EOD
 }
 
 function get_redhat_release () {
@@ -24,6 +36,16 @@ function get_repos () {
   redhat_release="$1"
 
   case "${redhat_release}" in
+    8)
+      dnf -q repolist all |\
+        awk -f <(cat - <<-'EOD'
+          NR > 1 {
+            print $1, $NF
+          }
+EOD
+      ) |\
+      sort
+      ;;
     7)
       yum -q -C --noplugins repolist all |\
         sed -E 's#^(\!|\*)##' |\
@@ -42,25 +64,7 @@ EOD
         ) |\
         sort
       ;;
-    8)
-      dnf -q repolist all |\
-        awk -f <(cat - <<-'EOD'
-          NR > 1 {
-            print $1, $NF
-          }
-EOD
-      ) |\
-      sort
-      ;;
   esac
-}
-
-function get_disabled_repos () {
-  local redhat_release
-  redhat_release="$1"
-
-  get_repos "${redhat_release}" |\
-    awk '$2 == "disabled" { print $1; }'
 }
 
 function get_packages () {
@@ -68,48 +72,36 @@ function get_packages () {
   redhat_release="$1"
 
   case "${redhat_release}" in
-    7)
-      repoquery --installed --qf='%{ui_from_repo} %{name}' '*' |\
-        awk -f <(cat - <<-'EOD'
+    8)
+      dnf repoquery -q --installed --qf='%{from_repo}\t%{name}' '*' |\
+        awk -F$'\t' -f <(cat - <<-'EOD'
         {
-          if ($1 == "installed") {
+          if ($1 == "@commandline" || $1 == "@System") {
             repo="!manual"
           }
           else {
-            split($1, a, "/")
-            repo=substr(a[1], 2)
-            if (length(repo) == 0) {
-              repo="!missing"
-            }
+            repo=substr($1, 1)
           }
 
-          {
-            print repo, $2
-          }
+          print repo, $2
         }
 EOD
         ) |\
         sort
       ;;
-    8)
-      # Doesn't include RHEL repos (??)
-      repoquery -q --installed --qf='%{from_repo}\t%{name}' '*' |\
-        awk -F$'\t' -f <(cat - <<-'EOD'
+    7)
+      repoquery --installed --qf='%{ui_from_repo} %{name}' '*' |\
+        awk -f <(cat - <<-'EOD'
         {
-          if ($1 == "@commandline") {
+          if ($1 == "installed" || substr($1, 1, 2) == "@/") {
             repo="!manual"
           }
           else {
-            split($1, a, "/")
+            split(substr($1, 2), a, "/")
             repo=a[1]
-            if (length(repo) == 0) {
-              repo="!missing"
-            }
           }
 
-          {
-            print repo, $2
-          }
+          print repo, $2
         }
 EOD
         ) |\
@@ -118,16 +110,42 @@ EOD
   esac
 }
 
+function find_unique_repos () {
+  local repos
+  local packages
+
+  repos="$1"
+  packages="$2"
+
+  while read -r repo; do
+    if [[ "${repo:0:1}" == '!' ]]; then
+      continue
+    fi
+
+    repo_pkgs="$(awk -v repo="${repo}" '$1 == repo { print $2; }' <<<"${packages}")"
+    if [[ "${repo_pkgs}" == "" ]]; then
+      continue
+    fi
+
+    printf "%s\t%s\n" "${repo}" "$(wc -l <<<"${repo_pkgs}")"
+    if [[ "${print_package}" == "true" ]]; then
+      while read -r pkg; do
+        printf '\t%s\n' "${pkg}"
+      done <<<"${repo_pkgs}"
+    fi
+  done <<<"${repos}"
+}
+
 function main () {
-  local verbose=false
-  while getopts ":hv" o; do
+  local print_package=false
+  while getopts ":hp" o; do
     case "${o}" in
       h)
         usage
         exit
         ;;
-      v)
-        verbose=true
+      p)
+        print_package=true
         ;;
       *)
         usage >&2
@@ -148,7 +166,7 @@ function main () {
   fi
 
   case "${redhat_release}" in
-    7 | 8)
+    8 | 7)
       :
       ;;
     *)
@@ -158,28 +176,23 @@ function main () {
   esac
 
   readonly PACKAGES="$(get_packages "${redhat_release}")"
+  readonly REPOS="$(get_repos "${redhat_release}")"
 
-  echo 'Disabled yum repositories with installed packages'
+  echo 'Disabled repositories with installed packages'
   echo '-------------------------------------------------'
-  while read -r repo; do
-    repo_pkgs="$(awk -v repo="${repo}" '$1 == repo { print $2; }' <<<"${PACKAGES}")"
-    if [[ "${repo_pkgs}" == "" ]]; then
-      continue
-    fi
-
-    printf "%s\t%s\n" "${repo}" "$(wc -l <<<"${repo_pkgs}")"
-    if [[ "${verbose}" == "true" ]]; then
-      while read -r pkg; do
-        printf '\t%s\n' "${pkg}"
-      done <<<"${repo_pkgs}"
-    fi
-  done < <(get_disabled_repos "${redhat_release}")
+  find_unique_repos \
+    "$(awk '$2 == "disabled" { print $1; }' <<<"${REPOS}")" \
+    "${PACKAGES}"
   echo
 
   echo 'Installed packages with missing repositories'
   echo '--------------------------------------------'
-  awk '$1 == "!missing" { print $2; }' <<<"${PACKAGES}" |\
-    sort
+  find_unique_repos \
+    "$(comm -13 \
+      <(awk '{ print $1; }' <<<"${REPOS}" |sort) \
+      <(awk '{ print $1; }' <<<"${PACKAGES}" |sort -u)
+    )" \
+    "${PACKAGES}"
   echo
 
   echo 'Manually installed packages'
