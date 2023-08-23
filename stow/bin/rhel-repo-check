@@ -79,6 +79,9 @@ function get_packages () {
           if ($1 == "@commandline" || $1 == "@System") {
             repo="!manual"
           }
+          else if (substr($0, 1, 1) == "\t") {
+            repo="!manual"
+          }
           else {
             repo=substr($1, 1)
           }
