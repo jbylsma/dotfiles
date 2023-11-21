@@ -114,28 +114,6 @@ fi
 # Override SSH timeout
 unset TMOUT 2>/dev/null
 
-# Quickly change to the webroot of Drupal site
-function dcd {
-  local path
-  local target
-
-  if ! command -v drush >/dev/null 2>&1; then
-    echo "Drush not found"
-    return 1
-  fi
-
-  target="${1:-root}"
-  if path="$(drush dd --local-only "${target}" 2>/dev/null)"; then
-    if ! cd "${path}"; then
-      echo "Could not change to directory ${path}." >&2
-      return 1
-    fi
-  else
-    echo "Target '${target}' not found." >&2
-    return 1
-  fi
-}
-
 # Quickly change to the Git top level dir
 function gcd {
   local path
