@@ -114,6 +114,32 @@ fi
 # Override SSH timeout
 unset TMOUT 2>/dev/null
 
+# Create Docker shortcuts
+function d {
+  if [[ $# -gt 0 ]]; then
+    case "$1" in
+      cd)
+        shift
+        docker compose down --remove-orphans "$@"
+        ;;
+      cl)
+        shift
+        docker compose logs "$@"
+        ;;
+      cu)
+        shift
+        docker compose up -d "$@"
+        ;;
+      *)
+        docker "$@"
+        ;;
+    esac
+  else
+    docker "$@"
+  fi
+}
+function _d { _xfunc docker _docker; } && complete -F _d d
+
 # Quickly change to the Git top level dir
 function gcd {
   local path
