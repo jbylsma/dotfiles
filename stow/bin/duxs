@@ -56,7 +56,6 @@ get_dir_resources() {
 
 main() {
   local dir
-  local mounts
   local -a resources
 
   if [[ $# -lt 1 ]]; then
@@ -64,10 +63,8 @@ main() {
     exit 1
   fi
 
-  if [[ -f "${MOUNT_FILE}" ]]; then
-    mounts="$(awk '$5 != "/" { print $5; }' "${MOUNT_FILE}" | sort)"
-  else
-    echo "Currently only supports Linux" >&2
+  if [[ ! -f "${MOUNT_FILE}" ]]; then
+    echo "Cannot read ${MOUNT_FILE}" >&2
     exit 1
   fi
 
@@ -78,17 +75,6 @@ main() {
     exit
   fi
   dir="$(get_dir_full_path "${dir}")"
-
-  while read -r mount; do
-    if [[ "${dir}" -ef "${mount}" ]]; then
-      continue
-    fi
-
-    # TODO: Could allow edge cases like hard links
-    if [[ "${mount}" =~ ^${dir} ]]; then
-      excludes+=("${mount}")
-    fi
-  done <<<"${mounts}"
 
   while IFS='' read -r resource; do
     resources+=("${resource}");
