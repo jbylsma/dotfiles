@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Run du against all children of a directory, excluding outside mounts
 # Linux-specific because BSD du doesn't support excluding files
-# Use caution; not fool-proof on paths
+# Use caution:
+# * Not fool-proof on paths
+# * Mostly likely will fail on resources with newlines in them.
 set -e
 
 readonly MOUNT_FILE="/proc/self/mountinfo"
