@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+# Run du against all children of a directory, excluding outside mounts
+# Linux-specific because BSD du doesn't support excluding files
+# Use caution; not fool-proof on paths
+set -e
+
+readonly MOUNT_FILE="/proc/self/mountinfo"
+
+usage() {
+  echo "Usage: $(basename "$0") [du arguments] {dir}"
+}
+
+###
+# Get the full path for a directory.
+# Arguments:
+#   Directory to get full path
+###
+get_dir_full_path() {
+  local path
+  path="$1"
+
+  if [[ "${path}" = '/' ]]; then
+    echo '/'
+    return
+  fi
+
+  base_dir="$(cd -P "$(dirname "${path}")"; echo "${PWD}")"
+
+  dir="$(basename "${path}")"
+
+  if [[ "${dir}" != '.' ]]; then
+    if [[ "${base_dir}" = '/' ]]; then
+      echo "/${dir}"
+    else
+      echo "${base_dir}/${dir}"
+    fi
+  else
+    echo "${base_dir}"
+  fi
+
+}
+
+###
+# In a directory, get all immediate resources on the same filesystem
+# Arguments:
+#   Directory to get resources for
+###
+get_dir_resources() {
+  local dir
+  dir="$1"
+
+  comm -23 \
+    <(find "${dir}" -mindepth 1 -maxdepth 1 |sort) \
+    <(awk '$5 != "/" { print $5; }' "${MOUNT_FILE}" |sort)
+}
+
+main() {
+  local dir
+  local mounts
+  local -a resources
+
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  if [[ -f "${MOUNT_FILE}" ]]; then
+    mounts="$(awk '$5 != "/" { print $5; }' "${MOUNT_FILE}" | sort)"
+  else
+    echo "Currently only supports Linux" >&2
+    exit 1
+  fi
+
+  dir="${@: -1}"
+  set -- "${@: 1: $#-1}"
+  if [[ ! -d "${dir}" ]]; then
+    echo "Invalid directory: ${dir}" >&2
+    exit
+  fi
+  dir="$(get_dir_full_path "${dir}")"
+
+  while read -r mount; do
+    if [[ "${dir}" -ef "${mount}" ]]; then
+      continue
+    fi
+
+    # TODO: Could allow edge cases like hard links
+    if [[ "${mount}" =~ ^${dir} ]]; then
+      excludes+=("${mount}")
+    fi
+  done <<<"${mounts}"
+
+  while IFS='' read -r resource; do
+    resources+=("${resource}");
+  done < <(get_dir_resources "${dir}")
+  du "$@" -sx "${resources[@]}"
+
+}
+main "$@"
