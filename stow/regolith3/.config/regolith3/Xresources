@@ -6,5 +6,5 @@ wm.binding.launcher.app: space
 wm.binding.launcher.cmd: Ctrl+space
 wm.binding.launcher.window: Shift+space
 
-wm.binding.sleep: true
-wm.binding.bluetooth: true
+wm.binding.sleep: F20
+wm.binding.bluetooth: F21
