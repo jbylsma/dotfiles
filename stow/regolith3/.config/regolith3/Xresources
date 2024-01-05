@@ -1,10 +1,13 @@
-i3xrocks.action.volume.left: regolith-control-center --class=floating_window sound
+! Relative path from $HOME, declaration does not support ~ or $HOME
 regolith.look.path: .config/regolith3/looks/jb
+
+i3xrocks.action.volume.left: regolith-control-center --class=floating_window sound
 wm.program.launcher.cmd: env PATH="$PATH:$HOME/usr/bin" ilia -p terminal
 
 wm.binding.launcher.app: space
 wm.binding.launcher.cmd: Ctrl+space
 wm.binding.launcher.window: Shift+space
 
+! Use atypical bindings to disable bindings
 wm.binding.sleep: F20
 wm.binding.bluetooth: F21
