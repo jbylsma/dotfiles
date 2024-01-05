@@ -113,6 +113,7 @@ regolith.lockscreen.wallpaper.color.shading.type:
 ! -- Component resources
 ! --------------------------------------------
 
+! Relative paths from $HOME/.config/regolith3/Xresources.d
 #include "../looks/jb/i3xrocks"
 #include "../looks/jb/wm"
 #include "../looks/jb/gnome-terminal"
