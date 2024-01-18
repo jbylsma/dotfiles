@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+set -e
+
+_process () {
+  set -e
+  local gz="$1"
+  local zst="${1%.gz}.zst"
+
+  echo "$(date): Processing ${gz}"
+  gunzip -c "${gz}" |zstd -q --long -T0 -o "${zst}" || ( rm "${zst}" ; exit 1 )
+  touch --reference="${gz}" "${zst}"
+  if type chcon >/dev/null 2>&1; then
+    # Ignore if the context can't be set
+    set +e
+    chcon --reference="${gz}" "${zst}" >/dev/null 2>&1
+    set -e
+  fi
+  chown --reference="${gz}" "${zst}"
+
+  if type getfacl >/dev/null 2>&1; then
+    getfacl "${gz}" |setfacl --set-file=- "${zst}"
+  fi
+  rm "${gz}"
+  echo "$(date): Done processing ${gz}"
+}
+export -f _process
+
+usage () {
+  echo "Usage: $(basename "$0") [-h] [-p parallel processes] directory" >&2
+}
+
+main () {
+  local directory
+  local file_count
+  local max_procs=0
+
+  while getopts ":hp:" o; do
+    case "${o}" in
+      h)
+        usage
+        exit
+        ;;
+      p)
+        if [[ ! ${OPTARG} =~ ^[0-9]+$ ]]; then
+          echo "Invalid max processes: ${OPTARG}" >&2
+          exit 1
+        fi
+        max_procs="${OPTARG}"
+        ;;
+      *)
+        usage >&2
+        exit 1
+    esac
+  done
+  shift $((OPTIND-1))
+
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  directory="$1"
+  if [[ ! -d ${directory} ]]; then
+    echo "Invalid directory: ${directory}" >&2
+    exit 1
+  fi
+
+  file_count="$(find "${directory}" -maxdepth 1 -iname '*.gz' -printf '\n' | wc -l)"
+
+  if [[ "${file_count}" -lt 1 ]]; then
+    echo "No gz files found" >&2
+    exit
+  fi
+
+  read -r -p "${file_count} gz files found. Confirm zst conversion (y|n)?: " choice
+  case "${choice}" in
+    y|Y)
+      true
+      ;;
+    *)
+      exit
+      ;;
+  esac
+
+  find "${directory}" -maxdepth 1 -iname '*.gz' -print0 |\
+    xargs -P"${max_procs}" -I{} -0 bash -c '_process {}'
+}
+main "$@"
