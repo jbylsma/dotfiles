@@ -13,6 +13,21 @@ if [ -x /usr/libexec/path_helper ]; then
   source /etc/profile
 fi
 
+# XDG configuration
+export XDG_DATA_HOME="${HOME}/.local/share"
+export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_STATE_HOME="${HOME}/.local/state"
+export XDG_CACHE_HOME="${HOME}/.cache"
+declare -a XDG_TYPES=(DATA CONFIG STATE CACHE)
+for XDG_TYPE in "${XDG_TYPES[@]}"; do
+  _xdg_dir="XDG_${XDG_TYPE}_HOME"
+  if [[ ! -d "${!_xdg_dir}" ]]; then
+    mkdir -p "${!_xdg_dir}"
+  fi
+  unset _xdg_dir
+done
+unset XDG_TYPES
+
 # History configuration
 export HISTSIZE=
 export HISTFILESIZE=
