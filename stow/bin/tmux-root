@@ -18,4 +18,4 @@ session_name="!${tmux_user}"
 
 cd "${HOME}"
 sure \
-  tmux new-session -A -s "${session_name}" -n "Main"
+  tmux -L"$(id -un)" new-session -A -s "${session_name}" -n "Main"

@@ -3,7 +3,7 @@
 set -e
 
 usage() {
-  echo "Usage: $(basename $0) {ssh args...} {ssh_server}"
+  echo "Usage: $(basename "$0") {ssh args...} {ssh_server}"
   echo "Requires tmux-root to be in the server's bin path."
 }
 
@@ -13,7 +13,7 @@ main() {
     exit 1
   fi
 
-  host=${@: -1}
+  host="${*: -1}"
   set -- "${@:1:$(($#-1))}"
   ssh -t "${host}" "$@" 'bash -lc tmux-root'
 }
