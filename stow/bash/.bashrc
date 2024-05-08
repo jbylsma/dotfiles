@@ -64,6 +64,11 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# Disable XON/XOFF flow control, which allows Ctrl-S for searching
+if _which stty && [[ -t 0 && $- = *i* ]]; then
+  stty -ixon
+fi
+
 # Aliases
 alias ack='ack --pager="less -SFRX"'
 alias ag='ag --pager="less -SFRX"'
