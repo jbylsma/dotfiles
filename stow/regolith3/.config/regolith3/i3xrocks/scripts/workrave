@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -e
+
+VALUE_COLOR=${color:-$(xrescat i3xrocks.value.color "#D8DEE9")}
+LABEL_COLOR=${label_color:-$(xrescat i3xrocks.label.color "#7B8394")}
+VALUE_FONT=${font:-$(xrescat i3xrocks.value.font "Source Code Pro Medium 13")}
+
+# Get a timer's remaining time.
+#
+# Returns:
+#   The remaining time, formattetd as MM:SS.
+get_timer_remaining() {
+  local timer="$1"
+  local dbus_response
+
+  read -ra dbus_response < <(_dbus GetTimerRemaining "string:${timer}")
+  if [[ ${#dbus_response[@]} -eq 2 && ${dbus_response[0]} = 'int32' ]]; then
+    (
+      local totalSeconds="${dbus_response[1]}"
+      local minutes=$(( totalSeconds / 60 ))
+      local seconds=$(( totalSeconds - (minutes * 60) ))
+      printf '%i:%.2i\n' "${minutes}" "${seconds}"
+    )
+  else
+    echo "Invalid timer response for ${timer}: ${dbus_response[*]}" >&2
+    exit 1
+  fi
+}
+
+# Query dbus for values.
+#
+# Returns:
+#   The unformatted dbus response.
+_dbus() {
+  local method="$1"
+  shift
+
+  dbus-send \
+    --print-reply=literal \
+    --dest=org.workrave.Workrave \
+    /org/workrave/Workrave/Core \
+    "org.workrave.CoreInterface.${method}" \
+    "$@" 2>/dev/null
+}
+
+# span for text
+fspan() {
+  echo "<span font_desc=\"${VALUE_FONT}\" color=\"${VALUE_COLOR}\"> ${1}</span>"
+}
+
+# span for label/icon
+lspan() {
+  echo "<span font_desc=\"${VALUE_FONT}\" color=\"${LABEL_COLOR}\">${1}</span>"
+}
+
+
+MICROBREAK="$(get_timer_remaining microbreak)"
+RESTBREAK="$(get_timer_remaining restbreak)"
+
+echo "$(lspan "M")$(fspan "${MICROBREAK}") $(lspan "R")$(fspan "${RESTBREAK}")"
+
+if [ "${button:-}" == 1 ]; then
+  /usr/bin/i3-msg -q exec \
+    "dbus-send \
+      --type=method_call \
+      --dest=org.workrave.Workrave \
+      /org/workrave/Workrave/UI \
+      org.workrave.ControlInterface.RestBreak"
+fi
