@@ -57,7 +57,7 @@ lspan() {
 MICROBREAK="$(get_timer_remaining microbreak)"
 RESTBREAK="$(get_timer_remaining restbreak)"
 
-echo "$(lspan "M")$(fspan "${MICROBREAK}") $(lspan "R")$(fspan "${RESTBREAK}")"
+echo "$(lspan "") $(fspan "${RESTBREAK}")"
 
 if [ "${button:-}" == 1 ]; then
   /usr/bin/i3-msg -q exec \

@@ -1,4 +1,4 @@
 # Workrave timers
 [workrave-dbus]
 command=../scripts/workrave
-interval=1
+interval=5
