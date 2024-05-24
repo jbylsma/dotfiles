@@ -146,6 +146,10 @@ function d {
         shift
         docker compose logs "$@"
         ;;
+      cr)
+        shift
+        docker compose restart "$@"
+        ;;
       cu)
         shift
         docker compose up -d "$@"
