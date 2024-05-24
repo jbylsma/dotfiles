@@ -87,6 +87,7 @@ Plug 'junegunn/gv.vim'
 Plug 'kshenoy/vim-signature'
 Plug 'junegunn/vim-peekaboo'
 Plug 'wesQ3/vim-windowswap'
+Plug 'drmikehenry/vim-fontsize'
 
 call plug#end()
 
