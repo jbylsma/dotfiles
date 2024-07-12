@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+import argparse, datetime, os
+
+parser = argparse.ArgumentParser(description='NCSA JSON log splitter.')
+parser.add_argument('file')
+parser.add_argument('--no-offset', action='store_true',
+        help='Use the log\'s day for the date in the filename. Rotated logs typically have the next day in the filename.')
+args = parser.parse_args()
+
+class SplitLog:
+    filename_date_format = '%Y%m%d'
+
+    def __init__(self, base_filename: str, ts: datetime.datetime):
+        self._date = ts.date()
+        self._latest_ts = ts
+
+        if (args.no_offset):
+            filename_ts = ts
+        else:
+            filename_ts = ts + datetime.timedelta(days=1)
+        self._filename = '%s-%s' % (base_filename, filename_ts.strftime(self.filename_date_format))
+        self._f = open(self._filename, 'a')
+
+    @property
+    def date(self):
+        return self._date
+
+    @property
+    def filename(self):
+        return self._filename
+
+    def append(self, line: str, ts: datetime.datetime):
+        self._f.write(line)
+        if (ts > self._latest_ts):
+            self._latest_ts = ts
+
+    def close(self):
+        self._f.close()
+        ts = self._latest_ts.timestamp()
+        os.utime(self._filename, (ts, ts))
+
+orig_filename = os.path.basename(args.file)
+f = open(args.file, 'r')
+
+log = None
+for line in f:
+    line_ts = line.split(' ')[3][1:21]
+    line_ts = datetime.datetime.strptime(line_ts, '%d/%b/%Y:%H:%M:%S')
+
+    if log is None:
+        log = SplitLog(orig_filename, line_ts)
+        print(log.filename)
+    elif log.date != line_ts.date():
+        log.close()
+        log = SplitLog(orig_filename, line_ts)
+        print(log.filename)
+
+    log.append(line, line_ts)
+log.close()
