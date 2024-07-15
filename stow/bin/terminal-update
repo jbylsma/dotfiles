@@ -67,7 +67,7 @@ update_dotfiles() {
   local dotfiles_branch
   local dotfiles_dir
 
-  dotfiles_branch="origin/master"
+  dotfiles_branch="origin/main"
   dotfiles_dir="${HOME}/usr/src/dotfiles"
 
   _title "dotfiles"
