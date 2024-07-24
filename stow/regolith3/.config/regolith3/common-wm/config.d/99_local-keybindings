@@ -6,3 +6,6 @@ bindsym $mod+Shift+s sticky toggle
 
 ## Modify // Border Toggle // <> b ##
 bindsym $mod+b border toggle
+
+## Launch // Workrave Rest Break // <><Alt> b ##
+bindsym $mod+$alt+b exec --no-startup-id dbus-send --type=method_call --dest=org.workrave.Workrave /org/workrave/Workrave/UI org.workrave.ControlInterface.RestBreak
