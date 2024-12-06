@@ -4,4 +4,4 @@ set -e
 
 tmp_dir="$(mktemp --tmpdir -d firefox-throwaway.XXXXXXXXXX)"
 trap 'rm -r "${tmp_dir}"' EXIT
-exec firefox --new-instance --profile "${tmp_dir}"
+firefox --new-instance --profile "${tmp_dir}"
