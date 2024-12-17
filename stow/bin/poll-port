@@ -17,8 +17,8 @@ ping_port() {
   port="$1"
   server="$2"
 
-  echo 'port test' |\
-    nc -w1 "${server}" "${port}" >/dev/null 2>&1
+  ping -c1 -W.1 "${server}" >/dev/null 2>&1 && \
+    timeout .1 nc -z "${server}" "${port}" >/dev/null 2>&1
 }
 
 main() {
@@ -50,7 +50,7 @@ main() {
 
   server="$1"
   port="$2"
-  if [[ ! $port =~ ^[1-9]+[0-9]*$ ]]; then
+  if [[ ! ${port} =~ ^[1-9]+[0-9]*$ ]]; then
     echo "Invalid port: ${port}" >&2
     exit 1
   fi
