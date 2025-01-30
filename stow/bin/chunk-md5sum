@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Shows MD5 sums for chunks of a file.
+set -ueo pipefail
+
+readonly DEFAULT_CHUNK_SIZE=100
+
+usage() {
+  echo "Usage: $(basename "$0") [-h|-c=chunk_size] filename"
+}
+
+main() {
+  local chunk_size="${DEFAULT_CHUNK_SIZE}"
+  local file
+
+  while getopts ":c:h" opt; do
+    case "${opt}" in
+      c)
+        if [[ "${OPTARG}" =~ ^-?[1-9]+[0-9]*$ ]]; then
+          chunk_size="${OPTARG}"
+        else
+          echo "Invalid chunk size: ${OPTARG}" >&2
+          exit 1
+        fi
+        ;;
+      h)
+        usage
+        exit
+        ;;
+      *)
+        echo "Invalid option: -${OPTARG}" >&2
+        usage >&2
+        exit 1
+        ;;
+    esac
+  done
+  shift $((OPTIND-1))
+
+
+  if [[ $# -lt 1 ]]; then
+    usage >&2
+    exit 1
+  fi
+
+  file="$1"
+  if [[ ! -r "${file}" ]]; then
+    echo "Invalid file: ${file}" >&2
+    exit 1
+  fi
+
+  lines="$(wc -l <"${file}")"
+  if [[ "${lines}" -eq 0 ]]; then
+    exit
+  fi
+
+  for (( start=1 ; start <= lines; start=start + chunk_size )); do
+    end=$((start + chunk_size - 1))
+    if [[ ${end} -gt ${lines} ]]; then
+      end=${lines}
+    fi
+
+    sum="$(sed -n "${start},${end}p;$((end + 1))q" "${file}" |md5sum |cut -d' ' -f1)"
+    printf '%d:%d\t%s\n' "${start}" "${end}" "${sum}"
+  done
+}
+main "$@"
