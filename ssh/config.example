@@ -18,7 +18,7 @@ Host *
   ControlMaster auto
 
   # Set path for control sockets for shared sessions.
-  ControlPath ~/.ssh/sessions/ssh-%r@%h:%p
+  ControlPath ~/.ssh/sessions/control-%C
 
   # Keep shared session connections of X seconds after SSH session is closed.
   # Useful when creating many connections like SCPing multiple files.
