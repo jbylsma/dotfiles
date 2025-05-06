@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Open up a tmux root session with a pane for the non-root user
+# Start or attach to tmux session run by root for the current user
 set -e
 
 tmux_user=""
-if [[ "$UID" -eq 0 ]]; then
+if [[ "${UID}" -eq 0 ]]; then
   if [[ -n "${SUDO_USER}" ]]; then
     tmux_user="${SUDO_USER}"
   else
@@ -17,5 +17,8 @@ fi
 session_name="!${tmux_user}"
 
 cd "${HOME}"
-sure \
-  tmux -L"$(id -un)" new-session -A -s "${session_name}" -n "Main"
+sure tmux \
+  -L"${tmux_user}" \
+  new-session -A \
+    -s "${session_name}" \
+    -n "Main"
