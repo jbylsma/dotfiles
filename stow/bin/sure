@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sure: Switch user, retain environment
+# sure: switch user, retain environment
 set -e
 
 declare -a required_envs=( HOME SHELL )
@@ -10,15 +10,15 @@ for env in "${required_envs[@]}"; do
   fi
 done
 
-cmd=""
+cmd=()
 if [[ $# -gt 0 ]]; then
-  cmd+="$@"
+  cmd+=("$@")
 else
-  cmd+="${SHELL}"
+  cmd+=("${SHELL}")
   # Make bash request a login shell
   if [[ "$(basename "${SHELL}")" = 'bash' ]]; then
-    cmd+=" -l"
+    cmd+=("-l")
   fi
 fi
 
-sudo -E su root -c "export HOME=\"${HOME}\"; ${cmd}"
+sudo -E --preserve-env=HOME "${cmd[@]}"
