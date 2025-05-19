@@ -2,6 +2,8 @@
 regolith.look.path: .config/regolith3/looks/jb
 
 i3xrocks.action.volume.left: regolith-control-center --class=floating_window sound
+i3xrocks.date.format2: %m/%d %I:%M:%S
+i3xrocks.time.interval: 1
 wm.program.launcher.cmd: env PATH="$PATH:$HOME/usr/bin" ilia -p terminal
 
 wm.binding.launcher.app: space
