@@ -1,10 +1,10 @@
 mkdir -p ~/usr/src ~/usr/bin
 cd ~/usr/src
 if ! command -v stow 2>&1 >/dev/null; then
-  curl -LO 'http://ftp.gnu.org/gnu/stow/stow-2.3.1.tar.gz'
-  tar -zxvf ./stow-2.3.1.tar.gz
-  rm ./stow-2.3.1.tar.gz
-  cd stow-2.3.1
+  curl -LO 'http://ftp.gnu.org/gnu/stow/stow-2.4.1.tar.gz'
+  tar -zxvf ./stow-2.4.1.tar.gz
+  rm ./stow-2.4.1.tar.gz
+  cd stow-2.4.1
   ./configure --prefix=$HOME/usr
   make install
   export PATH="${HOME}/usr/bin:${PATH}"
