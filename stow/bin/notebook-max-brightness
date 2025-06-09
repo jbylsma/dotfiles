@@ -1,0 +1,15 @@
+#!/bin/sh
+# Sets the maximum brightness for Intel backlights
+set -e
+
+readonly LIGHT_BASEDIR="/sys/class/backlight/intel_backlight"
+
+for filename in brightness max_brightness; do
+  file_path="${LIGHT_BASEDIR}/${filename}"
+  if [ ! -f "${file_path}" ]; then
+    echo "Setting file not found: ${file_path}" >&2
+    exit 1
+  fi
+done
+
+cat "${LIGHT_BASEDIR}/max_brightness" >"${LIGHT_BASEDIR}/brightness"
