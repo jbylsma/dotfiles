@@ -17,7 +17,8 @@ function g () {
 }
 
 main() {
-  if [[ $(g get) != "${OPTIONS}" ]]; then
+  current="$(set -e; g get)"
+  if [[ "${current}" != "${OPTIONS}" ]]; then
     echo "Setting laptop keyboard tweaks" >&2
     g set "${OPTIONS}"
   else
