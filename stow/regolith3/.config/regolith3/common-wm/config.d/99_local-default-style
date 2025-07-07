@@ -1,5 +1,6 @@
 for_window [class="Cheese"] floating enable
 for_window [class="(?i)gnome-calculator"] floating enable
-for_window [class="Gnome-tweaks"] floating enable
+
+for_window [class="regolith-control-center"] floating disable
 
 for_window [class="firefox"] border $wm.window.border.style $wm.window.border.size
