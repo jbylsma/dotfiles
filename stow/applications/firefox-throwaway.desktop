@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Firefox Throwaway
+Exec=/home/jbylsma/usr/bin/firefox-throwaway
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=firefox-esr
+StartupWMClass=firefox-esr
+StartupNotify=true
