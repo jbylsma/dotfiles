@@ -142,6 +142,10 @@ function d {
         shift
         docker compose down --remove-orphans "$@"
         ;;
+      ce)
+        shift
+        docker compose exec "$@"
+        ;;
       cl)
         shift
         docker compose logs "$@"
