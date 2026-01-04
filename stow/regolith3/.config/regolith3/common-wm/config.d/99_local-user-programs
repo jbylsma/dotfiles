@@ -5,3 +5,5 @@ exec --no-startup-id workrave
 # confirmation from working. Reloading the keyring will have DISPLAY set but
 # will require the keyring to be unlocked again.
 exec --no-startup-id gnome-keyring-daemon --replace
+
+exec --no-startup-id /usr/libexec/geoclue-2.0/demos/agent
