@@ -72,11 +72,12 @@ fi
 # Aliases
 alias ack='ack --pager="less -SFRX"'
 alias ag='ag --pager="less -SFRX"'
+alias ffprobe='ffprobe -hide_banner'
 alias grep='grep -I --color=auto'
 alias less='less -SR'
+alias lsof='lsof -anP'
 alias psw='ps -wwf'
 alias vij='vim -c "set ft=json"'
-alias lsof='lsof -anP'
 
 # If MacVim is present but gvim isn't, map gvim back to mvim
 if _which mvim && ! _which gvim; then
