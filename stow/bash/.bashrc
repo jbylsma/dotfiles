@@ -135,6 +135,34 @@ fi
 # Override SSH timeout
 unset TMOUT 2>/dev/null
 
+# Function to lazily copy completion from one command to another
+_lazy_copy_completion() {
+    local source_cmd="$1"
+    local target_cmd="$2"
+    local wrapper_func="_lazy_copy_completion_${target_cmd}"
+
+    eval "$(cat <<EOF
+${wrapper_func}() {
+    if ! complete -p "${source_cmd}" &>/dev/null; then
+        _completion_loader "${source_cmd}"
+    fi
+
+    local comp_spec=\$(complete -p "${source_cmd}")
+    comp_spec=\${comp_spec% ${source_cmd}}
+    eval "\${comp_spec} ${target_cmd}"
+
+    # Extract and invoke the completion function
+    local comp_func=\$(echo "\${comp_spec}" | sed -n 's/.*-F \([^ ]*\).*/\1/p')
+    if [[ -n "\${comp_func}" ]]; then
+        "\${comp_func}" "\$@"
+    fi
+}
+EOF
+)"
+
+    complete -F "${wrapper_func}" "${target_cmd}"
+}
+
 # Create Docker shortcuts
 function d {
   if [[ $# -gt 0 ]]; then
@@ -195,7 +223,7 @@ function gcd {
 function pssh {
   ssh -S none -o PreferredAuthentications=keyboard-interactive,password "$@"
 }
-function _pssh { _xfunc ssh _ssh; } && complete -F _pssh pssh
+_lazy_copy_completion ssh pssh
 
 # Run ps restricted to the current user
 function psu {
@@ -206,11 +234,7 @@ function psu {
 function digs {
   dig "$@" +short
 }
-complete -p dig >/dev/null 2>&1 && {
-  read -r _ type completion _ < <(complete -p dig)
-  complete "${type}" "${completion}" digs
-  unset type completion
-}
+_lazy_copy_completion dig digs
 
 # Reload all enabled SCLs, useful in tmux sessions
 function scl-reload {
