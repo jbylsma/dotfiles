@@ -1,0 +1,88 @@
+# Custom completion for d command
+_d_completion() {
+    # Load docker completion if not already loaded
+    if ! complete -p "docker" &>/dev/null; then
+        _completion_loader "docker"
+    fi
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    local cword="${COMP_CWORD}"
+
+    # If we're completing the first argument
+    if [[ ${COMP_CWORD} -eq 1 ]]; then
+        # Offer our shortcuts plus regular docker commands
+        local shortcuts="${!D_SHORTCUTS[@]}"
+
+        # Get docker's first-level completions
+        COMP_WORDS=(docker "${COMP_WORDS[@]:1}")
+        COMP_CWORD=1
+        local comp_func=$(complete -p docker | sed -n 's/.*-F \([^ ]*\).*/\1/p')
+        if [[ -n "${comp_func}" ]]; then
+            COMPREPLY=()
+            "${comp_func}" docker "${cur}" ""
+
+            # Extract just the command names (first word before whitespace)
+            local docker_comps=""
+            local comp
+            for comp in "${COMPREPLY[@]}"; do
+                # Extract first word (everything before first space/tab)
+                local cmd="${comp%% *}"
+                docker_comps="${docker_comps} ${cmd}"
+            done
+        fi
+
+        # Combine and filter
+        COMPREPLY=($(compgen -W "${shortcuts}${docker_comps}" -- "${cur}"))
+    else
+        # Save original values
+        local -a orig_words=("${COMP_WORDS[@]}")
+        local orig_line="${COMP_LINE}"
+        local orig_point="${COMP_POINT}"
+
+        # For shortcuts, translate to docker command
+        local first_arg="${orig_words[1]}"
+
+        if [[ -n "${D_SHORTCUTS[$first_arg]}" ]]; then
+            # Split the mapped command into array
+            local -a docker_cmd_parts=(${D_SHORTCUTS[$first_arg]})
+
+            # Build new COMP_WORDS
+            COMP_WORDS=(docker "${docker_cmd_parts[@]}")
+            local i
+            for ((i=2; i<${#orig_words[@]}; i++)); do
+                COMP_WORDS+=("${orig_words[i]}")
+            done
+
+            # Adjust COMP_CWORD
+            COMP_CWORD=$((cword + ${#docker_cmd_parts[@]} - 1))
+
+            # Recalculate cur and prev
+            cur="${COMP_WORDS[COMP_CWORD]}"
+            prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+            # Update COMP_LINE and COMP_POINT to match the transformed command
+            COMP_LINE="${COMP_LINE/#d ${first_arg}/docker ${D_SHORTCUTS[$first_arg]}}"
+            local len_diff=$((${#COMP_LINE} - ${#orig_line}))
+            COMP_POINT=$((orig_point + len_diff))
+        else
+            # Regular docker command - just translate d -> docker
+            COMP_WORDS=(docker "${orig_words[@]:1}")
+            cur="${COMP_WORDS[COMP_CWORD]}"
+            prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+            # Update COMP_LINE
+            COMP_LINE="${COMP_LINE/#d /docker }"
+            COMP_POINT=$((orig_point + 5))
+        fi
+
+        # Call docker's completion
+        local comp_func=$(complete -p docker | sed -n 's/.*-F \([^ ]*\).*/\1/p')
+        if [[ -n "${comp_func}" ]]; then
+            COMPREPLY=()
+            "${comp_func}" docker "${cur}" "${prev}"
+        fi
+    fi
+}
+
+complete -o default -F _d_completion d

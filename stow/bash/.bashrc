@@ -164,38 +164,27 @@ EOF
 }
 
 # Create Docker shortcuts
+declare -A D_SHORTCUTS=(
+    [cd]="compose down --remove-orphans"
+    [ce]="compose exec"
+    [cl]="compose logs"
+    [cr]="compose restart"
+    [cu]="compose up -d"
+)
+
 function d {
   if [[ $# -gt 0 ]]; then
-    case "$1" in
-      cd)
-        shift
-        docker compose down --remove-orphans "$@"
-        ;;
-      ce)
-        shift
-        docker compose exec "$@"
-        ;;
-      cl)
-        shift
-        docker compose logs "$@"
-        ;;
-      cr)
-        shift
-        docker compose restart "$@"
-        ;;
-      cu)
-        shift
-        docker compose up -d "$@"
-        ;;
-      *)
-        docker "$@"
-        ;;
-    esac
+    local shortcut="$1"
+    if [[ -n "${D_SHORTCUTS[${shortcut}]}" ]]; then
+      shift
+      docker ${D_SHORTCUTS[${shortcut}]} "$@"
+    else
+      docker "$@"
+    fi
   else
     docker "$@"
   fi
 }
-function _d { _xfunc docker _docker; } && complete -F _d d
 
 # Quickly change to the Git top level dir
 function gcd {
