@@ -165,6 +165,7 @@ EOF
 
 # Create Docker shortcuts
 declare -A D_SHORTCUTS=(
+    [c]="compose"
     [cd]="compose down --remove-orphans"
     [ce]="compose exec"
     [cl]="compose logs"
