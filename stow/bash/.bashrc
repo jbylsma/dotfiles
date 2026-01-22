@@ -165,12 +165,13 @@ EOF
 
 # Create Docker shortcuts
 declare -A D_SHORTCUTS=(
-    [c]="compose"
-    [cd]="compose down --remove-orphans"
-    [ce]="compose exec"
-    [cl]="compose logs"
-    [cr]="compose restart"
-    [cu]="compose up -d"
+    [c]='compose'
+    [cb]='compose build'
+    [cd]='compose down --remove-orphans'
+    [ce]='compose exec'
+    [cl]='compose logs'
+    [cr]='compose restart'
+    [cu]='compose up -d'
 )
 
 function d {
@@ -178,6 +179,7 @@ function d {
     local shortcut="$1"
     if [[ -n "${D_SHORTCUTS[${shortcut}]}" ]]; then
       shift
+      # shellcheck disable=SC2086
       docker ${D_SHORTCUTS[${shortcut}]} "$@"
     else
       docker "$@"
