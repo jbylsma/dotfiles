@@ -3,6 +3,7 @@ let mapleader=" "
 set visualbell
 set surround
 set easymotion
+set vimhints
 
 " Use :actionlist to find IDE actions for mapping
 nmap <C-W>o <Action>(MaximizeEditorInSplit)
