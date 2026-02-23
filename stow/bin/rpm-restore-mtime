@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Restore the mtime for files from RPM packages
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: ${0} <file>" >&2
+  exit 1
+fi
+
+FILE="${1}"
+
+if [[ ! -e "${FILE}" ]]; then
+  echo "Error: '${FILE}' does not exist." >&2
+  exit 1
+fi
+
+# Resolve to absolute path
+FILE=$(realpath "${FILE}")
+
+# Check if file is owned by an RPM package
+PKG=$(rpm -qf "${FILE}" 2>/dev/null) || {
+  echo "Error: '${FILE}' is not owned by any RPM package." >&2
+  exit 1
+}
+
+# Get the mtime from the RPM database
+MTIME=$(rpm -q --queryformat '[%{FILEMTIMES} %{FILENAMES}\n]' "${PKG}" \
+  | awk -v file="${FILE}" '$2 == file { print $1; }')
+
+if [[ -z "${MTIME}" ]]; then
+  echo "Error: Could not find mtime for '${FILE}' in RPM database for package '${PKG}'." >&2
+  exit 1
+fi
+
+TIMESTAMP=$(date -d "@${MTIME}" +%Y%m%d%H%M.%S)
+MTIME_HUMAN=$(date -d "@${MTIME}")
+
+echo "Restoring mtime for '${FILE}' (package: ${PKG})"
+echo "  RPM mtime: ${MTIME} -> ${MTIME_HUMAN}"
+
+touch -t "${TIMESTAMP}" "${FILE}"
+
+echo "Done."
