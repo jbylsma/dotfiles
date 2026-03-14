@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -e
+
+MESSAGE="${1:-Task completed}"
+SOUND_TYPE="${2:-default}"
+
+PROJECT=""
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  PROJECT="$(git rev-parse --show-toplevel 2>/dev/null)"
+  PROJECT="$(basename "${PROJECT}")"
+fi
+
+TITLE="${PROJECT:-Claude Code}"
+
+case "${SOUND_TYPE}" in
+  input)
+    URGENCY=critical
+    ;;
+  *)
+    URGENCY=normal
+    ;;
+esac
+
+notify-send -a claude -u "${URGENCY}" "${TITLE}" "${MESSAGE}"
+
+case "${SOUND_TYPE}" in
+  input)
+    paplay /usr/share/sounds/freedesktop/stereo/dialog-information.oga &
+    ;;
+  complete)
+    paplay /usr/share/sounds/freedesktop/stereo/window-question.oga &
+    ;;
+  *)
+    ;;
+esac
