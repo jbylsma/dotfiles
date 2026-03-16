@@ -15,7 +15,7 @@ regolith.look: jb
 ! --------------------------------------------
 
 gtk.theme_name: Adwaita
-gtk.icon_theme_name: hicolor
+gtk.icon_theme_name: Adwaita
 
 ! --------------------------------------------
 ! -- Fonts
