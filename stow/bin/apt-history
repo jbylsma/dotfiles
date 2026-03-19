@@ -1,0 +1,340 @@
+#!/usr/bin/env python3
+"""
+apt-history — a dnf-history-style viewer for apt transaction logs.
+
+Parses /var/log/apt/history.log (and rotated .gz copies) into numbered
+transactions with summary and detail views.
+
+Usage:
+    apt-history [list] [N]        Show last N transactions (default: 20)
+    apt-history info ID [ID ...]  Show full details for transaction(s)
+    apt-history search PATTERN    Search for packages matching PATTERN
+"""
+
+import argparse
+import gzip
+import os
+import re
+import sys
+from dataclasses import dataclass, field
+from datetime import datetime
+
+
+LOG_DIR = "/var/log/apt"
+LOG_BASE = "history.log"
+
+ACTION_TYPES = ("Install", "Upgrade", "Remove", "Purge", "Reinstall", "Downgrade")
+
+
+@dataclass
+class Package:
+    name: str
+    arch: str
+    version: str
+    old_version: str | None = None
+    automatic: bool = False
+
+
+@dataclass
+class Transaction:
+    id: int = 0
+    start: datetime | None = None
+    end: datetime | None = None
+    commandline: str = ""
+    requested_by: str = ""
+    actions: dict[str, list[Package]] = field(default_factory=dict)
+
+    @property
+    def package_count(self) -> int:
+        return sum(len(pkgs) for pkgs in self.actions.values())
+
+    @property
+    def action_summary(self) -> str:
+        parts = []
+        for action in ACTION_TYPES:
+            pkgs = self.actions.get(action, [])
+            if pkgs:
+                count = len(pkgs)
+                if count == 1:
+                    parts.append(f"{count} {action}")
+                elif action.endswith("e"):
+                    parts.append(f"{count} {action}s")
+                else:
+                    parts.append(f"{count} {action}s")
+        return ", ".join(parts)
+
+
+def parse_package_list(action: str, raw: str) -> list[Package]:
+    """Parse a comma-separated package list from a history.log action line."""
+    packages = []
+    # Each entry looks like:
+    #   name:arch (version, automatic)           — Install
+    #   name:arch (old_version, new_version)     — Upgrade
+    #   name:arch (version)                      — Remove/Purge
+    for entry in raw.split("),"):
+        entry = entry.strip().rstrip(")")
+        if not entry:
+            continue
+        match = re.match(r"^(\S+?):(\S+?)\s+\((.+)$", entry)
+        if not match:
+            continue
+        name, arch, version_info = match.group(1), match.group(2), match.group(3)
+        parts = [p.strip() for p in version_info.split(",")]
+        automatic = "automatic" in parts
+        parts = [p for p in parts if p != "automatic"]
+
+        if action == "Upgrade" and len(parts) == 2:
+            packages.append(Package(name, arch, parts[1], old_version=parts[0], automatic=automatic))
+        else:
+            packages.append(Package(name, arch, parts[0], automatic=automatic))
+    return packages
+
+
+def read_all_logs() -> str:
+    """Read all history.log files (rotated + current) in chronological order."""
+    files = []
+    for f in os.listdir(LOG_DIR):
+        if f.startswith(LOG_BASE):
+            files.append(os.path.join(LOG_DIR, f))
+
+    # Sort: higher numbered rotated files are older
+    def sort_key(path):
+        name = os.path.basename(path)
+        if name == LOG_BASE:
+            return -1  # current log is newest
+        # extract number from e.g. history.log.3.gz
+        m = re.search(r"\.(\d+)\.", name)
+        if m:
+            return int(m.group(1))
+        return 0
+
+    files.sort(key=sort_key, reverse=True)
+
+    chunks = []
+    for path in files:
+        try:
+            if path.endswith(".gz"):
+                with gzip.open(path, "rt", encoding="utf-8", errors="replace") as f:
+                    chunks.append(f.read())
+            else:
+                with open(path, "r", encoding="utf-8", errors="replace") as f:
+                    chunks.append(f.read())
+        except PermissionError:
+            print(f"Warning: cannot read {path} (permission denied)", file=sys.stderr)
+    return "\n".join(chunks)
+
+
+def parse_transactions(text: str) -> list[Transaction]:
+    """Parse raw history.log text into a list of Transaction objects."""
+    transactions = []
+    current: Transaction | None = None
+
+    for line in text.splitlines():
+        line = line.rstrip()
+        if not line:
+            if current and current.start:
+                transactions.append(current)
+            current = None
+            continue
+
+        if current is None:
+            current = Transaction()
+
+        if line.startswith("Start-Date: "):
+            try:
+                current.start = datetime.strptime(line[12:].strip(), "%Y-%m-%d  %H:%M:%S")
+            except ValueError:
+                current.start = None
+        elif line.startswith("End-Date: "):
+            try:
+                current.end = datetime.strptime(line[10:].strip(), "%Y-%m-%d  %H:%M:%S")
+            except ValueError:
+                current.end = None
+        elif line.startswith("Commandline: "):
+            current.commandline = line[13:]
+        elif line.startswith("Requested-By: "):
+            current.requested_by = line[14:]
+        else:
+            for action in ACTION_TYPES:
+                if line.startswith(f"{action}: "):
+                    pkgs = parse_package_list(action, line[len(action) + 2:])
+                    current.actions.setdefault(action, []).extend(pkgs)
+                    break
+
+    # Don't forget the last transaction if file doesn't end with blank line
+    if current and current.start:
+        transactions.append(current)
+
+    # Assign IDs (1-based, oldest first)
+    for i, txn in enumerate(transactions, start=1):
+        txn.id = i
+
+    return transactions
+
+
+def format_duration(txn: Transaction) -> str:
+    if txn.start and txn.end:
+        delta = txn.end - txn.start
+        secs = int(delta.total_seconds())
+        if secs < 60:
+            return f"{secs}s"
+        return f"{secs // 60}m {secs % 60}s"
+    return "?"
+
+
+def cmd_list(transactions: list[Transaction], count: int) -> None:
+    """Print a summary table of recent transactions."""
+    to_show = transactions[-count:] if count < len(transactions) else transactions
+    to_show = list(reversed(to_show))
+
+    # Header
+    print(f"{'ID':>4}  {'Date':19}  {'Duration':>8}  {'Command':40}  {'Actions'}")
+    print(f"{'─' * 4}  {'─' * 19}  {'─' * 8}  {'─' * 40}  {'─' * 30}")
+
+    for txn in to_show:
+        date_str = txn.start.strftime("%Y-%m-%d  %H:%M:%S") if txn.start else "?"
+        cmd = txn.commandline[:40]
+        duration = format_duration(txn)
+        summary = txn.action_summary
+        print(f"{txn.id:>4}  {date_str:19}  {duration:>8}  {cmd:40}  {summary}")
+
+
+def cmd_info(transactions: list[Transaction], ids: list[int]) -> None:
+    """Print detailed info for specific transaction IDs."""
+    txn_map = {t.id: t for t in transactions}
+
+    for tid in ids:
+        txn = txn_map.get(tid)
+        if not txn:
+            print(f"Transaction {tid} not found.")
+            continue
+
+        date_str = txn.start.strftime("%Y-%m-%d  %H:%M:%S") if txn.start else "?"
+        end_str = txn.end.strftime("%Y-%m-%d  %H:%M:%S") if txn.end else "?"
+        print(f"Transaction ID : {txn.id}")
+        print(f"Start          : {date_str}")
+        print(f"End            : {end_str}")
+        print(f"Duration       : {format_duration(txn)}")
+        print(f"Command        : {txn.commandline}")
+        print(f"User           : {txn.requested_by}")
+        print(f"Packages       : {txn.package_count}")
+        print()
+
+        for action in ACTION_TYPES:
+            pkgs = txn.actions.get(action, [])
+            if not pkgs:
+                continue
+            print(f"  {action} ({len(pkgs)}):")
+            for pkg in sorted(pkgs, key=lambda p: p.name):
+                if pkg.old_version:
+                    ver = f"{pkg.old_version} -> {pkg.version}"
+                else:
+                    ver = pkg.version
+                auto = " (auto)" if pkg.automatic else ""
+                print(f"    {pkg.name}:{pkg.arch}  {ver}{auto}")
+            print()
+        print("─" * 72)
+
+
+def cmd_search(transactions: list[Transaction], pattern: str) -> None:
+    """Search for transactions involving packages matching a pattern."""
+    try:
+        regex = re.compile(pattern, re.IGNORECASE)
+    except re.error as e:
+        print(f"Invalid pattern: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    matches = []
+    for txn in transactions:
+        for action, pkgs in txn.actions.items():
+            for pkg in pkgs:
+                if regex.search(pkg.name):
+                    matches.append((txn, action, pkg))
+
+    if not matches:
+        print(f"No transactions found matching '{pattern}'.")
+        return
+
+    # Compute column width for package names
+    pkg_width = max(len(f"{m[2].name}:{m[2].arch}") for m in matches)
+    pkg_width = max(pkg_width, 20)
+
+    print(f"{'ID':>4}  {'Date':19}  {'Action':10}  {'Package':{pkg_width}}  {'Version'}")
+    print(f"{'─' * 4}  {'─' * 19}  {'─' * 10}  {'─' * pkg_width}  {'─' * 30}")
+
+    for txn, action, pkg in matches:
+        date_str = txn.start.strftime("%Y-%m-%d  %H:%M:%S") if txn.start else "?"
+        if pkg.old_version:
+            ver = f"{pkg.old_version} -> {pkg.version}"
+        else:
+            ver = pkg.version
+        pkg_name = f"{pkg.name}:{pkg.arch}"
+        print(f"{txn.id:>4}  {date_str:19}  {action:10}  {pkg_name:{pkg_width}}  {ver}")
+
+
+def resolve_transaction_spec(spec: str, transactions: list[Transaction]) -> int:
+    """Resolve a transaction spec to an ID.
+
+    Accepts:
+        - An integer transaction ID
+        - 'last' (most recent transaction)
+        - 'last-N' (Nth transaction before the most recent)
+    """
+    if spec == "last":
+        return transactions[-1].id
+
+    m = re.match(r"^last-(\d+)$", spec)
+    if m:
+        offset = int(m.group(1))
+        idx = len(transactions) - 1 - offset
+        if idx < 0:
+            print(f"Error: 'last-{offset}' is out of range (only {len(transactions)} transactions).", file=sys.stderr)
+            sys.exit(1)
+        return transactions[idx].id
+
+    try:
+        return int(spec)
+    except ValueError:
+        print(f"Error: invalid transaction spec '{spec}'. Use an ID, 'last', or 'last-N'.", file=sys.stderr)
+        sys.exit(1)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="dnf-history-style viewer for apt transaction logs",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    sub = parser.add_subparsers(dest="command")
+
+    list_p = sub.add_parser("list", help="List recent transactions (default)")
+    list_p.add_argument("count", nargs="?", type=int, default=20, help="Number of transactions to show (default: 20)")
+    list_p.add_argument("-a", "--all", action="store_true", help="Show all transactions")
+
+    info_p = sub.add_parser("info", help="Show details for a transaction")
+    info_p.add_argument("ids", nargs="+", help="Transaction ID(s), or 'last', or 'last-N'")
+
+    search_p = sub.add_parser("search", help="Search for a package across transactions")
+    search_p.add_argument("pattern", help="Package name pattern (regex)")
+
+    args = parser.parse_args()
+
+    text = read_all_logs()
+    transactions = parse_transactions(text)
+
+    if not transactions:
+        print("No apt transactions found.")
+        sys.exit(0)
+
+    if args.command is None or args.command == "list":
+        show_all = getattr(args, "all", False)
+        count = len(transactions) if show_all else (getattr(args, "count", 20) or 20)
+        cmd_list(transactions, count)
+    elif args.command == "info":
+        ids = [resolve_transaction_spec(s, transactions) for s in args.ids]
+        cmd_info(transactions, ids)
+    elif args.command == "search":
+        cmd_search(transactions, args.pattern)
+
+
+if __name__ == "__main__":
+    main()
