@@ -3,4 +3,6 @@ for_window [class="(?i)gnome-calculator"] floating enable
 
 for_window [class="regolith-control-center"] floating disable
 
+for_window [class="(?i)keepassxc"] floating enable, resize set 80 ppt 80 ppt, move position center
+
 for_window [class="firefox"] border $wm.window.border.style $wm.window.border.size
