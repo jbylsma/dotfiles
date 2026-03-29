@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+#
+# pdfpack - Combine and/or compress PDF files using Ghostscript.
+#
+# Can operate on a single file (compress only) or multiple files
+# (combine and compress in one pass).
+#
+# PDFSETTINGS presets are sourced from the Ghostscript 10.08.0 documentation:
+# https://ghostscript.readthedocs.io/en/latest/VectorDevices.html
+# (section: "distillerparams / PDFSETTINGS")
+# These presets cannot be queried programmatically from Ghostscript itself.
+
+set -euo pipefail
+
+SETTINGS_PRESET="ebook"
+OUTPUT_FILE="$(date +%Y-%m-%d).pdf"
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [-s PRESET] [-o output.pdf] [-l] [-h] file1.pdf [file2.pdf ...]
+
+Combine and/or compress PDF files using Ghostscript.
+A single input file is compressed only; multiple files are combined and compressed.
+
+Options:
+  -s PRESET   Ghostscript PDFSETTINGS preset (default: ebook)
+  -o FILE     Output filename (default: YYYY-MM-DD.pdf)
+  -l          List available PDFSETTINGS presets
+  -h          Show this help
+
+EOF
+}
+
+list_presets() {
+    cat <<EOF
+Available PDFSETTINGS presets (source: Ghostscript 10.08.0 documentation,
+https://ghostscript.readthedocs.io/en/latest/VectorDevices.html):
+
+  screen    - Low resolution (72 PPI), smallest file size, screen viewing only.
+              Equivalent to Acrobat Distiller "Screen Optimized".
+  ebook     - Medium resolution (150 PPI), good balance for sharing. [default]
+              Equivalent to Acrobat Distiller "eBook".
+  printer   - High resolution (300 PPI), suitable for quality printing.
+              Equivalent to Acrobat Distiller "Print Optimized".
+  prepress  - High resolution (300 PPI+), colour-managed, for commercial print.
+              Equivalent to Acrobat Distiller "Prepress Optimized".
+              Note: despite the name, this is NOT the highest quality option.
+  default   - No downsampling; output intended to be useful across a wide
+              variety of uses, possibly at the expense of a larger output file.
+              Closest to the original input quality.
+
+Note: all presets alter the input in some way. If preserving quality is the
+priority, use 'default' or omit -s entirely.
+EOF
+}
+
+while getopts ":s:o:lh" opt; do
+    case "${opt}" in
+        s) SETTINGS_PRESET="${OPTARG}" ;;
+        o) OUTPUT_FILE="${OPTARG}" ;;
+        l) list_presets; exit 0 ;;
+        h) usage; exit 0 ;;
+        :) echo "Error: Option -${OPTARG} requires an argument." >&2; usage; exit 1 ;;
+        \?) echo "Error: Unknown option -${OPTARG}" >&2; usage; exit 1 ;;
+        *) echo "Error: Unhandled option -${opt}" >&2; usage; exit 1 ;;
+    esac
+done
+
+shift $((OPTIND - 1))
+
+if [[ $# -eq 0 ]]; then
+    echo "Error: No input files specified." >&2
+    usage
+    exit 1
+fi
+
+# Validate all input files exist before starting
+for f in "$@"; do
+    if [[ ! -f "${f}" ]]; then
+        echo "Error: Input file not found: ${f}" >&2
+        exit 1
+    fi
+done
+
+# Prompt if output file already exists
+if [[ -f "${OUTPUT_FILE}" ]]; then
+    read -rp "Output file '${OUTPUT_FILE}' already exists. Overwrite? [y/N] " confirm
+    case "${confirm}" in
+        [yY]|[yY][eE][sS]) ;;
+        *) echo "Aborted."; exit 0 ;;
+    esac
+fi
+
+if [[ $# -eq 1 ]]; then
+    echo "Compressing 1 file with PDFSETTINGS=/${SETTINGS_PRESET} -> ${OUTPUT_FILE}"
+else
+    echo "Combining and compressing ${#@} files with PDFSETTINGS=/${SETTINGS_PRESET} -> ${OUTPUT_FILE}"
+fi
+
+gs -sDEVICE=pdfwrite \
+   -dCompatibilityLevel=1.4 \
+   -dPDFSETTINGS=/"${SETTINGS_PRESET}" \
+   -dNOPAUSE -dQUIET -dBATCH \
+   -sOutputFile="${OUTPUT_FILE}" \
+   "$@"
+
+filesize="$(du -h "${OUTPUT_FILE}" | cut -f1)"
+echo "Done: ${OUTPUT_FILE} (${filesize})"
