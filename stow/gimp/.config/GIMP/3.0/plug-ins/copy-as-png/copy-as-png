@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+import gi
+gi.require_version('Gimp', '3.0')
+gi.require_version('GimpUi', '3.0')
+from gi.repository import Gimp, Gio, GLib, GObject
+import subprocess
+import tempfile
+import os
+import sys
+
+
+class CopyAsPng(Gimp.PlugIn):
+
+    def do_query_procedures(self):
+        return ["copy-as-png"]
+
+    def do_set_i18n(self, name):
+        return False
+
+    def do_create_procedure(self, name):
+        procedure = Gimp.ImageProcedure.new(
+            self, name, Gimp.PDBProcType.PLUGIN, self.run, None
+        )
+        procedure.set_menu_label("Copy as PNG")
+        procedure.set_icon_name("edit-copy")
+        procedure.add_menu_path("<Image>/Edit/")
+        procedure.set_documentation(
+            "Copy image to clipboard as PNG",
+            "Copies the flattened image to the system clipboard as image/png using xclip",
+            name,
+        )
+        procedure.set_attribution("", "", "2026")
+        return procedure
+
+    def run(self, procedure, run_mode, image, drawables, config, data):
+        dupe = image.duplicate()
+        dupe.flatten()
+        tmp = os.path.join(tempfile.gettempdir(), "_gimp_clip.png")
+
+        opts = GObject.new(Gimp.ExportOptions)
+        Gimp.file_save(
+            Gimp.RunMode.NONINTERACTIVE,
+            dupe,
+            Gio.File.new_for_path(tmp),
+            opts,
+        )
+        dupe.delete()
+        subprocess.Popen(
+            ["xclip", "-selection", "clipboard", "-t", "image/png", "-i", tmp],
+        ).wait()
+        os.remove(tmp)
+
+        return procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
+
+
+Gimp.main(CopyAsPng.__gtype__, sys.argv)
