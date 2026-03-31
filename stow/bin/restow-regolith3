@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Stow the regolith3 package and create absolute symlinks that stow
+# cannot handle. Absolute symlinks are stored in _system_links/
+# directories within the package and ignored by stow. This script
+# creates them in the target after stowing.
+#
+# See: https://github.com/aspiers/stow/issues/51
+set -eo pipefail
+
+readonly STOW_DIR="${HOME}/usr/src/dotfiles/stow"
+readonly TARGET_DIR="${HOME}"
+readonly PACKAGE="regolith3"
+
+main() {
+  # Xresources gets overwritten from a symlink to a static file by
+  # regolith session init. If that happened, remove the static file so
+  # stow can recreate the symlink.
+  local xresources="${TARGET_DIR}/.config/regolith3/Xresources"
+  if [[ -f "${xresources}" && ! -L "${xresources}" ]]; then
+    rm "${xresources}"
+    echo "  removed static ${xresources} (will be restowed as symlink)"
+  fi
+
+  # Stow the package, ignoring directories that contain absolute symlinks
+  stow -d "${STOW_DIR}" -t "${TARGET_DIR}" --ignore='_system_links' -R "${PACKAGE}"
+
+  # Find all _system_links directories and recreate absolute symlinks
+  # in the corresponding target locations
+  local pkg_dir="${STOW_DIR}/${PACKAGE}"
+
+  local -a symlinks
+  # shellcheck disable=SC2312
+  mapfile -d '' symlinks < <(find "${pkg_dir}" -path '*/_system_links/*' -type l -print0 | sort -z)
+
+  local symlink
+  for symlink in "${symlinks[@]}"; do
+
+    # Get the path relative to the package root
+    # e.g., .config/regolith3/i3xrocks/conf.d/_system_links/90_time
+    local rel_path="${symlink#"${pkg_dir}/"}"
+
+    # Strip _system_links/ from the path to get the target location
+    # e.g., .config/regolith3/i3xrocks/conf.d/90_time
+    local target_rel="${rel_path//_system_links\//}"
+    local target_path="${TARGET_DIR}/${target_rel}"
+    local link_target
+    link_target="$(readlink "${symlink}")"
+
+    # Create parent directory if needed
+    mkdir -p "$(dirname "${target_path}")"
+
+    # Create the absolute symlink, replacing if it already exists
+    ln -snf "${link_target}" "${target_path}"
+    echo "  ${target_rel} -> ${link_target}"
+  done
+}
+main "$@"
