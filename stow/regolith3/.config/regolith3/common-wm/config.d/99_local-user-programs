@@ -1,4 +1,6 @@
-exec --no-startup-id keepassxc
+# KeePassXC reads DPI via XSETTINGS once at launch, so wait for gsd-xsettings
+# to start and publish its settings before launching.
+exec --no-startup-id sh -c 'until pgrep -x gsd-xsettings >/dev/null; do sleep 0.1; done; sleep 1; keepassxc'
 exec --no-startup-id workrave
 
 # Gnome keyring starts without DISPLAY being set, which prevents SSH key usage
@@ -7,3 +9,10 @@ exec --no-startup-id workrave
 exec --no-startup-id gnome-keyring-daemon --replace
 
 exec --no-startup-id /usr/libexec/geoclue-2.0/demos/agent
+
+exec_always --no-startup-id gsettings set org.gnome.desktop.peripherals.keyboard delay 'uint32 250'
+exec_always --no-startup-id gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 'uint32 33'
+
+# gsd-keyboard resets the X core bell as a side effect of XKB init, so wait
+# for it to finish before silencing the bell.
+exec_always --no-startup-id sh -c 'until pgrep -x gsd-keyboard >/dev/null; do sleep 0.1; done; sleep 3; xset b off'
