@@ -4,3 +4,14 @@
 
 [general]
 import = ["~/.config/alacritty/regolith-look.toml"]
+
+[bell]
+animation = "EaseOutExpo"
+duration = 100
+color = "#555555"
+
+[cursor]
+style = { shape = "Block", blinking = "On" }
+
+[mouse]
+hide_when_typing = true
