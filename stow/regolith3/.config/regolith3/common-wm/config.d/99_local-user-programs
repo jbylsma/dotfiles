@@ -16,3 +16,8 @@ exec_always --no-startup-id gsettings set org.gnome.desktop.peripherals.keyboard
 # gsd-keyboard resets the X core bell as a side effect of XKB init, so wait
 # for it to finish before silencing the bell.
 exec_always --no-startup-id sh -c 'until pgrep -x gsd-keyboard >/dev/null; do sleep 0.1; done; sleep 3; xset b off'
+
+# Regenerate Alacritty's theme import from the active Regolith look.
+# regolith-look refresh ends with an i3 reload, so exec_always rebuilds
+# this whenever the look changes.
+exec_always --no-startup-id sh -c 'mkdir -p ~/.config/alacritty && ~/usr/bin/regolith-look-to-alacritty > ~/.config/alacritty/regolith-look.toml 2>/dev/null || :'

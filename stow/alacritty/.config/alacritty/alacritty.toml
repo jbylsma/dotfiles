@@ -1,0 +1,6 @@
+# Colors and font are generated from the active Regolith look by
+# regolith-look-to-alacritty and written to regolith-look.toml. Missing
+# imports are silently skipped, so alacritty still launches before first run.
+
+[general]
+import = ["~/.config/alacritty/regolith-look.toml"]
