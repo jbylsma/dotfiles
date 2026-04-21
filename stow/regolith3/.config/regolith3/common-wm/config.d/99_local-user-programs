@@ -20,4 +20,4 @@ exec_always --no-startup-id sh -c 'until pgrep -x gsd-keyboard >/dev/null; do sl
 # Regenerate Alacritty's theme import from the active Regolith look.
 # regolith-look refresh ends with an i3 reload, so exec_always rebuilds
 # this whenever the look changes.
-exec_always --no-startup-id sh -c 'mkdir -p ~/.config/alacritty && ~/usr/bin/regolith-look-to-alacritty > ~/.config/alacritty/regolith-look.toml 2>/dev/null || :'
+exec_always --no-startup-id ~/usr/bin/regolith-look-to-alacritty

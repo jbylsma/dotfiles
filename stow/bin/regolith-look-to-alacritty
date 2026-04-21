@@ -1,50 +1,122 @@
 #!/usr/bin/env bash
-# Emit an Alacritty TOML fragment derived from the currently-loaded Regolith
-# look: gnome.terminal.color{0..15} for colors and gnome.terminal.font for
-# the monospace font family and size.
+# Regenerate ~/.config/alacritty/regolith-look.toml from the active Regolith
+# look's Xresource files. Written atomically so Alacritty's file watcher never
+# reads a partial file.
 #
 # Intended to be imported from alacritty.toml via `[general].import`.
-#
-# Usage:
-#   regolith-look-to-alacritty > ~/.config/alacritty/regolith-look.toml
 set -euo pipefail
 
-main() {
-  local -A c=()
-  local key val n
+OUTPUT="${HOME}/.config/alacritty/regolith-look.toml"
 
-  while read -r key val; do
-    n="${key#gnome.terminal.}"
-    n="${n%:}"
-    c["${n}"]="${val}"
-  done < <(xrdb -query | grep '^gnome\.terminal\.color[0-9]\+:')
+XRESOURCES="${HOME}/.config/regolith3/Xresources"
+XRESOURCES_SEARCH_PATH="${HOME}/.config/regolith3/Xresources.d"
 
-  for n in color{0..15}; do
-    if [[ -z "${c[${n}]:-}" ]]; then
-      echo "error: gnome.terminal.${n} is not set in the X resources database;" \
-           "is a Regolith look loaded?" >&2
+# Resolve all #define macros from an Xresource file, recursing into #include.
+# Populates the associative array named by $1.
+# Include paths are resolved relative to the including file first, then
+# relative to XRESOURCES_SEARCH_PATH (mirroring xrdb's -I flag behavior).
+load_defines() {
+  local -n _defs="$1"
+  local file="$2"
+  local base_dir
+  base_dir="$(dirname "${file}")"
+  local line
+
+  while IFS= read -r line; do
+    if [[ "${line}" =~ ^#define[[:space:]]+([^[:space:]]+)[[:space:]]+(.+)$ ]]; then
+      _defs["${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"
+    elif [[ "${line}" =~ ^#include[[:space:]]\"([^\"]+)\" ]]; then
+      local inc="${BASH_REMATCH[1]}"
+      local inc_path="${base_dir}/${inc}"
+      if [[ ! -f "${inc_path}" ]]; then
+        inc_path="${XRESOURCES_SEARCH_PATH}/${inc}"
+      fi
+      load_defines "$1" "${inc_path}"
+    fi
+  done < "${file}"
+}
+
+# Resolve a value: if it matches a key in the define map, return its value
+# (recursing until stable); otherwise return the value as-is.
+resolve() {
+  local -n _defs="$1"
+  local val="$2"
+  local seen=()
+  while [[ -n "${_defs[${val}]+_}" ]]; do
+    for s in "${seen[@]+"${seen[@]}"}"; do
+      [[ "${s}" == "${val}" ]] && break 2
+    done
+    seen+=("${val}")
+    val="${_defs[${val}]}"
+  done
+  printf '%s' "${val}"
+}
+
+generate() {
+  # Find the active look directory from the top-level Xresources file.
+  local look_path
+  look_path="$(awk -F':[[:space:]]+' '$1 == "regolith.look.path" { print $2; exit }' \
+    "${XRESOURCES}")"
+  if [[ -z "${look_path}" ]]; then
+    echo "error: regolith.look.path not set in ${XRESOURCES}" >&2
+    exit 1
+  fi
+  local look_dir="${HOME}/${look_path}"
+
+  local root_file="${look_dir}/root"
+  local term_file="${look_dir}/gnome-terminal"
+  for f in "${root_file}" "${term_file}"; do
+    if [[ ! -f "${f}" ]]; then
+      echo "error: look file not found: ${f}" >&2
       exit 1
     fi
   done
 
-  # Font: GTK/Pango descriptor "Family Name Size" where the trailing integer
-  # (or decimal) is the point size and everything before it is the family.
-  local font_raw family size
-  font_raw="$(xrdb -query | awk -F':[[:space:]]+' '$1 == "gnome.terminal.font" { print $2; exit }')"
+  # Load all #define macros from the look's root file (which #includes the
+  # rest of the look's Xresource files).
+  local -A defs=()
+  load_defines defs "${root_file}"
+
+  # Parse gnome-terminal key/value pairs.
+  local -A term=()
+  local key val
+  while IFS= read -r line; do
+    [[ "${line}" =~ ^[[:space:]]*! ]] && continue
+    [[ "${line}" =~ ^[[:space:]]*$ ]]  && continue
+    if [[ "${line}" =~ ^([^:]+):[[:space:]]+(.+)$ ]]; then
+      key="${BASH_REMATCH[1]}"
+      val="$(resolve defs "${BASH_REMATCH[2]}")"
+      term["${key}"]="${val}"
+    fi
+  done < "${term_file}"
+
+  for n in color{0..15}; do
+    if [[ -z "${term[gnome.terminal.${n}]+_}" ]]; then
+      echo "error: gnome.terminal.${n} not found in ${term_file}" >&2
+      exit 1
+    fi
+  done
+
+  # Parse font: Pango descriptor "Family Name Size" where the trailing integer
+  # or decimal is the point size.
+  local family="" size=""
+  local font_raw="${term[gnome.terminal.font]:-}"
   if [[ "${font_raw}" =~ ^(.+)[[:space:]]+([0-9]+(\.[0-9]+)?)$ ]]; then
     family="${BASH_REMATCH[1]}"
     size="${BASH_REMATCH[2]}"
     [[ "${size}" != *.* ]] && size="${size}.0"
-  else
-    family=""
-    size=""
-    [[ -n "${font_raw}" ]] && \
-      echo "warning: could not parse gnome.terminal.font=${font_raw@Q}; skipping font" >&2
+  elif [[ -n "${font_raw}" ]]; then
+    echo "warning: could not parse gnome.terminal.font=${font_raw@Q}; skipping font" >&2
   fi
 
+  local -A c=()
+  for n in color{0..15}; do
+    c["${n}"]="${term[gnome.terminal.${n}]}"
+  done
+
   cat <<EOF
-# Generated by regolith-look-to-alacritty from the currently-loaded Regolith
-# look. Re-run after switching looks or editing the look's palette or font.
+# Generated by regolith-look-to-alacritty from the active Regolith look.
+# Re-run after switching looks or editing the look's palette or font.
 
 [colors.primary]
 background = "${c[color0]}"
@@ -81,5 +153,12 @@ size = ${size}
 family = "${family}"
 EOF
   fi
+}
+
+main() {
+  mkdir -p "$(dirname "${OUTPUT}")"
+  local tmp="${OUTPUT}.tmp"
+  generate > "${tmp}"
+  mv "${tmp}" "${OUTPUT}"
 }
 main "$@"
