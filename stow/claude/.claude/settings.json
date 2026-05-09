@@ -22,5 +22,6 @@
         ]
       }
     ]
-  }
+  },
+  "editorMode": "vim"
 }
