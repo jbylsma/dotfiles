@@ -6,6 +6,7 @@
 ## Shell Scripts
 - Always run `shellcheck --enable=all` on shell scripts before considering
   them complete.
+- Always quote a line with single quotes unless double quotes are required.
 
 ## Markdown
 - Text should wrap at 80 columns.

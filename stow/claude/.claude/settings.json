@@ -23,5 +23,6 @@
       }
     ]
   },
+  "theme": "auto",
   "editorMode": "vim"
 }
