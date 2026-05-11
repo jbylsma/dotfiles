@@ -1,0 +1,46 @@
+#!/bin/sh
+# Converts Markdown to a PDF styled like a Google Doc.
+#
+# Usage: md-to-pdf.sh <input.md> [output.pdf]
+#
+# Required Debian packages:
+#   pandoc
+#   texlive-latex-base        (pdflatex, helvet, geometry)
+#   texlive-latex-recommended (microtype, parskip)
+#   texlive-latex-extra       (titlesec)
+set -e
+
+if [ $# -lt 1 ]; then
+    printf 'Usage: %s <input.md> [output.pdf]\n' "$0" >&2
+    exit 1
+fi
+
+INPUT="$1"
+OUTPUT="${2:-${INPUT%.md}.pdf}"
+
+HEADER=$(mktemp /tmp/pandoc-header-XXXXXX.tex)
+trap 'rm -f "$HEADER"' EXIT
+
+cat > "${HEADER}" << 'EOF'
+\microtypesetup{expansion=false}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{parskip}
+\usepackage{titlesec}
+\titleformat{\section}{\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\large\bfseries}{\thesubsubsection}{1em}{}
+\titlespacing{\section}{0pt}{2ex}{1ex}
+\titlespacing{\subsection}{0pt}{2ex}{0.8ex}
+\titlespacing{\subsubsection}{0pt}{2ex}{0.6ex}
+EOF
+
+pandoc "${INPUT}" \
+    -o "${OUTPUT}" \
+    --pdf-engine=pdflatex \
+    -V colorlinks=true \
+    -V urlcolor=blue \
+    -V geometry:margin=1in \
+    -V fontsize=11pt \
+    -V linestretch=1.15 \
+    -V fontfamily=helvet \
+    -H "${HEADER}"
