@@ -10,8 +10,12 @@ exec --no-startup-id gnome-keyring-daemon --replace
 
 exec --no-startup-id /usr/libexec/geoclue-2.0/demos/agent
 
+# gsd-keyboard only applies dconf keyboard settings to X11 when the incoming
+# value differs from its cache, so it will not reapply after an XKB init
+# resets X11 state. Wait for gsd-keyboard to settle before overriding.
 exec_always --no-startup-id gsettings set org.gnome.desktop.peripherals.keyboard delay 'uint32 250'
 exec_always --no-startup-id gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 'uint32 33'
+exec_always --no-startup-id sh -c 'until pgrep -x gsd-keyboard >/dev/null; do sleep 0.1; done; sleep 3; xset r rate 250 30'
 
 # gsd-keyboard resets the X core bell as a side effect of XKB init, so wait
 # for it to finish before silencing the bell.
