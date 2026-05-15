@@ -10,18 +10,17 @@ exec --no-startup-id gnome-keyring-daemon --replace
 
 exec --no-startup-id /usr/libexec/geoclue-2.0/demos/agent
 
-# gsd-keyboard only applies dconf keyboard settings to X11 when the incoming
-# value differs from its cache, so it will not reapply after an XKB init
-# resets X11 state. Wait for gsd-keyboard to settle before overriding.
 exec_always --no-startup-id gsettings set org.gnome.desktop.peripherals.keyboard delay 'uint32 250'
 exec_always --no-startup-id gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 'uint32 33'
-exec_always --no-startup-id sh -c 'until pgrep -x gsd-keyboard >/dev/null; do sleep 0.1; done; sleep 1; xset r rate 250 30'
+# gsd-keyboard does not reapply keyboard settings after XKB init resets X11
+# state. xset is a no-op under Wayland.
+exec_always --no-startup-id sh -c 'until pgrep -x gsd-keyboard >/dev/null; do sleep 0.1; done; sleep 1; xset r rate 250 33'
 
-# gsd-keyboard resets the X core bell as a side effect of XKB init, so wait
-# for it to finish before silencing the bell.
+# gsd-keyboard resets the X core bell as a side effect of XKB init. xset is a
+# no-op under Wayland.
 exec_always --no-startup-id sh -c 'until pgrep -x gsd-keyboard >/dev/null; do sleep 0.1; done; sleep 1; xset b off'
 
 # Regenerate Alacritty's theme import from the active Regolith look.
-# regolith-look refresh ends with an i3 reload, so exec_always rebuilds
+# regolith-look refresh triggers a WM reload, so exec_always rebuilds
 # this whenever the look changes.
 exec_always --no-startup-id ~/usr/bin/regolith-look-to-alacritty
