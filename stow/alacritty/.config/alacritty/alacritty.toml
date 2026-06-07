@@ -5,6 +5,12 @@
 [general]
 import = ["~/.config/alacritty/regolith-look.toml"]
 
+# Use xterm-256color instead of alacritty: its terminfo entry is missing on
+# most older/embedded systems (RHEL7, Synology DSM), which breaks things like
+# backspace and key bindings over SSH/tmux.
+[env]
+TERM = "xterm-256color"
+
 [bell]
 animation = "EaseOutExpo"
 duration = 100
