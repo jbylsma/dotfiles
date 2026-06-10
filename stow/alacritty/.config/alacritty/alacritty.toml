@@ -22,6 +22,12 @@ style = { shape = "Block", blinking = "On" }
 [mouse]
 hide_when_typing = true
 
+[keyboard]
+bindings = [
+  { key = "+", mods = "Control|Shift", action = "IncreaseFontSize" },
+  { key = "=", mods = "Control", action = "None" },
+]
+
 [[hints.enabled]]
 command = "xdg-open"
 hyperlinks = true
