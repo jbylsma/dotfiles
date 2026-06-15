@@ -1,0 +1,4 @@
+## PolicyKit authentication agent ##
+# Lets GUI privilege prompts (e.g. system-config-printer "Unlock") show a
+# password dialog. Without it, polkit fails with "Failed to acquire permission".
+exec --no-startup-id /usr/libexec/polkit-mate-authentication-agent-1
