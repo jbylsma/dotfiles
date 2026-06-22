@@ -9,12 +9,6 @@ set splitright
 " Use low updatetime to trigger CursorHold faster
 set updatetime=100
 
-" Theme
-set background=dark
-let g:molokai_original=1
-let g:rehash256 = 1
-silent! colorscheme molokai
-
 " Whitespace
 set nowrap
 set tabstop=2

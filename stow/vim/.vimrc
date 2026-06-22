@@ -37,7 +37,7 @@ let g:plug_threads = 8
 call plug#begin('~/.vim/plugged')
 
 " Colors
-Plug 'fatih/molokai'
+Plug 'sainnhe/sonokai'
 
 " Languages
 Plug 'vim-scripts/apachestyle'
