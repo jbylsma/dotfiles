@@ -3,7 +3,7 @@ set -e
 
 readonly SCHEMA='org.gnome.desktop.input-sources'
 readonly KEY='xkb-options'
-readonly OPTIONS="['lv3:menu_switch', 'altwin:prtsc_rwin', 'caps:swapescape']"
+readonly OPTIONS="['lv3:menu_switch', 'altwin:prtsc_rwin', 'caps:swapescape', 'shift:both_capslock']"
 
 function g () {
   local action
