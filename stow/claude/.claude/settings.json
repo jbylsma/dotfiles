@@ -24,6 +24,5 @@
     ]
   },
   "theme": "auto",
-  "editorMode": "vim",
-  "model": "opus"
+  "editorMode": "vim"
 }
