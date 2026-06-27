@@ -3,6 +3,9 @@
 exec --no-startup-id sh -c 'until pgrep -x gsd-xsettings >/dev/null; do sleep 0.1; done; sleep 1; keepassxc'
 exec --no-startup-id workrave
 
+# Enable touchscreen gesture support in Firefox via XInput2.
+exec --no-startup-id systemctl --user set-environment MOZ_USE_XINPUT2=1
+
 # Gnome keyring starts without DISPLAY being set, which prevents SSH key usage
 # confirmation from working. Reloading the keyring will have DISPLAY set but
 # will require the keyring to be unlocked again.
