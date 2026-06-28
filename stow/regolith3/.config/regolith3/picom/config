@@ -1,0 +1,3 @@
+@include "/etc/regolith/picom/config"
+
+fade-delta = 2;
