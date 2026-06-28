@@ -6,6 +6,8 @@
 #   HostName {host url}
 #   Port {external port}
 
+Include hosts/*.conf
+
 Host *
   # Any keys added through SSH should use confirm, which prompts the user to
   # confirm key usage.

@@ -1,21 +1,25 @@
 # SSH
 
-## MacOS key and passphrase handling
+## Host configuration
+Per-host settings are split into separate files under `~/.ssh/hosts/` and
+included via `Include hosts/*.conf` at the top of `~/.ssh/config`. Add new
+host entries there rather than directly in the main config.
 
-Passphrases _cannot_ be stored in the user's keychains if you want to use
-identity confirmation. If a passphrase is stored in a keychain, a SSH session
-could skip any key confirmation by passing `-o UseKeychain=yes`. Unfortunately,
-this means that passphrases must be manually entered whenever they are added to
-the SSH agent. That's just the price of security!
+## Key confirmation
+`AddKeysToAgent confirm` applies when SSH loads a key from a file on disk to
+authenticate. The key is added to the agent with the confirm flag, requiring
+explicit approval each time it is used. Keys added by an agent manager like
+KeePassXC are unaffected — those are controlled by the manager itself.
 
-On MacOS, requests for keys added to SSH agent with the confirm option will
-fail because the default helper program `/usr/libexec/ssh-askpass` does not
-exist ([StackOverflow issue][1]). A [Homebrew tap][2] exists to start `ssh-agent`
-with a basic confirmation prompt.
+## Connection multiplexing
+`ControlMaster auto`, `ControlPath`, and `ControlPersist` together enable SSH
+connection multiplexing: subsequent connections to the same host reuse an
+existing authenticated session rather than opening a new one.
 
-The Keychain Access application only updates when it's initially loaded. If you
-use `ssh-add -K -d {key}` to delete a key's passphrase in a keychain, it will
-_not_ be reflected until the user has re-opened the keychain.
+The control socket is stored at `~/.ssh/sessions/control-%C`, where `%C` is a
+hash of the connection parameters. The `~/.ssh/sessions/` directory must exist
+before multiplexing will work:
 
-[1]: https://serverfault.com/a/238500
-[2]: https://github.com/theseal/ssh-askpass/blob/master/ssh-askpass.plist
+```sh
+mkdir -p ~/.ssh/sessions
+```
