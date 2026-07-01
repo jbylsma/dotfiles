@@ -8,6 +8,6 @@ set background=dark
 "   shusia    #2d2a2e  plum-gray              - subtle purple/magenta cast
 "   maia      #273136  teal-green             - coolest/calmest
 "   espresso  #312c2b  warm brown             - only warm-toned variant
-let g:sonokai_style='shusia'
+let g:sonokai_style='default'
 let g:sonokai_better_performance=1
 silent! colorscheme sonokai
