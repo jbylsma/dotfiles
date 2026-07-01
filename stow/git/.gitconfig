@@ -32,3 +32,5 @@
 	ff = only
 [init]
 	defaultBranch = main
+[rebase]
+	autoSquash = true
