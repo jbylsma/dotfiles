@@ -4,6 +4,7 @@ set visualbell
 set surround
 set easymotion
 set vimhints
+set VimEverywhere
 
 " Use :actionlist to find IDE actions for mapping
 nmap <C-W>o <Action>(MaximizeEditorInSplit)
