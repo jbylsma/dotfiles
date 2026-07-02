@@ -7,6 +7,12 @@ usage() {
   echo "Requires tmux-root to be in the server's bin path."
 }
 
+# Disable terminal focus-event reporting on this pane in case a dropped
+# connection left the remote tmux-root unable to disable it itself.
+cleanup() {
+  printf '\e[?1004l'
+}
+
 main() {
   if [[ $# -lt 1 ]]; then
     usage >&2
@@ -15,6 +21,8 @@ main() {
 
   host="${*: -1}"
   set -- "${@:1:$(($#-1))}"
+
+  trap cleanup EXIT
   ssh -t "${host}" "$@" 'bash -lc tmux-root'
 }
 main "$@"

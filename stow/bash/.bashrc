@@ -260,6 +260,26 @@ function tue {
   )"
 }
 
+# Disable terminal focus-event reporting on this pane, reporting prior state
+function unfocus {
+  local reply stty_orig mode
+  stty_orig=$(stty -g)
+  stty -echo -icanon min 0 time 10
+  printf '\e[?1004$p'
+  IFS= read -r -d y -t 1 reply
+  stty "${stty_orig}"
+  printf '\e[?1004l'
+
+  mode="${reply##*;}"
+  mode="${mode%\$}"
+
+  case "${mode}" in
+    1|3) echo "focus-event reporting was enabled; now disabled" ;;
+    2|4) echo "focus-event reporting was already disabled" ;;
+    *)   echo "focus-event reporting state unknown (no response); disable sequence sent anyway" ;;
+  esac
+}
+
 # Unset private _which function
 unset -f _which
 
