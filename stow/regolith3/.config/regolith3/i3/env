@@ -1,0 +1,2 @@
+# Enable touchscreen gesture support in Firefox via XInput2.
+MOZ_USE_XINPUT2=1
