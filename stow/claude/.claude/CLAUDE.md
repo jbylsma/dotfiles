@@ -5,7 +5,11 @@
 
 ## Shell Scripts
 - Always run `shellcheck --enable=all` on shell scripts before considering
-  them complete.
+  them complete. This applies to scripts that land in a project directory or
+  that I will keep.
+- Skip shellcheck for throwaway scripts written to the session scratchpad
+  directory. If a scratchpad script is later promoted to a project directory,
+  shellcheck it then.
 - Always quote a line with single quotes unless double quotes are required.
 
 ## Markdown
