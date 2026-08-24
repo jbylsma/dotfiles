@@ -23,6 +23,8 @@
       }
     ]
   },
+  "effortLevel": "high",
   "theme": "auto",
-  "editorMode": "vim"
+  "editorMode": "vim",
+  "tui": "fullscreen"
 }
