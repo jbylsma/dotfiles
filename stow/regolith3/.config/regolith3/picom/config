@@ -1,3 +1,4 @@
 @include "/etc/regolith/picom/config"
 
 fade-delta = 2;
+inactive-dim = 0;
