@@ -12,6 +12,10 @@ exec --no-startup-id /usr/libexec/geoclue-2.0/demos/agent
 
 exec_always --no-startup-id gsettings set org.gnome.desktop.peripherals.keyboard delay 'uint32 250'
 exec_always --no-startup-id gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 'uint32 33'
+
+# Use Pause as the Compose key
+exec_always --no-startup-id gsettings set org.gnome.desktop.input-sources xkb-options "['compose:paus']"
+
 # gsd-keyboard does not reapply keyboard settings after XKB init resets X11
 # state. xset is a no-op under Wayland.
 exec_always --no-startup-id sh -c 'until pgrep -x gsd-keyboard >/dev/null; do sleep 0.1; done; sleep 1; xset r rate 250 33'
