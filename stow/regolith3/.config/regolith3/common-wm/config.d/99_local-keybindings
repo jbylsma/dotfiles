@@ -12,3 +12,6 @@ bindsym $mod+$alt+b exec --no-startup-id dbus-send --type=method_call --dest=org
 
 ## Modify // Window Layout Mode // <> t ##
 bindsym $mod+t layout toggle tabbed splith splitv
+
+## Insert // Emoji Picker // <> ; ##
+bindsym $mod+semicolon exec --no-startup-id env PATH="$PATH:$HOME/usr/bin" BEMOJI_PICKER_CMD="ilia -n -p textlist -l 'Emoji' -i desktop-magnifier" bemoji -t

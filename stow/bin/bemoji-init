@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Clone or update the bemoji emoji picker (https://github.com/marty-oehme/bemoji)
+# and expose it on PATH. Re-run any time to pull the latest upstream version.
+set -euo pipefail
+
+readonly SRC_DIR="${HOME}/usr/src/bemoji"
+readonly BIN_LINK="${HOME}/usr/bin/bemoji"
+
+main() {
+  if [[ -d "${SRC_DIR}/.git" ]]; then
+    git -C "${SRC_DIR}" pull --ff-only
+  else
+    git clone https://github.com/marty-oehme/bemoji.git "${SRC_DIR}"
+  fi
+
+  mkdir -p "$(dirname "${BIN_LINK}")"
+  ln -snf "${SRC_DIR}/bemoji" "${BIN_LINK}"
+  echo "  ${BIN_LINK} -> ${SRC_DIR}/bemoji"
+}
+main "$@"
