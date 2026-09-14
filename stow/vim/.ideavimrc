@@ -21,7 +21,7 @@ map ]` <Action>(GotoNextBookmark)
 map <Leader>gw <Action>(Git.Add)
 map <Leader>gs <Action>(Vcs.Show.Local.Changes)
 map <Leader>gd <Action>(Compare.SameVersion)
-map <Leader>gc <Action>(CheckinProject)
+map <Leader>gc <Action>(ActivateCommitToolWindow)
 map <Leader>gb <Action>(Annotate)
 
 " Debug
