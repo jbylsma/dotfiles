@@ -50,13 +50,29 @@ IDLE_THRESHOLD_MS=30000
 PAYLOAD="$(cat 2>/dev/null || true)"
 
 NOTIF_TYPE=""
+PAYLOAD_TITLE=""
 SESSION_ID="$(read_session_id "${PAYLOAD}")"
 MESSAGE="${DEFAULT_MESSAGE}"
 if [[ -n "${PAYLOAD}" ]] && command -v jq >/dev/null 2>&1; then
   if printf '%s' "${PAYLOAD}" | jq -e . >/dev/null 2>&1; then
+    HOOK_EVENT="$(printf '%s' "${PAYLOAD}" | jq -r '.hook_event_name // empty')"
     NOTIF_TYPE="$(printf '%s' "${PAYLOAD}" | jq -r '.notification_type // empty')"
     PAYLOAD_MESSAGE="$(printf '%s' "${PAYLOAD}" | jq -r '.message // empty')"
+    PAYLOAD_TITLE="$(printf '%s' "${PAYLOAD}" | jq -r '.title // empty')"
     [[ -n "${PAYLOAD_MESSAGE}" ]] && MESSAGE="${PAYLOAD_MESSAGE}"
+
+    if [[ "${HOOK_EVENT}" == "Stop" ]]; then
+      STOP_SUMMARY="$(printf '%s' "${PAYLOAD}" | jq -r '
+        if ((.background_tasks // []) | length) > 0 then
+          "Paused -- background task running"
+        else
+          (.last_assistant_message // "")
+          | gsub("\\s+"; " ")
+          | if length > 150 then .[0:150] + "…" else . end
+        end
+      ')"
+      [[ -n "${STOP_SUMMARY}" ]] && MESSAGE="${STOP_SUMMARY}"
+    fi
   fi
 fi
 
@@ -138,13 +154,15 @@ if [[ "${NOTIF_TYPE}" != "permission_prompt" ]] && user_is_present; then
   exit 0
 fi
 
-PROJECT=""
-if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  PROJECT="$(git rev-parse --show-toplevel 2>/dev/null)"
-  PROJECT="$(basename "${PROJECT}")"
+TITLE="${PAYLOAD_TITLE}"
+if [[ -z "${TITLE}" ]]; then
+  PROJECT=""
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    PROJECT="$(git rev-parse --show-toplevel 2>/dev/null)"
+    PROJECT="$(basename "${PROJECT}")"
+  fi
+  TITLE="${PROJECT:-Claude Code}"
 fi
-
-TITLE="${PROJECT:-Claude Code}"
 
 case "${SOUND_TYPE}" in
   input)
