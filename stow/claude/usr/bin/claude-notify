@@ -1,9 +1,100 @@
 #!/usr/bin/env bash
-# Requires libnotify-bin
+# Requires libnotify-bin and pipewire-bin (for pw-play). Reads the Claude
+# Code hook JSON payload from stdin
+# for the real message/notification_type when available (needs jq), and
+# skips the notification entirely when it looks like the user is actively
+# watching this exact session -- unless it's a permission request, which
+# always notifies since Claude is genuinely blocked on it.
 set -e
 
-MESSAGE="${1:-Task completed}"
+DEFAULT_MESSAGE="${1:-Task completed}"
 SOUND_TYPE="${2:-default}"
+
+# Milliseconds/seconds of no keyboard/mouse input still counted as "present".
+IDLE_THRESHOLD_MS=30000
+
+PAYLOAD="$(cat 2>/dev/null || true)"
+
+NOTIF_TYPE=""
+MESSAGE="${DEFAULT_MESSAGE}"
+if [[ -n "${PAYLOAD}" ]] && command -v jq >/dev/null 2>&1; then
+  if printf '%s' "${PAYLOAD}" | jq -e . >/dev/null 2>&1; then
+    NOTIF_TYPE="$(printf '%s' "${PAYLOAD}" | jq -r '.notification_type // empty')"
+    PAYLOAD_MESSAGE="$(printf '%s' "${PAYLOAD}" | jq -r '.message // empty')"
+    [[ -n "${PAYLOAD_MESSAGE}" ]] && MESSAGE="${PAYLOAD_MESSAGE}"
+  fi
+fi
+
+# Is this pane/window the one an attached, recently-active tmux client is
+# actually looking at right now?
+tmux_user_is_present() {
+  local pane_active_and_current session now
+  pane_active_and_current="$(tmux display-message -p -t "${TMUX_PANE}" \
+    '#{&&:#{pane_active},#{window_active}}' 2>/dev/null || true)"
+  [[ "${pane_active_and_current}" == "1" ]] || return 1
+
+  session="$(tmux display-message -p -t "${TMUX_PANE}" '#{session_name}' 2>/dev/null || true)"
+  [[ -n "${session}" ]] || return 1
+
+  now="$(date +%s)"
+  while IFS="$(printf '\t')" read -r flags activity; do
+    case ",${flags}," in
+      *,focused,*)
+        [[ -n "${activity}" ]] || continue
+        if [[ $(( (now - activity) * 1000 )) -lt "${IDLE_THRESHOLD_MS}" ]]; then
+          return 0
+        fi
+        ;;
+      *)
+        ;;
+    esac
+  done < <(tmux list-clients -t "${session}" -F "$(printf '#{client_flags}\t#{client_activity}')" 2>/dev/null || true)
+
+  return 1
+}
+
+# Is the OS-level window that currently has input focus the same GUI process
+# (terminal emulator, IDE, ...) that is hosting this Claude session, and was
+# there recent keyboard/mouse activity?
+x11_user_is_present() {
+  local focused_pid pid ppid_raw idle_ms
+  focused_pid="$(xdotool getactivewindow getwindowpid 2>/dev/null || true)"
+  [[ -n "${focused_pid}" ]] || return 1
+
+  pid=$$
+  while [[ "${pid}" -gt 1 ]]; do
+    if [[ "${pid}" == "${focused_pid}" ]]; then
+      idle_ms="$(xssstate -i 2>/dev/null || true)"
+      [[ -n "${idle_ms}" ]] || return 1
+      [[ "${idle_ms}" -lt "${IDLE_THRESHOLD_MS}" ]]
+      return $?
+    fi
+    ppid_raw="$(ps -o ppid= -p "${pid}" 2>/dev/null)" || ppid_raw=""
+    pid="${ppid_raw//[[:space:]]/}"
+    [[ -n "${pid}" ]] || return 1
+  done
+  return 1
+}
+
+user_is_present() {
+  if [[ -n "${TMUX:-}" ]] && [[ -n "${TMUX_PANE:-}" ]] && command -v tmux >/dev/null 2>&1; then
+    tmux_user_is_present
+    return $?
+  fi
+  if [[ -n "${DISPLAY:-}" ]] && command -v xdotool >/dev/null 2>&1 \
+    && command -v xssstate >/dev/null 2>&1; then
+    x11_user_is_present
+    return $?
+  fi
+  return 1
+}
+
+# SC2310: set -e is deliberately not propagated into user_is_present here --
+# its helpers already report failure via explicit return codes.
+# shellcheck disable=SC2310
+if [[ "${NOTIF_TYPE}" != "permission_request" ]] && user_is_present; then
+  exit 0
+fi
 
 PROJECT=""
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -26,10 +117,10 @@ notify-send -a claude -u "${URGENCY}" "${TITLE}" "${MESSAGE}"
 
 case "${SOUND_TYPE}" in
   input)
-    paplay /usr/share/sounds/freedesktop/stereo/dialog-information.oga &
+    pw-play /usr/share/sounds/freedesktop/stereo/dialog-information.oga &
     ;;
   complete)
-    paplay /usr/share/sounds/freedesktop/stereo/window-question.oga &
+    pw-play /usr/share/sounds/freedesktop/stereo/window-question.oga &
     ;;
   *)
     ;;
