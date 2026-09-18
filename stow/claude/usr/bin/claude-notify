@@ -1,11 +1,43 @@
 #!/usr/bin/env bash
-# Requires libnotify-bin and pipewire-bin (for pw-play). Reads the Claude
-# Code hook JSON payload from stdin
-# for the real message/notification_type when available (needs jq), and
+# Requires libnotify-bin, pipewire-bin (for pw-play), and glib2.0-bin (for
+# gdbus). Reads the Claude Code hook JSON payload from stdin for the real
+# message/notification_type/session_id when available (needs jq), and
 # skips the notification entirely when it looks like the user is actively
 # watching this exact session -- unless it's a permission request, which
-# always notifies since Claude is genuinely blocked on it.
+# always notifies since Claude is genuinely blocked on it. Sent notification
+# IDs are recorded per session_id so a later `claude-notify --clear` (run
+# from a UserPromptSubmit hook) can withdraw them once the user is back.
 set -e
+shopt -s inherit_errexit
+
+STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/claude-notify"
+
+close_notification() {
+  gdbus call --session \
+    --dest org.freedesktop.Notifications \
+    --object-path /org/freedesktop/Notifications \
+    --method org.freedesktop.Notifications.CloseNotification \
+    "$1" >/dev/null 2>&1 || true
+}
+
+read_session_id() {
+  local payload="$1"
+  [[ -n "${payload}" ]] && command -v jq >/dev/null 2>&1 || return 0
+  printf '%s' "${payload}" | jq -e . >/dev/null 2>&1 || return 0
+  printf '%s' "${payload}" | jq -r '.session_id // empty'
+}
+
+if [[ "${1:-}" == "--clear" ]]; then
+  SESSION_ID="$(read_session_id "$(cat 2>/dev/null || true)")"
+  STATE_FILE="${STATE_DIR}/${SESSION_ID}"
+  if [[ -n "${SESSION_ID}" ]] && [[ -f "${STATE_FILE}" ]]; then
+    while IFS= read -r id; do
+      [[ -n "${id}" ]] && close_notification "${id}"
+    done < "${STATE_FILE}"
+    rm -f "${STATE_FILE}"
+  fi
+  exit 0
+fi
 
 DEFAULT_MESSAGE="${1:-Task completed}"
 SOUND_TYPE="${2:-default}"
@@ -16,6 +48,7 @@ IDLE_THRESHOLD_MS=30000
 PAYLOAD="$(cat 2>/dev/null || true)"
 
 NOTIF_TYPE=""
+SESSION_ID="$(read_session_id "${PAYLOAD}")"
 MESSAGE="${DEFAULT_MESSAGE}"
 if [[ -n "${PAYLOAD}" ]] && command -v jq >/dev/null 2>&1; then
   if printf '%s' "${PAYLOAD}" | jq -e . >/dev/null 2>&1; then
@@ -113,7 +146,12 @@ case "${SOUND_TYPE}" in
     ;;
 esac
 
-notify-send -a claude -u "${URGENCY}" "${TITLE}" "${MESSAGE}"
+NOTIF_ID="$(notify-send -p -a claude -u "${URGENCY}" "${TITLE}" "${MESSAGE}" 2>/dev/null || true)"
+if [[ -n "${SESSION_ID}" ]] && [[ "${NOTIF_ID}" =~ ^[0-9]+$ ]]; then
+  mkdir -p "${STATE_DIR}" 2>/dev/null || true
+  chmod 700 "${STATE_DIR}" 2>/dev/null || true
+  printf '%s\n' "${NOTIF_ID}" >> "${STATE_DIR}/${SESSION_ID}"
+fi
 
 case "${SOUND_TYPE}" in
   input)

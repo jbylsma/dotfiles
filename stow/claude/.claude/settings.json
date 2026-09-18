@@ -21,6 +21,28 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "claude-notify --clear"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "claude-notify --clear"
+          }
+        ]
+      }
     ]
   },
   "effortLevel": "high",
