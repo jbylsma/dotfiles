@@ -24,7 +24,8 @@
     ]
   },
   "effortLevel": "high",
+  "tui": "fullscreen",
   "theme": "auto",
   "editorMode": "vim",
-  "tui": "fullscreen"
+  "agentPushNotifEnabled": true
 }
