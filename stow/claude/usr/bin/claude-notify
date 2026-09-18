@@ -3,10 +3,12 @@
 # gdbus). Reads the Claude Code hook JSON payload from stdin for the real
 # message/notification_type/session_id when available (needs jq), and
 # skips the notification entirely when it looks like the user is actively
-# watching this exact session -- unless it's a permission request, which
-# always notifies since Claude is genuinely blocked on it. Sent notification
-# IDs are recorded per session_id so a later `claude-notify --clear` (run
-# from a UserPromptSubmit hook) can withdraw them once the user is back.
+# watching this exact session -- unless it's a permission prompt, which
+# always notifies since Claude is genuinely blocked on it. The idle-prompt
+# nudge (Claude waiting on you ~60s after a turn ends) is always skipped
+# since it duplicates that turn's Stop notification. Sent notification IDs
+# are recorded per session_id so a later `claude-notify --clear` (run from
+# a UserPromptSubmit/SessionEnd hook) can withdraw them once you're back.
 set -e
 shopt -s inherit_errexit
 
@@ -56,6 +58,13 @@ if [[ -n "${PAYLOAD}" ]] && command -v jq >/dev/null 2>&1; then
     PAYLOAD_MESSAGE="$(printf '%s' "${PAYLOAD}" | jq -r '.message // empty')"
     [[ -n "${PAYLOAD_MESSAGE}" ]] && MESSAGE="${PAYLOAD_MESSAGE}"
   fi
+fi
+
+# The idle-prompt nudge always duplicates the Stop notification for the same
+# turn (it just fires ~60s later if you haven't replied yet) -- always skip
+# it rather than running it through the presence check.
+if [[ "${NOTIF_TYPE}" == "idle_prompt" ]]; then
+  exit 0
 fi
 
 # Is this pane/window the one an attached, recently-active tmux client is
@@ -125,7 +134,7 @@ user_is_present() {
 # SC2310: set -e is deliberately not propagated into user_is_present here --
 # its helpers already report failure via explicit return codes.
 # shellcheck disable=SC2310
-if [[ "${NOTIF_TYPE}" != "permission_request" ]] && user_is_present; then
+if [[ "${NOTIF_TYPE}" != "permission_prompt" ]] && user_is_present; then
   exit 0
 fi
 
