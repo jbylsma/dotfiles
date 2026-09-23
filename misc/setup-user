@@ -1,3 +1,4 @@
+export PATH="${HOME}/usr/bin:${PATH}"
 mkdir -p ~/usr/src ~/usr/bin
 cd ~/usr/src
 if ! command -v stow 2>&1 >/dev/null; then
@@ -9,7 +10,6 @@ if ! command -v stow 2>&1 >/dev/null; then
   make install
   export PATH="${HOME}/usr/bin:${PATH}"
 fi
-cd ~/usr/src
 git clone https://github.com/jbylsma/dotfiles.git
 cd dotfiles/stow
 rm ~/.bashrc ~/.bash_profile
