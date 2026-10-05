@@ -26,6 +26,12 @@ hide_when_typing = true
 bindings = [
   { key = "+", mods = "Control|Shift", action = "IncreaseFontSize" },
   { key = "=", mods = "Control", action = "None" },
+  # Toggle a light (lightness-inverted) Regolith palette with a white
+  # background on the focused window. Run via sh so $HOME expands; ~/usr/bin isn't on Alacritty's PATH.
+  { key = "L", mods = "Control|Shift", command = { program = "sh", args = [
+    "-c",
+    'exec "$HOME/usr/bin/alacritty-theme-toggle" --invert --background "#FFFFFF" "$HOME/.config/alacritty/regolith-look.toml"',
+  ] } },
 ]
 
 [[hints.enabled]]

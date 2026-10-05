@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+"""Toggle an Alacritty theme on a single window.
+
+Applies the [colors] table of an Alacritty theme TOML file to one window via
+Alacritty's IPC runtime config overrides; running it again resets the window
+to its configured colors. Other windows and config files are untouched.
+
+With --invert, each hex color's HSL lightness is inverted (hue and saturation
+kept), turning a dark theme into a light one, e.g. the active Regolith look:
+
+    alacritty-theme-toggle --invert ~/.config/alacritty/regolith-look.toml
+
+--background overrides the primary background after any inversion, e.g. to
+use pure white instead of the inverse of a not-quite-black background.
+"""
+
+import argparse
+import colorsys
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import tomllib
+from pathlib import Path
+
+HEX_COLOR = re.compile(r"^#[0-9A-Fa-f]{6}$")
+
+
+def invert_lightness(color):
+    r, g, b = (int(color[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    r, g, b = colorsys.hls_to_rgb(h, 1 - l, s)
+    return "#{:02X}{:02X}{:02X}".format(*(round(x * 255) for x in (r, g, b)))
+
+
+def flatten(table, prefix, invert):
+    """Yield `dotted.key=value` overrides for scalar values in a TOML table."""
+    for key, val in table.items():
+        path = f"{prefix}.{key}"
+        if isinstance(val, dict):
+            yield from flatten(val, path, invert)
+        elif isinstance(val, str):
+            if invert and HEX_COLOR.match(val):
+                val = invert_lightness(val)
+            yield f"{path}={json.dumps(val)}"
+        elif isinstance(val, (bool, int, float)):
+            yield f"{path}={json.dumps(val)}"
+        else:
+            print(f"warning: skipping unsupported value at {path}",
+                  file=sys.stderr)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("theme", type=Path,
+                        help="Alacritty theme TOML file with a [colors] table")
+    parser.add_argument("--invert", action="store_true",
+                        help="invert the lightness of the theme's colors")
+    parser.add_argument("--background", metavar="COLOR",
+                        help="override the primary background color")
+    parser.add_argument("--window-id",
+                        help="Alacritty window ID (default: focused window)")
+    args = parser.parse_args()
+
+    window_id = args.window_id or subprocess.run(
+        ["xdotool", "getactivewindow"],
+        check=True, capture_output=True, text=True).stdout.strip()
+
+    runtime_dir = os.environ.get("XDG_RUNTIME_DIR") or tempfile.gettempdir()
+    state_file = Path(runtime_dir) / "alacritty-theme-toggle" / window_id
+
+    msg = ["alacritty", "msg", "config", "--window-id", window_id]
+
+    if state_file.exists():
+        subprocess.run([*msg, "--reset"], check=True)
+        state_file.unlink()
+        return
+
+    with args.theme.expanduser().open("rb") as f:
+        colors = tomllib.load(f).get("colors")
+    if not colors:
+        sys.exit(f"error: no [colors] table in {args.theme}")
+
+    overrides = list(flatten(colors, "colors", args.invert))
+    if args.background:
+        bg_key = "colors.primary.background"
+        overrides = [o for o in overrides if not o.startswith(f"{bg_key}=")]
+        overrides.append(f"{bg_key}={json.dumps(args.background)}")
+
+    subprocess.run([*msg, *overrides], check=True)
+    state_file.parent.mkdir(parents=True, exist_ok=True)
+    state_file.touch()
+
+
+if __name__ == "__main__":
+    main()
