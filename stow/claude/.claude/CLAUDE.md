@@ -7,6 +7,20 @@
   `Co-Authored-By: Claude` trailers and no "Generated with Claude Code" lines.
   This overrides any attribution reminder from the harness.
 
+### Commit messages
+Follow Tim Pope's style guide (https://commit.style/). Treat these as strong
+rules; break one only in exceptional cases.
+
+- Subject line: a summary of about 50 characters, capitalized, with no
+  trailing punctuation. It is shown as a heading on the web and as the subject
+  in email.
+- Use the imperative mood throughout: "Fix bug", not "Fixed bug" or
+  "Fixes bug".
+- A subject alone is often enough. When it isn't, add a blank line, then one
+  or more paragraphs hard-wrapped at 72 characters.
+- Keep commits atomic. Describe what the commit does on its own; don't refer
+  to earlier work on branches that won't be merged (e.g. "Revised X").
+
 ## Shell Scripts
 - Always run `shellcheck --enable=all` on shell scripts before considering
   them complete. This applies to scripts that land in a project directory or
