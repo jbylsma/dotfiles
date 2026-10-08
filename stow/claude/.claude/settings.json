@@ -47,7 +47,9 @@
   },
   "effortLevel": "high",
   "attribution": {
-    "commitTrailers": false
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
   },
   "tui": "fullscreen",
   "theme": "auto",

@@ -2,6 +2,11 @@
 
 - Never run `sudo` commands. If a command requires `sudo`, prompt me to run it manually.
 
+## Git
+- Never add Claude attribution to commits or pull requests: no
+  `Co-Authored-By: Claude` trailers and no "Generated with Claude Code" lines.
+  This overrides any attribution reminder from the harness.
+
 ## Shell Scripts
 - Always run `shellcheck --enable=all` on shell scripts before considering
   them complete. This applies to scripts that land in a project directory or
