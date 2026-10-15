@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-notify 'Task completed' complete"
+            "command": "$HOME/usr/bin/claude-notify 'Task completed' complete"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-notify 'Needs input' input"
+            "command": "$HOME/usr/bin/claude-notify 'Needs input' input"
           }
         ]
       }
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-notify --clear"
+            "command": "$HOME/usr/bin/claude-notify --clear"
           }
         ]
       }
@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-notify --clear"
+            "command": "$HOME/usr/bin/claude-notify --clear"
           }
         ]
       }
