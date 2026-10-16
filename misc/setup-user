@@ -1,22 +1,34 @@
+#!/usr/bin/env bash
+set -e
+
 export PATH="${HOME}/usr/bin:${PATH}"
 mkdir -p ~/usr/src ~/usr/bin
 cd ~/usr/src
-if ! command -v stow 2>&1 >/dev/null; then
-  curl -LO 'http://ftp.gnu.org/gnu/stow/stow-2.4.1.tar.gz'
-  tar -zxvf ./stow-2.4.1.tar.gz
-  rm ./stow-2.4.1.tar.gz
-  cd stow-2.4.1
-  ./configure --prefix=$HOME/usr
-  make install
-  export PATH="${HOME}/usr/bin:${PATH}"
+
+# Build stow from source if it isn't installed
+if ! command -v stow >/dev/null 2>&1; then
+  (
+    curl -LO 'https://ftp.gnu.org/gnu/stow/stow-2.4.1.tar.gz'
+    tar -zxvf ./stow-2.4.1.tar.gz
+    rm ./stow-2.4.1.tar.gz
+    cd stow-2.4.1
+    ./configure --prefix="${HOME}/usr"
+    make install
+  )
 fi
-git clone https://github.com/jbylsma/dotfiles.git
+
+# Clone the dotfiles and link them into place
+if [[ ! -d dotfiles ]]; then
+  git clone https://github.com/jbylsma/dotfiles.git
+fi
 cd dotfiles/stow
-rm ~/.bashrc ~/.bash_profile
+rm -f ~/.bashrc ~/.bash_profile
 stow -t ~ misc
 stow -t ~ bash
 stow -t ~ git
 stow -t ~ tmux
 stow -t ~ vim
 stow -t ~/usr/bin bin
-vim
+
+# Install vim plugins without opening vim
+vim -Nes -u ~/.vimrc -i NONE +'PlugInstall --sync' +qall </dev/null
