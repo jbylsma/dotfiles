@@ -14,7 +14,7 @@ keyboard", so external keyboards are left untouched.
 
 | File                | Include when…                                        |
 | ------------------- | ---------------------------------------------------- |
-| `default.conf`      | Always — swaps Caps Lock/Esc, enables double-shift   |
+| `default.conf`      | Always — Caps/Esc swap, double-shift, Right Ctrl     |
 | `copilot-super.conf`| Keyboard has a Microsoft Copilot key                 |
 | `sysrq-super.conf`  | Print Screen is a standalone key (maps it to Super)  |
 
