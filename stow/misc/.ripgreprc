@@ -1,0 +1,6 @@
+# Search hidden files and follow symlinks, such as stowed dotfiles
+--hidden
+--follow
+
+# --hidden would otherwise search inside .git directories
+--glob=!.git

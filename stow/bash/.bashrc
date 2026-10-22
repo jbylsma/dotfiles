@@ -127,6 +127,11 @@ if [[ -f "${HOME}/.bcrc" ]]; then
   export BC_ENV_ARGS="${HOME}/.bcrc"
 fi
 
+# Default ripgrep options
+if [[ -f "${HOME}/.ripgreprc" ]]; then
+  export RIPGREP_CONFIG_PATH="${HOME}/.ripgreprc"
+fi
+
 # Disable Wine debugger everywhere
 if _which wine; then
   export WINEDEBUG=-all
