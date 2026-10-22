@@ -7,8 +7,6 @@ set guioptions+=c
 set guioptions-=e
 set guioptions-=T
 
-source ~/.vimrc
-
 if filereadable(expand("~/.gvimrc.after"))
   source ~/.gvimrc.after
 endif
