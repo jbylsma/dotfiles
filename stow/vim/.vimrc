@@ -52,13 +52,11 @@ Plug 'tpope/vim-markdown'
 Plug 'mustache/vim-mustache-handlebars'
 Plug 'vim-ruby/vim-ruby'
 Plug 'cakebaker/scss-syntax.vim'
-Plug 'chikamichi/mediawiki.vim'
 
 " Plugins
 Plug 'ap/vim-css-color'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'tpope/vim-dispatch'
 Plug 'easymotion/vim-easymotion'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
@@ -87,7 +85,6 @@ Plug 'vim-airline/vim-airline'
 Plug 'junegunn/gv.vim'
 Plug 'kshenoy/vim-signature'
 Plug 'junegunn/vim-peekaboo'
-Plug 'wesQ3/vim-windowswap'
 Plug 'drmikehenry/vim-fontsize'
 
 call plug#end()
