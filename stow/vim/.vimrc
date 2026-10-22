@@ -78,8 +78,6 @@ Plug 'tpope/vim-vinegar'
 Plug 'thinca/vim-visualstar'
 Plug 'sh-dude/ZoomWin'
 Plug 'godlygeek/tabular'
-Plug 'joonty/vdebug', { 'on': 'VdebugOn' }
-command! VdebugOn call plug#load('vdebug')
 Plug 'bling/vim-airline'
 Plug 'junegunn/gv.vim'
 Plug 'kshenoy/vim-signature'
