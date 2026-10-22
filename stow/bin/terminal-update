@@ -25,20 +25,6 @@ _which() {
 }
 
 #
-update_brew() {
-  _title "Brew"
-
-  ! _which brew && \
-    echo "brew not found" >&2 && \
-    return
-
-  brew update
-  set +e
-  brew upgrade
-  set -e
-}
-
-#
 update_composer() {
   _title "Composer"
 
@@ -107,7 +93,6 @@ main() {
 
   types=(
     dotfiles
-    brew
     composer
     vim
   )
