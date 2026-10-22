@@ -7,9 +7,6 @@ elseif executable('ag')
   let g:ackprg = 'ag --vimgrep'
 endif
 
-" Override UltiSnips mappings
-let g:UltiSnipsListSnippets='<s-tab>'
-
 " Last chance to override things
 if filereadable(expand("~/.vimrc.before"))
   source ~/.vimrc.before
