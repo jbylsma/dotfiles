@@ -1,12 +1,5 @@
 let mapleader = ' '
 
-" If available, use Ripgrep or Silver Searcher
-if executable('rg')
-  let g:ackprg = 'rg --vimgrep'
-elseif executable('ag')
-  let g:ackprg = 'ag --vimgrep'
-endif
-
 " Last chance to override things
 if filereadable(expand("~/.vimrc.before"))
   source ~/.vimrc.before
@@ -56,7 +49,6 @@ Plug 'cakebaker/scss-syntax.vim'
 Plug 'chikamichi/mediawiki.vim'
 
 " Plugins
-Plug 'mileszs/ack.vim'
 Plug 'ap/vim-css-color'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'editorconfig/editorconfig-vim'

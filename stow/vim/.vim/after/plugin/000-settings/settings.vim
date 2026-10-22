@@ -21,6 +21,19 @@ set hlsearch
 set ignorecase
 set smartcase
 
+" If available, use Ripgrep or Silver Searcher for :grep
+if executable('rg')
+  set grepprg=rg\ --vimgrep grepformat=%f:%l:%c:%m
+elseif executable('ag')
+  set grepprg=ag\ --vimgrep grepformat=%f:%l:%c:%m
+endif
+
+" Open the quickfix window after :grep, :make and similar commands
+augroup vimrc_quickfix
+  autocmd!
+  autocmd QuickFixCmdPost [^l]* cwindow
+augroup END
+
 " Folding
 set nofoldenable
 set foldmethod=indent
