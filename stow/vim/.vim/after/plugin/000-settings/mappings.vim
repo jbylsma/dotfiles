@@ -14,8 +14,12 @@ if &term =~ '^screen'
   execute "set <xLeft>=\e[1;*D"
 endif
 
-" Open up a shell starting in the current file's path
-noremap zz :execute '!cd ' . shellescape(expand("%:p:h")) . ' && ' . &shell <CR>
+" Open a shell in a split, starting in the current file's path
+if has('terminal')
+  nnoremap <silent> <leader>sh
+        \ :call term_start(&shell,
+        \ {'cwd': expand('%:p:h'), 'term_finish': 'close'})<CR>
+endif
 
 " After whitespace, insert the current directory into a command-line path
 cnoremap <expr> <C-P> getcmdline()[getcmdpos()-2] ==# ' ' ? expand('%:p:h') : "\<C-P>"
