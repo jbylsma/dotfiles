@@ -1,9 +1,10 @@
 " Underline the current line with '='
-nmap <silent> <leader>ul :t.<CR>Vr=
+nnoremap <silent> <leader>ul :t.<CR>Vr=
 
-" Map the arrow keys to be based on display lines, not physical lines
-map <Down> gj
-map <Up> gk
+" Map the arrow keys to be based on display lines, not physical lines,
+" unless given a count
+noremap <expr> <Down> v:count ? 'j' : 'gj'
+noremap <expr> <Up> v:count ? 'k' : 'gk'
 
 " Fix arrow keys under screen-* terms
 if &term =~ '^screen'
