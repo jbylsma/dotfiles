@@ -56,5 +56,8 @@ set directory^=~/.vim/_temp//
 " GUI
 if has("gui_running") && has("autocmd")
   " Automatically resize splits when resizing MacVim window
-  autocmd VimResized * wincmd =
+  augroup vimrc_resize
+    autocmd!
+    autocmd VimResized * wincmd =
+  augroup END
 endif
