@@ -10,4 +10,9 @@ set background=dark
 "   espresso  #312c2b  warm brown             - only warm-toned variant
 let g:sonokai_style='default'
 let g:sonokai_better_performance=1
+
+" Name the airline theme so airline doesn't search for one matching the
+" colorscheme, which roughly doubled startup time
+let g:airline_theme='sonokai'
+
 silent! colorscheme sonokai
