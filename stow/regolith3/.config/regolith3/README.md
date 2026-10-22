@@ -1,4 +1,4 @@
-# Required apt packages (2026-09-04)
+# Required apt packages (2026-10-22)
 ```
 i3xrocks-battery
 i3xrocks-nm-vpn
@@ -8,6 +8,7 @@ regolith-compositor-none
 regolith-desktop
 regolith-session-flashback
 regolith-session-sway
+ssh-askpass-gnome
 ```
 
 # Other dependencies
