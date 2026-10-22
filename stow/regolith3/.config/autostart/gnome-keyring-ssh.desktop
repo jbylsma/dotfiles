@@ -1,0 +1,7 @@
+# Disable gnome-keyring's deprecated SSH component so SSH_AUTH_SOCK stays
+# on gcr-ssh-agent. The keyring daemon starts before DISPLAY is set, so its
+# ssh-agent cannot run ssh-askpass to confirm key use.
+[Desktop Entry]
+Type=Application
+Name=SSH Key Agent
+Hidden=true
