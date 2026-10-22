@@ -37,6 +37,14 @@ if version > 704
 else
   set completeopt+=longest
 endif
+if has('patch-8.1.1880')
+  set completeopt-=preview completeopt+=popup
+endif
+
+" Diff
+" Older Vims reject these values and leave diffopt unchanged
+silent! set diffopt+=algorithm:histogram,indent-heuristic
+silent! set diffopt+=linematch:60
 
 " ctags
 " tags;$HOME will search for tags recursively until $HOME
