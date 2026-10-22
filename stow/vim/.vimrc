@@ -15,6 +15,12 @@ if has('termguicolors') && !has('gui_running')
   endif
 endif
 
+" screen's terminfo doesn't describe italics, so tell Vim how to draw them
+if &term =~# '^screen'
+  let &t_ZH = "\<Esc>[3m"
+  let &t_ZR = "\<Esc>[23m"
+endif
+
 " Automatically install VimPlug if it's missing
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
