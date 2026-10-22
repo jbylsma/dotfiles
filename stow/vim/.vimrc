@@ -29,6 +29,10 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+" Optional packages bundled with Vim; older Vims don't have them
+silent! packadd! cfilter
+silent! packadd! hlyank
+
 " VimPlug has been locking up over SSH connections, so try a lower thread
 let g:plug_threads = 8
 call plug#begin('~/.vim/plugged')
