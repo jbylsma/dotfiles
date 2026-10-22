@@ -50,16 +50,22 @@ silent! set diffopt+=linematch:60
 " tags;$HOME will search for tags recursively until $HOME
 set tags=./tags,tags;$HOME
 
-" Backup and swap files
+" Backup, swap and undo files
 if !isdirectory($HOME . '/.vim/_backup')
-  call mkdir($HOME . '/.vim/_backup')
+  call mkdir($HOME . '/.vim/_backup', 'p')
 endif
 set backupdir^=~/.vim/_backup//
 
 if !isdirectory($HOME . '/.vim/_temp')
-  call mkdir($HOME . '/.vim/_temp')
+  call mkdir($HOME . '/.vim/_temp', 'p')
 endif
 set directory^=~/.vim/_temp//
+
+if !isdirectory($HOME . '/.vim/_undo')
+  call mkdir($HOME . '/.vim/_undo', 'p')
+endif
+set undodir=~/.vim/_undo//
+set undofile
 
 " GUI
 if has("gui_running") && has("autocmd")
