@@ -96,7 +96,8 @@ update_vim() {
     echo "vim-plug not found" >&2 && \
     return
 
-  vim +PlugUpgrade +PlugClean\! +PlugUpdate +qall
+  vim -Nes -u ~/.vimrc -i NONE +PlugUpgrade +PlugClean\! \
+    +'PlugUpdate --sync' +qall </dev/null
 }
 
 #
