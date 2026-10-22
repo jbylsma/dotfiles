@@ -66,7 +66,9 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
-Plug 'dense-analysis/ale'
+if has('timers') && has('job') && has('channel')
+  Plug 'dense-analysis/ale'
+endif
 Plug 'majutsushi/tagbar'
 Plug 'tpope/vim-unimpaired'
 Plug 'airblade/vim-gitgutter'
