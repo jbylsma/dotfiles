@@ -4,3 +4,6 @@
 
 # --hidden would otherwise search inside .git directories
 --glob=!.git
+
+# Ignore case unless the pattern contains an uppercase letter, like Vim
+--smart-case
