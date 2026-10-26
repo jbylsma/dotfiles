@@ -6,6 +6,11 @@ nnoremap <silent> <leader>ul :t.<CR>Vr=
 noremap <expr> <Down> v:count ? 'j' : 'gj'
 noremap <expr> <Up> v:count ? 'k' : 'gk'
 
+" Accept the highlighted completion match with Enter. endwise and eunuch
+" map <CR> in a way that closes the menu without inserting the match; they
+" wrap this mapping at VimEnter, so their behavior is kept.
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>"
+
 " Fix arrow keys under screen-* terms
 if &term =~ '^screen'
   " tmux will send xterm-style keys when its xterm-keys option is on
