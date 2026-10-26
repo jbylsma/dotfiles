@@ -39,7 +39,13 @@ set nofoldenable
 set foldmethod=indent
 
 " Wild settings (cmdline-completion)
-set wildmode=longest,list
+" Show matches in a popup menu where supported, otherwise list them
+if has('patch-8.2.4325')
+  set wildmode=longest:full,full
+  set wildoptions=pum
+else
+  set wildmode=longest,list
+endif
 set wildignore+=tags
 set wildignore+=*.swp,*~,._*
 
