@@ -6,6 +6,21 @@
 #   HostName {host url}
 #   Port {external port}
 
+# Tagged profiles, selected with `ssh -P {tag}` or `-o Tag={tag}`. These come
+# first so they override host and default settings.
+#
+# Don't record the host or reuse shared sessions. Useful for throwaway hosts.
+Match tagged ephemeral
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  ControlPath none
+  LogLevel ERROR
+
+# Force password entry. Useful for testing a reset password.
+Match tagged password
+  PreferredAuthentications keyboard-interactive,password
+  ControlPath none
+
 Include hosts/*.conf
 
 Host *

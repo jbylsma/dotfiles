@@ -216,10 +216,10 @@ function gcd {
   fi
 }
 
-# Alias SSH connections forcing password entry. Useful for testing a reset password.
-function pssh {
-  ssh -S none -o PreferredAuthentications=keyboard-interactive,password "$@"
-}
+# Shorthand for tagged SSH profiles defined in ~/.ssh/config
+alias essh='ssh -P ephemeral'
+alias pssh='ssh -P password'
+_lazy_copy_completion ssh essh
 _lazy_copy_completion ssh pssh
 
 # Run ps restricted to the current user
