@@ -21,6 +21,9 @@ Match tagged password
   PreferredAuthentications keyboard-interactive,password
   ControlPath none
 
+# Close the Match above. An Include inside a Match block is conditional.
+Match all
+
 Include hosts/*.conf
 
 Host *
