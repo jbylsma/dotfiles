@@ -1,1 +1,15 @@
 set editing-mode vi
+
+set show-all-if-ambiguous on
+set mark-symlinked-directories on
+
+# Readline 7.0+ only; skipped on RHEL7
+$if version >= 7.0
+# Cursor: default in insert, underline in command
+set show-mode-in-prompt on
+set vi-ins-mode-string "\1\e[0 q\2"
+set vi-cmd-mode-string "\1\e[4 q\2"
+# Faster Esc (default 500 ms)
+set keyseq-timeout 50
+set colored-stats on
+$endif
