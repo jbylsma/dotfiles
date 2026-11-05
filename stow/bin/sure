@@ -21,6 +21,12 @@ if (( $# == 0 )); then
   set -- "${SHELL}" -l
 fi
 
+# Already root (plain root login or nested sure): run directly so the
+# outer sudo's SUDO_USER/SUDO_UID/SUDO_GID are kept
+if (( EUID == 0 )); then
+  exec "$@"
+fi
+
 exec sudo -E env HOME="${HOME}" PATH="${PATH}" bash -c '
   "$@"
   rc=$?
