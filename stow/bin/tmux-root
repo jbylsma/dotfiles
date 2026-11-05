@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Start or attach to tmux session run by root for the current user
-set -e
+set -euo pipefail
 
 tmux_user=""
 if [[ "${UID}" -eq 0 ]]; then
-  if [[ -n "${SUDO_USER}" ]]; then
+  if [[ -n "${SUDO_USER:-}" ]]; then
     tmux_user="${SUDO_USER}"
   else
     echo "Could not determine non-root user" >&2
@@ -17,7 +17,7 @@ fi
 session_name="!${tmux_user}"
 
 cd "${HOME}"
-sure tmux \
+exec sure tmux \
   -L"${tmux_user}" \
   new-session -A \
     -s "${session_name}" \
