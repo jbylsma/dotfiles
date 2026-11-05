@@ -1,24 +1,31 @@
 #!/usr/bin/env bash
 # sure: switch user, retain environment
-set -e
+#
+# Runs a command (default: a login shell) as root with this user's HOME and
+# PATH. PATH is passed through env because sudo's secure_path replaces it.
+#
+# When the command exits, root-owned files in this user's cache, config and
+# state directories are returned to the user in the background; nohup keeps
+# the cleanup alive when sudo closes its pty. If the session dies instead
+# (e.g. a dropped connection), the next normal exit catches up.
+set -euo pipefail
 
-declare -a required_envs=( HOME SHELL )
-for env in "${required_envs[@]}"; do
-  if [[ -z "${!env}" ]]; then
+for env in HOME SHELL; do
+  if [[ -z "${!env:-}" ]]; then
     echo "${env} not set" >&2
-    return 1
+    exit 1
   fi
 done
 
-cmd=()
-if [[ $# -gt 0 ]]; then
-  cmd+=("$@")
-else
-  cmd+=("${SHELL}")
-  # Make bash request a login shell
-  if [[ "$(basename "${SHELL}")" = 'bash' ]]; then
-    cmd+=("-l")
-  fi
+if (( $# == 0 )); then
+  set -- "${SHELL}" -l
 fi
 
-sudo -E --preserve-env=HOME "${cmd[@]}"
+exec sudo -E env HOME="${HOME}" PATH="${PATH}" bash -c '
+  "$@"
+  rc=$?
+  nohup find "${HOME}/.cache" "${HOME}/.config" "${HOME}/.local" \
+    -xdev -user 0 -exec chown -h "${SUDO_UID}:${SUDO_GID}" {} + \
+    </dev/null >/dev/null 2>&1 &
+  exit "${rc}"
+' sure "$@"
