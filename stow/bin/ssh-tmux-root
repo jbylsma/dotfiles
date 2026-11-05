@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Quickly SSH to a server with tmux-root
-set -e
+set -euo pipefail
 
 usage() {
   echo "Usage: $(basename "$0") {ssh args...} {ssh_server}"
@@ -8,9 +8,12 @@ usage() {
 }
 
 # Disable terminal focus-event reporting on this pane in case a dropped
-# connection left the remote tmux-root unable to disable it itself.
+# connection left the remote tmux-root unable to disable it itself. Skip it
+# when output isn't a terminal so redirected output stays clean.
 cleanup() {
-  printf '\e[?1004l'
+  if [[ -t 1 ]]; then
+    printf '\e[?1004l'
+  fi
 }
 
 main() {
@@ -23,6 +26,6 @@ main() {
   set -- "${@:1:$(($#-1))}"
 
   trap cleanup EXIT
-  ssh -t "${host}" "$@" 'bash -lc tmux-root'
+  ssh -t "$@" "${host}" 'bash -lc tmux-root'
 }
 main "$@"
