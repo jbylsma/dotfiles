@@ -32,4 +32,7 @@ rules; break one only in exceptional cases.
 
 ## Markdown
 - Text should wrap at 80 columns.
+- Exception: don't hard-wrap Markdown written for GitHub (issues, pull request
+  descriptions, comments). GitHub's formatter wraps the text itself, so put
+  each paragraph and list item on one line.
 - Columns in tables should be evenly spaced.
