@@ -251,18 +251,17 @@ function scl-reload {
 }
 
 # Update terminal variables from tmux
+# show-environment -s would emit shell code, but needs tmux 2.1 (RHEL 7 has
+# 1.8). Lines are NAME=value, or -NAME for a variable removed from the session.
 function tue {
-  eval "$(
-    while IFS= read -r var; do
-      if [[ "${var:0:1}" != "-" ]]; then
-        key="$(cut -d= -f1 <<< "${var}")"
-        val="$(cut -d= -f2 <<< "${var}")"
-        echo "${key}=\"${val}\"; export ${key}"
-      else
-        echo "unset ${var:1}"
-      fi
-    done < <(tmux show-environment)
-  )"
+  local var
+  while IFS= read -r var; do
+    if [[ "${var}" == -* ]]; then
+      unset "${var#-}"
+    else
+      export "${var%%=*}=${var#*=}"
+    fi
+  done < <(tmux show-environment)
 }
 
 # Disable terminal focus-event reporting on this pane, reporting prior state
