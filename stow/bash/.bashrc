@@ -203,8 +203,6 @@ function gcd {
     return 1
   fi
 
-  path="$(git rev-parse --show-toplevel 2>/dev/null)"
-
   if path="$(git rev-parse --show-toplevel 2>/dev/null)"; then
     if ! cd "${path}"; then
       echo "Could not change to directory ${path}." >&2
