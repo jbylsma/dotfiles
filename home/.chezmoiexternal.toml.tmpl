@@ -1,0 +1,30 @@
+{{/*
+  Third-party downloads, for workstations only. Each URL names a fixed tag or
+  commit, and chezmoi refuses a download that doesn't match its SHA-256.
+
+  To bump one: change the tag or commit in its URL, run `chezmoi apply`, and
+  check the hash in the "SHA256 mismatch" error against your own download of
+  the same URL before pasting it in.
+*/ -}}
+{{ if eq .role "workstation" -}}
+[".vim/autoload/plug.vim"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/junegunn/vim-plug/0.15.0/plug.vim"
+    checksum.sha256 = "f2e856512c982063d0f4353744a29208e98fc622a474209e3a022969c974654a"
+
+# master as of 2023-03-06, 18 commits past v4.0.0
+[".tmux/plugins/tmux-resurrect"]
+    type = "archive"
+    url = "https://github.com/tmux-plugins/tmux-resurrect/archive/cff343cf9e81983d3da0c8562b01616f12e8d548.tar.gz"
+    checksum.sha256 = "9f1dda18554291ee7f8a0f499e2af90bbadc2ebceb7a995bb13b76529fe0c5c9"
+    stripComponents = 1
+    exact = true
+
+# master as of 2026-07-16, 52 commits past v0.4.0
+[".local/opt/bemoji"]
+    type = "archive"
+    url = "https://github.com/marty-oehme/bemoji/archive/791c7748cf0236f691b1874e79ebe434469c20a9.tar.gz"
+    checksum.sha256 = "e94e7ad158ff2b8b860629e18e820fc002913942ffeec796076bdbd8ffb6dcbf"
+    stripComponents = 1
+    exact = true
+{{- end }}
