@@ -1,0 +1,50 @@
+{{/*
+  Target paths this host doesn't get. Hand-installed tools and host-local
+  files aren't in the repo, so they never need listing here.
+*/ -}}
+
+{{- if ne .role "workstation" }}
+# Desktop config and tools
+.claude
+.claude/**
+.config/GIMP
+.config/GIMP/**
+.config/alacritty
+.config/alacritty/**
+.config/autostart
+.config/autostart/**
+.config/ideavim
+.config/ideavim/**
+.config/regolith3
+.config/regolith3/**
+.config/systemd
+.config/systemd/**
+.config/xdg-desktop-portal
+.config/xdg-desktop-portal/**
+.local/share/applications
+.local/share/applications/**
+.local/bin/alacritty-theme-toggle
+.local/bin/bemoji
+.local/bin/claude-notify
+.local/bin/firefox-throwaway
+.local/bin/md-to-gdoc-pdf
+.local/bin/notebook-max-brightness
+.local/bin/pdfpack
+.local/bin/regolith-look-to-alacritty
+.local/bin/task-timer
+.local/bin/usb-reset
+{{- end }}
+
+{{- if not (stat "/etc/redhat-release") }}
+# RHEL family only
+.local/bin/open-firewalld-port
+.local/bin/rhel-repo-check
+.local/bin/rpm-restore-mtime
+.local/bin/yum-cl-history
+.local/bin/yum-get-package-repos
+{{- end }}
+
+{{- if not (stat "/etc/debian_version") }}
+# Debian only
+.local/bin/apt-history
+{{- end }}
