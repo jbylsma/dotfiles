@@ -1,0 +1,75 @@
+# Environment for every login: the graphical session, which GDM's Xsession
+# sources under /bin/sh, and login bash, through ~/.bash_profile.
+#
+# POSIX sh only, because dash sources this inside the graphical login and a
+# mistake here can break logging in. No bashisms, no exit or top-level
+# return, nothing that can fail unguarded, safe under set -u, and no output.
+# The same rules apply to ~/.profile.local.
+
+# XDG base directories, at their default locations
+export XDG_DATA_HOME="${HOME}/.local/share"
+export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_STATE_HOME="${HOME}/.local/state"
+export XDG_CACHE_HOME="${HOME}/.cache"
+for _dotfiles_dir in "${XDG_DATA_HOME}" "${XDG_CONFIG_HOME}" \
+  "${XDG_STATE_HOME}" "${XDG_CACHE_HOME}"; do
+  if [ ! -d "${_dotfiles_dir}" ]; then
+    mkdir -p "${_dotfiles_dir}" 2>/dev/null || :
+  fi
+done
+
+# Move a directory to the front of PATH, if it exists, removing any other
+# copy of it. Entries are compared whole, so similar paths are left alone.
+_dotfiles_path_prepend() {
+  if [ -d "$1" ]; then
+    _dotfiles_path=":${PATH:-}:"
+    while :; do
+      case "${_dotfiles_path}" in
+        *":$1:"*)
+          _dotfiles_path="${_dotfiles_path%%:"$1":*}:${_dotfiles_path#*:"$1":}"
+          ;;
+        *)
+          break
+          ;;
+      esac
+    done
+    _dotfiles_path="${_dotfiles_path#:}"
+    _dotfiles_path="${_dotfiles_path%:}"
+    PATH="$1${_dotfiles_path:+:${_dotfiles_path}}"
+  fi
+}
+
+# Prepended in reverse, so ~/.local/bin ends up first
+for _dotfiles_dir in /usr/local/bin /usr/local/sbin "${HOME}/bin" \
+  "${HOME}/usr/bin" "${HOME}/.local/bin"; do
+  _dotfiles_path_prepend "${_dotfiles_dir}"
+done
+export PATH
+unset -f _dotfiles_path_prepend
+unset _dotfiles_dir _dotfiles_path
+
+export EDITOR='vim'
+
+# Default bc scale
+if [ -f "${HOME}/.bcrc" ]; then
+  export BC_ENV_ARGS="${HOME}/.bcrc"
+fi
+
+# Default ripgrep options
+if [ -f "${HOME}/.ripgreprc" ]; then
+  export RIPGREP_CONFIG_PATH="${HOME}/.ripgreprc"
+fi
+
+# Disable Wine debugger everywhere
+if command -v wine >/dev/null 2>&1; then
+  export WINEDEBUG='-all'
+fi
+
+# Host-local environment, not managed by chezmoi
+if [ -f "${HOME}/.profile.local" ]; then
+  # shellcheck source=/dev/null
+  . "${HOME}/.profile.local"
+fi
+
+# Lets ~/.bashrc skip sourcing this again
+export DOTFILES_PROFILE_LOADED=1
