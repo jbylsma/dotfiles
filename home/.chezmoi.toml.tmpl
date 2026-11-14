@@ -1,0 +1,4 @@
+{{- $roles := list "server" "workstation" -}}
+{{- $role := promptChoiceOnce . "role" "Host role" $roles -}}
+[data]
+role = {{ $role | quote }}
