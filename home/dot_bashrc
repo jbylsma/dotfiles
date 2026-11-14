@@ -89,7 +89,8 @@ if _which wine; then
   export WINEDEBUG=-all
 fi
 
-# Override SSH timeout
+# Override SSH timeout. This does nothing where TMOUT is read-only, as on
+# hardened RHEL hosts.
 unset TMOUT 2>/dev/null
 
 # Function to lazily copy completion from one command to another
