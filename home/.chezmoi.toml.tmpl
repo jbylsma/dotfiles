@@ -1,4 +1,8 @@
 {{- $roles := list "server" "workstation" -}}
 {{- $role := promptChoiceOnce . "role" "Host role" $roles -}}
+# Fixed umask, so every host gets 755 directories and 644 files however its
+# own umask is set. Directories that must stay private use private_.
+umask = 0o022
+
 [data]
 role = {{ $role | quote }}
