@@ -1,0 +1,65 @@
+#!/bin/bash
+# Set up this host's dotfiles with chezmoi.
+#
+# Clone the repo to chezmoi's default source directory, then run this:
+#
+#   git clone https://github.com/jbylsma/dotfiles.git ~/.local/share/chezmoi
+#   ~/.local/share/chezmoi/misc/bootstrap [--yes] [--role server|workstation]
+#
+# --yes overwrites existing files, such as skel ~/.bashrc, without asking.
+# --role answers the role prompt.
+#
+# Oldest supported versions (RHEL 8): bash 4.4, git 2.18, tmux 2.7, Vim 8.0.
+# RHEL 7 hosts stay on the `stow` branch.
+set -euo pipefail
+
+readonly SOURCE_DIR="${HOME}/.local/share/chezmoi"
+readonly INSTALLER='home/.chezmoiscripts/run_onchange_before_install-chezmoi.sh'
+
+usage() {
+  echo "Usage: ${0##*/} [--yes] [--role server|workstation]" >&2
+}
+
+main() {
+  local repo_dir source_dir
+  local -a init_args=(init --apply)
+
+  while (($# > 0)); do
+    case "$1" in
+      --yes)
+        init_args+=(--force)
+        ;;
+      --role)
+        if (($# < 2)) || [[ "$2" != server && "$2" != workstation ]]; then
+          usage
+          return 2
+        fi
+        # --promptChoice matches the prompt's text in .chezmoi.toml.tmpl
+        init_args+=(--promptChoice "Host role=$2")
+        shift
+        ;;
+      -h | --help)
+        usage
+        return 0
+        ;;
+      *)
+        usage
+        return 2
+        ;;
+    esac
+    shift
+  done
+
+  repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+  source_dir="$(cd "${SOURCE_DIR}" 2>/dev/null && pwd -P)" || true
+  if [[ "${repo_dir}" != "${source_dir}" ]]; then
+    echo "bootstrap: clone the repo to ${SOURCE_DIR} and run it from there" >&2
+    return 1
+  fi
+
+  # chezmoi doesn't exist yet, so run its installer directly
+  bash "${repo_dir}/${INSTALLER}"
+  "${HOME}/.local/bin/chezmoi" "${init_args[@]}"
+}
+
+main "$@"
