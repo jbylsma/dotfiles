@@ -1,13 +1,7 @@
-[color]
-  status = auto
-  branch = auto
-  interactive = auto
-  diff = auto
 [push]
   default = upstream
 [core]
   editor = vim
-  autocrlf = input
 [mergetool]
   keepBackup = false
 [alias]
