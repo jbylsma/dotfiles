@@ -22,4 +22,4 @@ exec_always --no-startup-id sh -c 'until pgrep -x gsd-keyboard >/dev/null; do sl
 # Regenerate Alacritty's theme import from the active Regolith look.
 # regolith-look refresh triggers a WM reload, so exec_always rebuilds
 # this whenever the look changes.
-exec_always --no-startup-id ~/usr/bin/regolith-look-to-alacritty
+exec_always --no-startup-id ~/.local/bin/regolith-look-to-alacritty

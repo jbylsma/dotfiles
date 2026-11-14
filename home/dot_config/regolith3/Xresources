@@ -5,7 +5,7 @@ i3xrocks.action.volume.left: regolith-control-center
 i3xrocks.date.format2: %m/%d %I:%M:%S
 i3xrocks.time.interval: 1
 wm.program.terminal: sh -c 'command -v alacritty >/dev/null && exec alacritty || exec x-terminal-emulator'
-wm.program.launcher.cmd: env PATH="$PATH:$HOME/usr/bin" ilia -p terminal
+wm.program.launcher.cmd: ilia -p terminal
 
 wm.binding.launcher.app: space
 wm.binding.launcher.cmd: Ctrl+space

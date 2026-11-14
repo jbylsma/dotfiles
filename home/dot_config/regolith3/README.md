@@ -13,7 +13,7 @@ ssh-askpass-gnome
 
 # Other dependencies
 
-Emoji picker: run `bemoji-init` (in `stow/bin`) once to clone
-[bemoji](https://github.com/marty-oehme/bemoji) to `~/usr/src/bemoji` and
-link it onto `PATH`. Re-run it any time to update to the latest upstream
-version.
+Emoji picker: chezmoi installs a pinned
+[bemoji](https://github.com/marty-oehme/bemoji) in `~/.local/opt/bemoji` on
+workstations, and links it into `~/.local/bin`. To update it, bump its pin in
+`home/.chezmoiexternal.toml.tmpl`.
