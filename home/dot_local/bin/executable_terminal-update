@@ -50,28 +50,30 @@ update_composer() {
 
 #
 update_dotfiles() {
-  local dotfiles_branch
-  local dotfiles_dir
+  local config head upstream
 
-  dotfiles_branch="origin/main"
-  dotfiles_dir="${HOME}/usr/src/dotfiles"
+  config="${XDG_CONFIG_HOME:-${HOME}/.config}/chezmoi/chezmoi.toml"
 
   _title "dotfiles"
 
-  test ! -d "${dotfiles_dir}" && \
-    echo "dotfiles directory not found" >&2 && \
+  if ! command -v chezmoi >/dev/null || [[ ! -f "${config}" ]]; then
+    echo "chezmoi isn't set up. Clone the dotfiles to ~/.local/share/chezmoi," >&2
+    echo "then run ~/.local/share/chezmoi/misc/bootstrap." >&2
     return
+  fi
 
-  cd "${dotfiles_dir}"
-  git fetch origin
-  if [[ "$(_git_commit_get HEAD)" != "$(_git_commit_get "${dotfiles_branch}")" ]]; then
+  chezmoi git -- fetch origin
+  head="$(chezmoi git -- rev-parse HEAD)"
+  upstream="$(chezmoi git -- rev-parse '@{upstream}')"
+  if [[ "${head}" != "${upstream}" ]]; then
     echo "Updating dotfiles"
-    git pull
   else
     echo "Already up-to-date"
   fi
 
-  "${HOME}/usr/src/dotfiles/stow/bin/restow-common"
+  # Pulls, then applies. A bumped chezmoi pin installs itself through the
+  # repo's run_onchange_ installer script.
+  chezmoi update
 }
 
 #
@@ -82,7 +84,8 @@ update_vim() {
     echo "vim-plug not found" >&2 && \
     return
 
-  vim -Nes -u ~/.vimrc -i NONE +PlugUpgrade +PlugClean\! \
+  # vim-plug itself is pinned by chezmoi, so PlugUpgrade isn't used
+  vim -Nes -u ~/.vim/vimrc -i NONE +PlugClean\! \
     +'PlugUpdate --sync' +qall </dev/null
 }
 
@@ -99,9 +102,10 @@ main() {
 
   # The first argument is used for restricting updates to a single type
   if [ $# -gt 0 ]; then
-    declare -f "update_$1" >/dev/null || \
-      ( echo "Unknown update type: $1" && \
-      exit 1 )
+    declare -f "update_$1" >/dev/null || {
+      echo "Unknown update type: $1" >&2
+      exit 1
+    }
 
     types=("$1")
   fi
