@@ -4,15 +4,6 @@ function _which {
   return $?
 }
 
-# Reset PATH on OS X keep it from being clobbered in tmux
-# See https://github.com/yyuu/pyenv/issues/85
-if [[ -x /usr/libexec/path_helper ]]; then
-  #shellcheck disable=SC2123
-  PATH=''
-  #shellcheck disable=SC1091
-  source /etc/profile
-fi
-
 # XDG configuration
 export XDG_DATA_HOME="${HOME}/.local/share"
 export XDG_CONFIG_HOME="${HOME}/.config"
@@ -39,9 +30,8 @@ if [[ -n "${PS1}" ]]; then
   # If SSH, set host color to red, otherwise bold cyan.
   export PS1="\[\e[\$( [ ! -z \"\$(jobs -p)\" ] && echo -n '31' || echo -n '32' )m\][\w]\[\e[0m\]\n\[\e[\$( [ ! -z \${SSH_CONNECTION+x} ] && echo -n '31' || echo -n '1;36' )m\]\u@\h\[\e[1;33m\]$ \[\e[0m\]"
 fi
-export CLICOLOR=1
 
-# Add some additional paths ($HOME, Homebrew)
+# Add some additional paths
 DIRS=( "${HOME}/usr/bin" "${HOME}/bin" "${HOME}/.local/bin" "/usr/local/sbin" "/usr/local/bin" )
 for ((i=${#DIRS[@]}-1; i>=0; i--)); do
   DIR="${DIRS[${i}]}"
@@ -79,47 +69,9 @@ alias lsof='lsof -anP'
 alias psw='ps -wwf'
 alias vij='vim -c "set ft=json"'
 
-# If MacVim is present but gvim isn't, map gvim back to mvim
-if _which mvim && ! _which gvim; then
-  alias gvim='mvim'
-fi
-
 # If ls supports the --color argument, alias ls to use it.
 if ls --color /dev/null >/dev/null 2>&1; then
   alias ls='ls --color'
-fi
-
-# Homebrew specific rules
-if _which brew; then
-  BREW_PREFIX="$(brew --prefix)"
-  BREW_GITHUB_TOKEN="${HOME}/.homebrew_github_api_token"
-
-  # Use a GitHub API Token so Homebrew gets a higher rate limit.
-  if [[ -f "${BREW_GITHUB_TOKEN}" ]]; then
-    read -r HOMEBREW_GITHUB_API_TOKEN < "${BREW_GITHUB_TOKEN}"
-    export HOMEBREW_GITHUB_API_TOKEN
-  elif [[ -n "${PS1}" ]]; then
-    echo "GitHub API token for Homebrew does not exist."
-    echo "Consider creating ${BREW_GITHUB_TOKEN}."
-  fi
-
-  # Don't automatically update brew before install, update, and tap.
-  export HOMEBREW_NO_AUTO_UPDATE=1
-
-  # Use Brew's vim for the Editor
-  if [[ -f "${BREW_PREFIX}/bin/vim" ]]; then
-    export EDITOR="${BREW_PREFIX}/bin/vim"
-  fi
-
-  # Add Bash completion
-  if ! shopt -oq posix; then
-    if [[ -f "${BREW_PREFIX}/etc/bash_completion" ]]; then
-      # shellcheck disable=SC1090
-      . "${BREW_PREFIX}/etc/bash_completion"
-    fi
-  fi
-
-  unset BREW_PREFIX
 fi
 
 # Default bc scale
@@ -230,23 +182,6 @@ function digs {
   dig "$@" +short
 }
 _lazy_copy_completion dig digs
-
-# Reload all enabled SCLs, useful in tmux sessions
-function scl-reload {
-  local _scls_current
-  if ! command -v scl_source >/dev/null 2>&1; then
-    echo "SCL not found" >&2
-    return 1
-  fi
-
-  _scls_current="${X_SCLS}"
-  export -n X_SCLS
-  unset X_SCLS
-  while read -r collection; do
-    source scl_source enable "${collection}"
-  done < <(tr -s ' ' \\n <<< "${_scls_current}")
-  unset _scls_current
-}
 
 # Update terminal variables from tmux
 # show-environment -s would emit shell code, but needs tmux 2.1 (RHEL 7 has
