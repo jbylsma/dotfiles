@@ -13,6 +13,10 @@ git clone https://github.com/jbylsma/dotfiles.git ~/.local/share/chezmoi
 ~/.local/share/chezmoi/misc/bootstrap
 ```
 
+The clone uses HTTPS, so pulling and `chezmoi update` need no credentials. The
+git config pushes repos under `github.com/jbylsma` over SSH instead, so
+pushing needs a GitHub key or your agent forwarded with `ssh -A`.
+
 `bootstrap` downloads the pinned chezmoi release to `~/.local/bin`, checks its
 SHA-256, then runs `chezmoi init --apply`. It asks for this host's role:
 

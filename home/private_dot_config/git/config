@@ -19,6 +19,10 @@
 [merge]
   tool = vimdiff
   conflictstyle = diff3
+# Clone and pull my own repos over HTTPS, which needs no credentials, and
+# push them over SSH
+[url "git@github.com:jbylsma/"]
+  pushInsteadOf = https://github.com/jbylsma/
 [include]
   path = ~/.config/git/config.local
 [pull]
