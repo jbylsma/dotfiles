@@ -2,11 +2,6 @@
 set -e
 
 #
-_git_commit_get() {
-  git rev-parse "${1}"
-}
-
-#
 _title() {
   local char
   local title
@@ -50,7 +45,7 @@ update_composer() {
 
 #
 update_dotfiles() {
-  local config head upstream
+  local config
 
   config="${XDG_CONFIG_HOME:-${HOME}/.config}/chezmoi/chezmoi.toml"
 
@@ -62,17 +57,8 @@ update_dotfiles() {
     return
   fi
 
-  chezmoi git -- fetch origin
-  head="$(chezmoi git -- rev-parse HEAD)"
-  upstream="$(chezmoi git -- rev-parse '@{upstream}')"
-  if [[ "${head}" != "${upstream}" ]]; then
-    echo "Updating dotfiles"
-  else
-    echo "Already up-to-date"
-  fi
-
-  # Pulls, then applies. A bumped chezmoi pin installs itself through the
-  # repo's run_onchange_ installer script.
+  # Pulls fast-forward only, then applies. A bumped chezmoi pin installs
+  # itself through the repo's run_onchange_ installer script.
   chezmoi update
 }
 
