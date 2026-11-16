@@ -40,7 +40,6 @@
 .local/bin/rhel-repo-check
 .local/bin/rpm-restore-mtime
 .local/bin/yum-cl-history
-.local/bin/yum-get-package-repos
 {{- end }}
 
 {{- if not (stat "/etc/debian_version") }}
