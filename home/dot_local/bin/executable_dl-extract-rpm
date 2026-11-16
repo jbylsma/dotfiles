@@ -5,13 +5,9 @@ tmp_dir=
 package_dir=
 
 declare -ra REQUIRED_BINS=(
+  dnf
   rpm2cpio
   cpio
-)
-
-declare -ra DOWNLOADER_BINS=(
-  dnf
-  yumdownloader
 )
 
 cleanup () {
@@ -27,7 +23,7 @@ usage () {
 }
 
 main () {
-  local bin
+  local i
   local package
   local package_file
 
@@ -38,20 +34,8 @@ main () {
 
   package="$1"
 
-  for i in "${DOWNLOADER_BINS[@]}"; do
-    if type -f "${i}" >/dev/null 2>&1; then
-      bin="${i}"
-      break
-    fi
-  done
-
-  if [[ -z "${bin}" ]]; then
-    echo 'No supported RPM downloaders found' >&2
-    exit 1
-  fi
-
   for i in "${REQUIRED_BINS[@]}"; do
-    if ! type -f "${i}" >/dev/null 2>&1; then
+    if ! command -v "${i}" >/dev/null 2>&1; then
       echo "Required executable not found: ${i}" >&2
       exit 1
     fi
@@ -67,23 +51,9 @@ main () {
   tmp_dir="$(mktemp -d)"
   trap 'cleanup' EXIT
 
-  set +e
+  # A failed download is reported by the check below
   echo 'Downloading package' >&2
-  case "${bin}" in
-    dnf)
-      dnf download --downloaddir="${tmp_dir}" "${package}" >/dev/null 2>&1
-      ;;
-
-    yumdownloader)
-      yumdownloader --destdir "${tmp_dir}" "${package}" >/dev/null 2>&1
-      ;;
-
-    *)
-      echo 'RPM downloader not defined' >&2
-      exit 1
-      ;;
-  esac
-  set -e
+  dnf download --downloaddir="${tmp_dir}" "${package}" >/dev/null 2>&1 || true
 
   package_file="$(find "${tmp_dir}" -type f)"
   if [[ -z "${package_file}" ]]; then
@@ -94,10 +64,10 @@ main () {
   echo 'Extracting package' >&2
   mkdir "${package_dir}"
   cd "${package_dir}"
-  rpm2cpio "${package_file}" |cpio -idm >/dev/null 2>&1 || (
+  if ! rpm2cpio "${package_file}" |cpio -idm >/dev/null 2>&1; then
     echo "Failed to extract ${package} to ${package_dir}" >&2
     exit 1
-  )
+  fi
   echo "Successfully extracted ${package} to ${package_dir}"
   unset package_dir
 }

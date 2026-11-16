@@ -10,9 +10,9 @@ _title() {
   char='*'
   title="$1"
 
-  printf "\\n%$((${#title} + 4))s\\n" | tr ' ' "${char}"
-  printf "%s${char} ${title} ${char}\\n"
-  printf "%$((${#title} + 4))s\\n" | tr ' ' "${char}"
+  printf '\n%*s\n' "$((${#title} + 4))" '' | tr ' ' "${char}"
+  printf '%s %s %s\n' "${char}" "${title}" "${char}"
+  printf '%*s\n' "$((${#title} + 4))" '' | tr ' ' "${char}"
 }
 
 # Print the files chezmoi deployed that the source no longer has, if they're
@@ -46,6 +46,8 @@ _chezmoi_orphans() {
 
 #
 update_composer() {
+  local composer_path
+
   _title "Composer"
 
   if ! command -v composer >/dev/null; then
@@ -62,7 +64,7 @@ update_composer() {
   composer self-update
 
   if ! composer global info >/dev/null 2>&1; then
-    echo "Composer could not find global project" >&2 && \
+    echo "Composer could not find global project" >&2
     return
   fi
 
@@ -103,9 +105,10 @@ update_dotfiles() {
 update_vim() {
   _title "vim-plug"
 
-  test ! -f "${HOME}/.vim/autoload/plug.vim" && \
-    echo "vim-plug not found" >&2 && \
+  if [[ ! -f "${HOME}/.vim/autoload/plug.vim" ]]; then
+    echo "vim-plug not found" >&2
     return
+  fi
 
   # vim-plug itself is pinned by chezmoi, so PlugUpgrade isn't used
   vim -Nes -u ~/.vim/vimrc -i NONE +PlugClean\! \
@@ -115,7 +118,7 @@ update_vim() {
 #
 main() {
   local type
-  declare -a types
+  local -a types
 
   types=(
     dotfiles
@@ -125,18 +128,17 @@ main() {
 
   # The first argument is used for restricting updates to a single type
   if [[ $# -gt 0 ]]; then
-    declare -f "update_$1" >/dev/null || {
+    if ! declare -f "update_$1" >/dev/null; then
       echo "Unknown update type: $1" >&2
       exit 1
-    }
+    fi
 
     types=("$1")
   fi
 
-
   for type in "${types[@]}"; do
     "update_${type}"
   done
-  echo -e "\\n${0} completed"
+  printf '\n%s completed\n' "${0}"
 }
 main "$@"

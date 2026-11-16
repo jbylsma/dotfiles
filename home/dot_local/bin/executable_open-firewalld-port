@@ -58,22 +58,22 @@ main() {
     exit 1
   fi
 
-  command -v 'firewall-cmd' >/dev/null 2>&1 || (
+  if ! command -v 'firewall-cmd' >/dev/null 2>&1; then
     echo 'firewall-cmd not found' >&2
     exit 1
-  )
+  fi
 
-  firewall-cmd --state >/dev/null 2>&1 || (
+  if ! firewall-cmd --state >/dev/null 2>&1; then
     echo 'firewalld not running' >&2
     exit 1
-  )
+  fi
 
-  if [[ -z "${SSH_CONNECTION}" ]]; then
+  if [[ -z "${SSH_CONNECTION:-}" ]]; then
     echo 'SSH_CONNECTION not available' >&2
     exit 1
   fi
 
-  client_ip="$(echo "${SSH_CONNECTION}" |cut -d' ' -f1)"
+  client_ip="${SSH_CONNECTION%% *}"
   port="$1"
   zone="$(firewall-cmd --get-default-zone)"
   rule="$(get_rich_rule "${client_ip}" "${port}")"

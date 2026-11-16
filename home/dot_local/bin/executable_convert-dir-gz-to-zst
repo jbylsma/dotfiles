@@ -8,17 +8,18 @@ _process () {
   local zst="${1%.gz}.zst"
 
   printf '%(%a %b %e %T %Z %Y)T: Processing %s\n' -1 "${gz}"
-  gunzip -c "${gz}" |zstd -q --long -T0 -o "${zst}" || ( rm -f "${zst}" ; exit 1 )
+  if ! gunzip -c "${gz}" |zstd -q --long -T0 -o "${zst}"; then
+    rm -f "${zst}"
+    exit 1
+  fi
   touch --reference="${gz}" "${zst}"
-  if type chcon >/dev/null 2>&1; then
+  if command -v chcon >/dev/null 2>&1; then
     # Ignore if the context can't be set
-    set +e
-    chcon --reference="${gz}" "${zst}" >/dev/null 2>&1
-    set -e
+    chcon --reference="${gz}" "${zst}" >/dev/null 2>&1 || true
   fi
   chown --reference="${gz}" "${zst}"
 
-  if type getfacl >/dev/null 2>&1; then
+  if command -v getfacl >/dev/null 2>&1; then
     getfacl "${gz}" |setfacl --set-file=- "${zst}"
   fi
   rm "${gz}"
