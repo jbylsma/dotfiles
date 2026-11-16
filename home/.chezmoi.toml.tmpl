@@ -4,5 +4,13 @@
 # own umask is set. Directories that must stay private use private_.
 umask = 0o022
 
+# Pull fast-forward only, like the git config's pull.ff. chezmoi's default,
+# git pull --autostash --rebase, can apply conflict markers to $HOME when a
+# stashed edit conflicts. This stops instead, on uncommitted edits to files
+# the pull changes and on unpushed commits.
+[update]
+command = "git"
+args = ["pull", "--ff-only"]
+
 [data]
 role = {{ $role | quote }}
