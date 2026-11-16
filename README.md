@@ -37,6 +37,7 @@ Options:
 | Path    | Contents                                                      |
 | ------- | ------------------------------------------------------------- |
 | `home/` | chezmoi's source state, deployed to `$HOME`                   |
+| `docs/` | Longer documentation, which isn't deployed                    |
 | `misc/` | `bootstrap`, which isn't deployed                             |
 | `keyd/` | System keyboard config, installed separately (see its README) |
 | `ssh/`  | An example `~/.ssh/config` (see its README)                   |
@@ -55,6 +56,9 @@ Options:
 
 Deployed files are copies, so edit the repo's copy, then apply. Commit and
 push from the repo as usual.
+
+More detail is in [docs/workflow.md](docs/workflow.md). To move a host that's
+still on GNU Stow, see [docs/stow-migration.md](docs/stow-migration.md).
 
 ## Host-local files
 
