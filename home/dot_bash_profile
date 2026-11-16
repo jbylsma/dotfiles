@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Login bash: SSH sessions, TTYs, and tmux panes. Environment comes from
 # ~/.profile, and interactive setup from ~/.bashrc.
 

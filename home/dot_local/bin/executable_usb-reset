@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-if [[ $EUID != 0 ]] ; then
+if [[ ${EUID} != 0 ]] ; then
   echo This must be run as root!
   exit 1
 fi
@@ -16,7 +16,7 @@ for xhci in /sys/bus/pci/drivers/?hci_hcd ; do
   echo "Resetting devices from ${xhci}..."
 
   for i in ????:??:??.? ; do
-    echo -n "$i" > unbind
-    echo -n "$i" > bind
+    echo -n "${i}" > unbind
+    echo -n "${i}" > bind
   done
 done

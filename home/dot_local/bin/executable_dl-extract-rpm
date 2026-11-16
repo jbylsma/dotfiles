@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -eo pipefail
 
 tmp_dir=
 package_dir=
@@ -95,7 +95,7 @@ main () {
   mkdir "${package_dir}"
   cd "${package_dir}"
   rpm2cpio "${package_file}" |cpio -idm >/dev/null 2>&1 || (
-    echo "Failed to extract ${package} to ${package_dir}" 2>&1
+    echo "Failed to extract ${package} to ${package_dir}" >&2
     exit 1
   )
   echo "Successfully extracted ${package} to ${package_dir}"

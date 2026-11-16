@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Environment for every login: the graphical session, which GDM's Xsession
 # sources under /bin/sh, and login bash, through ~/.bash_profile.
 #

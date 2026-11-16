@@ -2,7 +2,8 @@
 #
 # Show all listening processes and their ports
 #
-set -e
+set -eo pipefail
+shopt -s inherit_errexit
 
 ######################
 # Get all open ports
@@ -17,9 +18,13 @@ function get_open_ports {
 # Main
 ########
 function main() {
+  local ports
+  local port
+
+  ports="$(get_open_ports)"
   while read -r port; do
     printf "%s\\t" "${port}"
     port-to-cmd "${port}" 2>&1
-  done < <(get_open_ports)
+  done <<< "${ports}"
 }
 main "$@"

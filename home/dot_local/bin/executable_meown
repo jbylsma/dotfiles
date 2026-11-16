@@ -21,7 +21,7 @@ function main {
         usage
         exit
         ;;
-      \?)
+      *)
         echo "Invalid option: -${OPTARG}" >&2
         usage >&2
         exit 1

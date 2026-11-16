@@ -32,6 +32,7 @@ function usage {
 
 function main {
   local pid
+  local file
 
   if [[ "$#" -lt 1 ]]; then
     usage >&2
@@ -56,7 +57,7 @@ function main {
     exit 1
   fi
 
-  awk -f <(cat - <<-'EOD'
+  awk '
   # Convert kilobytes to gigabytes
   function convert(k) {
     if (k == 0) {
@@ -87,7 +88,6 @@ function main {
       printf "%s\t%s\n", i, convert(type_totals[i])
     }
   }
-	EOD
-  ) "${file}"
+  ' "${file}"
 }
 main "$@"

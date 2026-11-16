@@ -15,21 +15,17 @@ _title() {
 }
 
 #
-_which() {
-  command -v "$@" >/dev/null
-}
-
-#
 update_composer() {
   _title "Composer"
 
-  ! _which composer && \
-    echo "composer not found" >&2 && \
+  if ! command -v composer >/dev/null; then
+    echo "composer not found" >&2
     return
+  fi
 
   composer_path="$(command -v "composer")"
-  if [ "${composer_path}" == "${composer_path##"${HOME}"}" ]; then
-    echo "Non-local composer found" >&2 && \
+  if [[ "${composer_path}" == "${composer_path##"${HOME}"}" ]]; then
+    echo "Non-local composer found" >&2
     return
   fi
 
@@ -87,7 +83,7 @@ main() {
   )
 
   # The first argument is used for restricting updates to a single type
-  if [ $# -gt 0 ]; then
+  if [[ $# -gt 0 ]]; then
     declare -f "update_$1" >/dev/null || {
       echo "Unknown update type: $1" >&2
       exit 1

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Show certificate data for a hostname
-set -e
+set -eo pipefail
 
 usage() {
   cat - <<-EOD
@@ -47,7 +47,7 @@ get_all_certs() {
 }
 
 extract_certs() {
-  awk -f <(cat - <<-'EOD'
+  awk '
     BEGIN {
       cert = ""
       process_cert = 0
@@ -80,13 +80,13 @@ extract_certs() {
         next
       }
     }
-EOD
-)
+  '
 }
 
 main() {
   local hostname
   local server
+  local cmd
 
   local mode="summary"
   local scope="first"
@@ -134,7 +134,7 @@ main() {
       cmd="get_all_certs"
       ;;
     *)
-      echo "Invalid mode" >&2
+      echo "Invalid scope" >&2
       exit 1
       ;;
   esac
@@ -147,6 +147,11 @@ main() {
     full)
       "${cmd}" "${server}" "${hostname}" |\
         extract_certs
+      ;;
+
+    *)
+      echo "Invalid mode" >&2
+      exit 1
       ;;
   esac
 

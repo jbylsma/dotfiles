@@ -17,6 +17,8 @@ function usage () {
 ########
 function main() {
   local port
+  local listing
+  local pid
 
   if [[ $# -ne 1 ]]; then
     usage
@@ -30,7 +32,9 @@ function main() {
     exit 1
   fi
 
-  pid="$(sudo lsof -i ":${port}" | awk '$0~ / \(LISTEN\)$/ { print $2; exit; }')"
+  # lsof exits 1 when nothing uses the port
+  listing="$(sudo lsof -i ":${port}" || true)"
+  pid="$(awk '$0~ / \(LISTEN\)$/ { print $2; exit; }' <<< "${listing}")"
 
   if [[ -z "${pid}" ]]; then
     echo "No program found for port ${port}"
@@ -39,14 +43,8 @@ function main() {
 
   echo -n "${pid}	"
 
-  # Check for /proc, then parse ps (for OS X)
-  if [[ -d "/proc" ]]; then
-    sed -e 's|\x0| |g' < "/proc/${pid}/cmdline"
-    echo
-  else
-    ps -p "${pid}" -o command | \
-      awk 'NR > 1'
-  fi
+  sed -e 's|\x0| |g' < "/proc/${pid}/cmdline"
+  echo
 }
 
 main "$@"

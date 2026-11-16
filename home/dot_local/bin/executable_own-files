@@ -5,6 +5,7 @@
 # TODO: Support default configuration by "source ${config}"
 
 set -e
+shopt -s inherit_errexit
 
 
 ###############
@@ -67,14 +68,15 @@ main() {
           group="$(get_primary_group "${user}")"
         fi
         ;;
-      \?)
+      :)
+        echo "Option -${OPTARG} requires an argument" >&2
+        exit 1
+        ;;
+      *)
         echo "Invalid option: -${OPTARG}" >&2
         usage
         exit 1
         ;;
-      :)
-        echo "Option -${OPTARG} requires an argument" >&2
-        exit 1
     esac
   done
 

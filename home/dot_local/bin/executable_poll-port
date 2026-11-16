@@ -59,6 +59,7 @@ main() {
     clear
     date
 
+    # shellcheck disable=SC2310 # ping_port's status is the test
     if ping_port "${port}" "${server}"; then
       echo "${server} is available on port ${port}"
 

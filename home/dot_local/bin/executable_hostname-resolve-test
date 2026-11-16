@@ -11,6 +11,7 @@ usage() {
 main() {
   local hostname
   local server
+  local addresses
 
   if [[ $# -lt 1 ]]; then
     usage >&2
@@ -24,6 +25,7 @@ main() {
     nc -z -w1 "${server}" 53 >/dev/null 2>&1 || exit 1
   fi
 
-  test -n "$(dig ${server:+"@${server}"} "${hostname}" +short +timeout=0)"
+  addresses="$(dig ${server:+"@${server}"} "${hostname}" +short +timeout=0)"
+  [[ -n "${addresses}" ]]
 }
 main "$@"

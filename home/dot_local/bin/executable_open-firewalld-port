@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Open a firewalld TCP port or port range for the current SSH IP
 set -e
+shopt -s inherit_errexit
 
 readonly TIMEOUT_DEFAULT='1h'
 
@@ -25,6 +26,7 @@ main() {
   local client_ip
   local port
   local remove_rule
+  local rule
   local timeout
   local zone
 
@@ -74,16 +76,17 @@ main() {
   client_ip="$(echo "${SSH_CONNECTION}" |cut -d' ' -f1)"
   port="$1"
   zone="$(firewall-cmd --get-default-zone)"
+  rule="$(get_rich_rule "${client_ip}" "${port}")"
 
   if [[ "${remove_rule}" -eq 0 ]]; then
     firewall-cmd \
       --zone="${zone}" \
-      --add-rich-rule="$(get_rich_rule "${client_ip}" "${port}")" \
+      --add-rich-rule="${rule}" \
       --timeout="${timeout}"
   else
     firewall-cmd \
       --zone="${zone}" \
-      --remove-rich-rule="$(get_rich_rule "${client_ip}" "${port}")"
+      --remove-rich-rule="${rule}"
   fi
 }
 main "$@"
