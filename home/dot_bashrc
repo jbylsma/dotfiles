@@ -23,12 +23,12 @@ shopt -s histappend
 # Prompt colors: the path is red with background jobs, otherwise green. The
 # host is red over SSH, otherwise bold cyan. PS1 calls these at each prompt,
 # so the host color follows SSH_CONNECTION after tue.
-_prompt_path_color() {
+function _prompt_path_color {
   local pids
   pids="$(jobs -p)"
   if [[ -n "${pids}" ]]; then printf '31'; else printf '32'; fi
 }
-_prompt_host_color() {
+function _prompt_host_color {
   if [[ -n "${SSH_CONNECTION+x}" ]]; then printf '31'; else printf '1;36'; fi
 }
 
@@ -74,7 +74,7 @@ fi
 unset TMOUT 2>/dev/null
 
 # Function to lazily copy completion from one command to another
-_lazy_copy_completion() {
+function _lazy_copy_completion {
     local source_cmd="$1"
     local target_cmd="$2"
     local wrapper_func="_lazy_copy_completion_${target_cmd}"

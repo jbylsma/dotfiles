@@ -2,7 +2,7 @@
 set -eo pipefail
 
 # Runs in a new bash under xargs, so it sets its own options
-_process () {
+_process() {
   set -eo pipefail
   local gz="$1"
   local zst="${1%.gz}.zst"
@@ -27,11 +27,11 @@ _process () {
 }
 export -f _process
 
-usage () {
+usage() {
   echo "Usage: $(basename "$0") [-h] [-p parallel processes] directory" >&2
 }
 
-main () {
+main() {
   local directory
   local file_count
   local max_procs=0

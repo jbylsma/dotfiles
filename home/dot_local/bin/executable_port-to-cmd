@@ -8,14 +8,14 @@ set -e
 ###############
 # Basic usage
 ###############
-function usage () {
+usage() {
   echo "Usage: $(basename "$0") {port}" >&2
 }
 
 ########
 # Main
 ########
-function main() {
+main() {
   local port
   local listing
   local pid

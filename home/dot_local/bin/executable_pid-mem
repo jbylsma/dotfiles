@@ -3,7 +3,7 @@
 # Only works on OSes with /proc (not MacOS)
 set -e
 
-function help {
+help() {
   cat - <<-'EOD'
 Rss - Resident Set Size
 RSS is the total number of pages, shared or not, currently mapped into the
@@ -26,11 +26,11 @@ and 500k shared with four other processes, the PSS would be:
 EOD
 }
 
-function usage {
+usage() {
   echo "Usage: $(basename "$0") pid"
 }
 
-function main {
+main() {
   local pid
   local file
 

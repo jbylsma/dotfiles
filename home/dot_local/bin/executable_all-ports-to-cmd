@@ -8,7 +8,7 @@ shopt -s inherit_errexit
 ######################
 # Get all open ports
 ######################
-function get_open_ports {
+get_open_ports() {
   sudo lsof -Pni | \
     awk '$NF ~ "(LISTEN)" { gsub("^.+:", "", $(NF - 1)); print $(NF - 1); }' | \
     sort -nu
@@ -17,7 +17,7 @@ function get_open_ports {
 ########
 # Main
 ########
-function main() {
+main() {
   local ports
   local port
 

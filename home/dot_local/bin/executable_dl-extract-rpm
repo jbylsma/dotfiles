@@ -10,7 +10,7 @@ declare -ra REQUIRED_BINS=(
   cpio
 )
 
-cleanup () {
+cleanup() {
   for dir in "${tmp_dir}" "${package_dir}"; do
     if [[ -n "${dir}" && -d "${dir}" ]]; then
       rm -r "${dir}"
@@ -18,11 +18,11 @@ cleanup () {
   done
 }
 
-usage () {
+usage() {
   echo "Usage: $(basename "$0") [package name]"
 }
 
-main () {
+main() {
   local i
   local package
   local package_file

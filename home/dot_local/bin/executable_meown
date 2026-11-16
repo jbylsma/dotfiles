@@ -2,11 +2,11 @@
 # Changes a file's ownership to the current user, with awareness of sudo
 set -e
 
-function usage {
+usage() {
   echo "Usage: $(basename "$0") [-gh] files"
 }
 
-function main {
+main() {
   local set_group
   local gid
   local uid

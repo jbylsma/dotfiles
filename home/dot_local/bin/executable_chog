@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-function usage {
+usage() {
   echo "Usage: chog {owner}"
   echo "Change file owner and group to the owner in one pass."
 }
 
-function main {
+main() {
   local owner
 
   if [[ $# -lt 2 ]]; then

@@ -2,11 +2,11 @@
 # Show all listening ports for a PID
 set -e
 
-function usage {
+usage() {
     echo "Usage: $(basename "$0") [pid]"
 }
 
-function main {
+main() {
   local pid
 
   if [[ $# -ne 1 ]]; then
