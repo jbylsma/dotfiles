@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Show all listening ports for a PID
 set -e
 
@@ -9,14 +9,14 @@ function usage {
 function main {
   local pid
 
-  if [ $# -ne 1 ]; then
+  if [[ $# -ne 1 ]]; then
     usage
     exit 1
   fi
 
   pid="$1"
 
-  if [ "${pid}" -lt 1 ]; then
+  if [[ ! "${pid}" =~ ^[1-9][0-9]*$ ]]; then
     usage
     exit 1
   fi
