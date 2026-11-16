@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Environment for shells that skipped ~/.profile, such as `ssh host cmd`,
 # which bash on Debian and RHEL sources this file for
 if [[ -z "${DOTFILES_PROFILE_LOADED:-}" && -f "${HOME}/.profile" ]]; then
@@ -19,18 +20,31 @@ export HISTSIZE=
 export HISTFILESIZE=
 shopt -s histappend
 
+# Prompt colors: the path is red with background jobs, otherwise green. The
+# host is red over SSH, otherwise bold cyan. PS1 calls these at each prompt,
+# so the host color follows SSH_CONNECTION after tue.
+_prompt_path_color() {
+  local pids
+  pids="$(jobs -p)"
+  if [[ -n "${pids}" ]]; then printf '31'; else printf '32'; fi
+}
+_prompt_host_color() {
+  if [[ -n "${SSH_CONNECTION+x}" ]]; then printf '31'; else printf '1;36'; fi
+}
+
 # Terminal configuration
 if [[ -n "${PS1}" ]]; then
-  # If background jobs, set path color to red, otherwise green.
-  # If SSH, set host color to red, otherwise bold cyan.
-  PS1="\[\e[\$( [ ! -z \"\$(jobs -p)\" ] && echo -n '31' || echo -n '32' )m\][\w]\[\e[0m\]\n\[\e[\$( [ ! -z \${SSH_CONNECTION+x} ] && echo -n '31' || echo -n '1;36' )m\]\u@\h\[\e[1;33m\]$ \[\e[0m\]"
+  # shellcheck disable=SC2016 # PS1 expands these at each prompt
+  PS1='\[\e[$(_prompt_path_color)m\][\w]\[\e[0m\]\n\[\e[$(_prompt_host_color)m\]\u@\h\[\e[1;33m\]$ \[\e[0m\]'
 fi
 
-# enable bash completion in interactive shells
+# enable bash completion
 if ! shopt -oq posix; then
   if [[ -f /usr/share/bash-completion/bash_completion ]]; then
+    # shellcheck source=/dev/null
     . /usr/share/bash-completion/bash_completion
   elif [[ -f /etc/bash_completion ]]; then
+    # shellcheck source=/dev/null
     . /etc/bash_completion
   fi
 fi
@@ -65,7 +79,8 @@ _lazy_copy_completion() {
     local target_cmd="$2"
     local wrapper_func="_lazy_copy_completion_${target_cmd}"
 
-    eval "$(cat <<EOF
+    local definition
+    IFS= read -r -d '' definition <<EOF
 ${wrapper_func}() {
     if ! complete -p "${source_cmd}" &>/dev/null; then
         _completion_loader "${source_cmd}"
@@ -82,20 +97,20 @@ ${wrapper_func}() {
     fi
 }
 EOF
-)"
+    eval "${definition}"
 
     complete -F "${wrapper_func}" "${target_cmd}"
 }
 
 # Create Docker shortcuts
 declare -A D_SHORTCUTS=(
-    [c]='compose'
-    [cb]='compose build'
-    [cd]='compose down --remove-orphans'
-    [ce]='compose exec'
-    [cl]='compose logs'
-    [cr]='compose restart'
-    [cu]='compose up -d'
+  [c]='compose'
+  [cb]='compose build'
+  [cd]='compose down --remove-orphans'
+  [ce]='compose exec'
+  [cl]='compose logs'
+  [cr]='compose restart'
+  [cu]='compose up -d'
 )
 
 function d {
@@ -141,7 +156,7 @@ _lazy_copy_completion ssh pssh
 
 # Run ps restricted to the current user
 function psu {
-  ps -u "$(whoami)" "$@"
+  ps -u "${EUID}" "$@"
 }
 
 # Abbreviate dig +short with completion capabilities
@@ -151,17 +166,10 @@ function digs {
 _lazy_copy_completion dig digs
 
 # Update terminal variables from tmux
-# show-environment -s would emit shell code, but needs tmux 2.1 (RHEL 7 has
-# 1.8). Lines are NAME=value, or -NAME for a variable removed from the session.
 function tue {
-  local var
-  while IFS= read -r var; do
-    if [[ "${var}" == -* ]]; then
-      unset "${var#-}"
-    else
-      export "${var%%=*}=${var#*=}"
-    fi
-  done < <(tmux show-environment)
+  local env
+  env="$(tmux show-environment -s)" || return
+  eval "${env}"
 }
 
 # Disable terminal focus-event reporting on this pane, reporting prior state
@@ -169,6 +177,7 @@ function unfocus {
   local reply stty_orig mode
   stty_orig=$(stty -g)
   stty -echo -icanon min 0 time 10
+  # shellcheck disable=SC2016 # $p ends the DECRQM request; it isn't a variable
   printf '\e[?1004$p'
   IFS= read -r -d y -t 1 reply
   stty "${stty_orig}"
@@ -188,7 +197,7 @@ function unfocus {
 unset -f _which
 
 # Source local (non-shared) configuration.
-# shellcheck disable=SC1090
 if [[ -f "${HOME}/.bashrc.local" ]]; then
+  # shellcheck source=/dev/null
   source "${HOME}/.bashrc.local"
 fi
