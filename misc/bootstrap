@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Set up this host's dotfiles with chezmoi.
 #
 # Clone the repo to chezmoi's default source directory, then run this:

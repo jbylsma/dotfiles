@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Install the pinned chezmoi release to ~/.local/bin.
 #
 # chezmoi reruns a run_onchange_ script whenever its contents change, so
