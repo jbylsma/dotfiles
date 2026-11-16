@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+shopt -s inherit_errexit
 
 #
 _title() {
@@ -12,6 +13,35 @@ _title() {
   printf "\\n%$((${#title} + 4))s\\n" | tr ' ' "${char}"
   printf "%s${char} ${title} ${char}\\n"
   printf "%$((${#title} + 4))s\\n" | tr ' ' "${char}"
+}
+
+# Print the files chezmoi deployed that the source no longer has, if they're
+# still on disk. chezmoi's state keeps every target it has written.
+_chezmoi_orphans() {
+  local template
+  local written
+  local managed
+  local path
+  local -A is_managed=()
+
+  template='{{ range (output "chezmoi" "state" "get-bucket"
+    "--bucket" "entryState" "--format" "json" | fromJson | keys | sortAlpha)
+  }}{{ . }}{{ "\n" }}{{ end }}'
+  written="$(chezmoi execute-template "${template}")"
+  managed="$(chezmoi managed --path-style absolute)"
+
+  while IFS= read -r path; do
+    if [[ -n "${path}" ]]; then
+      is_managed["${path}"]=1
+    fi
+  done <<< "${managed}"
+
+  while IFS= read -r path; do
+    if [[ -n "${path}" && -z "${is_managed[${path}]+_}" ]] &&
+      [[ -e "${path}" || -L "${path}" ]]; then
+      printf '%s\n' "${path}"
+    fi
+  done <<< "${written}"
 }
 
 #
@@ -42,6 +72,8 @@ update_composer() {
 #
 update_dotfiles() {
   local config
+  local orphans
+  local -a orphan_list
 
   config="${XDG_CONFIG_HOME:-${HOME}/.config}/chezmoi/chezmoi.toml"
 
@@ -56,6 +88,15 @@ update_dotfiles() {
   # Pulls fast-forward only, then applies. A bumped chezmoi pin installs
   # itself through the repo's run_onchange_ installer script.
   chezmoi update
+
+  # chezmoi leaves a file in place when it's removed from the source
+  orphans="$(_chezmoi_orphans)"
+  if [[ -n "${orphans}" ]]; then
+    echo 'Files chezmoi deployed that the repo no longer has:' >&2
+    mapfile -t orphan_list <<< "${orphans}"
+    printf '  %s\n' "${orphan_list[@]}" >&2
+    echo 'Review, then delete them.' >&2
+  fi
 }
 
 #
