@@ -21,9 +21,8 @@ pushing needs a GitHub key or your agent forwarded with `ssh -A`.
 SHA-256, then runs `chezmoi init --apply`. It asks for this host's role:
 
 - `workstation`: everything, including the Regolith desktop, Alacritty, and
-  Vim and tmux plugins
-- `server`: shell, git, Vim, and tmux config only, with no third-party
-  downloads
+  tmux plugins
+- `server`: shell, git, Vim, and tmux config, with Vim's plugins
 
 Options:
 
@@ -78,8 +77,8 @@ chezmoi leaves files it doesn't manage alone.
 - `home/.chezmoiignore` skips the desktop files on servers. It also deploys
   the RHEL and Debian package scripts only where `/etc/redhat-release` or
   `/etc/debian_version` exists.
-- `home/.chezmoiexternal.toml.tmpl` lists third-party downloads, for
-  workstations only.
+- `home/.chezmoiexternal.toml.tmpl` lists third-party downloads. vim-plug
+  goes to every host, and the rest to workstations only.
 
 ## Pinned downloads
 

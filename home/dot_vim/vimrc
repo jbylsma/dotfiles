@@ -25,8 +25,7 @@ endif
 silent! packadd! cfilter
 silent! packadd! hlyank
 
-" chezmoi installs vim-plug on workstations only. Without it, turn on what
-" plug#end() would have.
+" Until chezmoi has installed vim-plug, turn on what plug#end() would have
 if !filereadable(expand('~/.vim/autoload/plug.vim'))
   filetype plugin indent on
   syntax enable

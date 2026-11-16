@@ -1,17 +1,18 @@
 {{/*
-  Third-party downloads, for workstations only. Each URL names a fixed tag or
-  commit, and chezmoi refuses a download that doesn't match its SHA-256.
+  Third-party downloads. Each URL names a fixed tag or commit, and chezmoi
+  refuses a download that doesn't match its SHA-256.
 
   To bump one: change the tag or commit in its URL, run `chezmoi apply`, and
   check the hash in the "SHA256 mismatch" error against your own download of
   the same URL before pasting it in.
 */ -}}
-{{ if eq .role "workstation" -}}
 [".vim/autoload/plug.vim"]
     type = "file"
     url = "https://raw.githubusercontent.com/junegunn/vim-plug/0.15.0/plug.vim"
     checksum.sha256 = "f2e856512c982063d0f4353744a29208e98fc622a474209e3a022969c974654a"
 
+# Workstations only
+{{ if eq .role "workstation" -}}
 # master as of 2023-03-06, 18 commits past v4.0.0
 [".tmux/plugins/tmux-resurrect"]
     type = "archive"

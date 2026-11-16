@@ -1,11 +1,9 @@
-{{ if eq .role "workstation" -}}
 #!/bin/bash
-# Install any missing Vim plugins with vim-plug, on workstations.
+# Install any missing Vim plugins with vim-plug.
 #
 # chezmoi reruns this whenever its rendered contents change. The hash below
-# changes with vimrc, so adding a plugin there installs it on each workstation
-# at its next `chezmoi apply`. Updating existing plugins is left to
-# terminal-update.
+# changes with vimrc, so adding a plugin there installs it on each host at its
+# next `chezmoi apply`. Updating existing plugins is left to terminal-update.
 #
 # vimrc: {{ include "dot_vim/vimrc" | sha256sum }}
 set -euo pipefail
@@ -20,4 +18,3 @@ if [[ ! -f "${HOME}/.vim/autoload/plug.vim" ]]; then
 fi
 
 vim -Nes -u "${HOME}/.vim/vimrc" -i NONE +'PlugInstall --sync' +qall </dev/null
-{{ end -}}
