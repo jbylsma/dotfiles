@@ -2,9 +2,10 @@
 # Run du against all children of a directory, excluding outside mounts
 # Linux-specific because BSD du doesn't support excluding files
 # Use caution:
-# * Not fool-proof on paths
 # * Mostly likely will fail on resources with newlines in them.
-set -e
+# * Mount points with spaces aren't excluded, because mountinfo escapes them.
+set -euo pipefail
+shopt -s inherit_errexit
 
 readonly MOUNT_FILE="/proc/self/mountinfo"
 
@@ -13,51 +14,30 @@ usage() {
 }
 
 ###
-# Get the full path for a directory.
-# Arguments:
-#   Directory to get full path
-###
-get_dir_full_path() {
-  local path
-  path="$1"
-
-  if [[ "${path}" = '/' ]]; then
-    echo '/'
-    return
-  fi
-
-  base_dir="$(cd -P "$(dirname "${path}")"; echo "${PWD}")"
-
-  dir="$(basename "${path}")"
-
-  if [[ "${dir}" != '.' ]]; then
-    if [[ "${base_dir}" = '/' ]]; then
-      echo "/${dir}"
-    else
-      echo "${base_dir}/${dir}"
-    fi
-  else
-    echo "${base_dir}"
-  fi
-
-}
-
-###
 # In a directory, get all immediate resources on the same filesystem
 # Arguments:
-#   Directory to get resources for
+#   Directory to get resources for, as a full path
 ###
 get_dir_resources() {
   local dir
+  local children
   dir="$1"
 
-  comm -23 \
-    <(find "${dir}" -mindepth 1 -maxdepth 1 |sort) \
-    <(awk '$5 != "/" { print $5; }' "${MOUNT_FILE}" |sort)
+  children="$(find "${dir}" -mindepth 1 -maxdepth 1 | sort)"
+  if [[ -z "${children}" ]]; then
+    return
+  fi
+
+  # Print the children that aren't mount points, other than /
+  awk '
+    NR == FNR { if ($5 != "/") mounts[$5]; next }
+    !($0 in mounts)
+  ' "${MOUNT_FILE}" - <<< "${children}"
 }
 
 main() {
   local dir
+  local listing
   local -a resources
 
   if [[ $# -lt 1 ]]; then
@@ -65,23 +45,25 @@ main() {
     exit 1
   fi
 
-  if [[ ! -f "${MOUNT_FILE}" ]]; then
+  if [[ ! -r "${MOUNT_FILE}" ]]; then
     echo "Cannot read ${MOUNT_FILE}" >&2
     exit 1
   fi
 
-  dir="${@: -1}"
-  set -- "${@: 1: $#-1}"
+  dir="${!#}"
+  set -- "${@:1:$#-1}"
   if [[ ! -d "${dir}" ]]; then
     echo "Invalid directory: ${dir}" >&2
+    exit 1
+  fi
+  # Resolve symlinks, . and .., so the paths match mountinfo's
+  dir="$(cd -P "${dir}" && pwd)"
+
+  listing="$(get_dir_resources "${dir}")"
+  if [[ -z "${listing}" ]]; then
     exit
   fi
-  dir="$(get_dir_full_path "${dir}")"
-
-  while IFS='' read -r resource; do
-    resources+=("${resource}");
-  done < <(get_dir_resources "${dir}")
+  mapfile -t resources <<< "${listing}"
   du "$@" -sx "${resources[@]}"
-
 }
 main "$@"
