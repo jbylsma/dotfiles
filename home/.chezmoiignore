@@ -31,7 +31,6 @@
 .local/bin/notebook-max-brightness
 .local/bin/pdfpack
 .local/bin/regolith-look-to-alacritty
-.local/bin/task-timer
 .local/bin/usb-reset
 {{- end }}
 
