@@ -11,43 +11,47 @@ OUTPUT="${HOME}/.config/alacritty/regolith-look.toml"
 XRESOURCES="${HOME}/.config/regolith3/Xresources"
 XRESOURCES_SEARCH_PATH="${HOME}/.config/regolith3/Xresources.d"
 
-# Resolve all #define macros from an Xresource file, recursing into #include.
-# Populates the associative array named by $1.
+# The #define macros from the look's Xresource files, set by load_defines
+declare -A DEFINES=()
+
+# Resolve all #define macros from an Xresource file into DEFINES, recursing
+# into #include.
 # Include paths are resolved relative to the including file first, then
 # relative to XRESOURCES_SEARCH_PATH (mirroring xrdb's -I flag behavior).
 load_defines() {
-  local -n _defs="$1"
-  local file="$2"
+  local file="$1"
   local base_dir
   base_dir="$(dirname "${file}")"
   local line
+  local inc
+  local inc_path
 
   while IFS= read -r line; do
     if [[ "${line}" =~ ^#define[[:space:]]+([^[:space:]]+)[[:space:]]+(.+)$ ]]; then
-      _defs["${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"
+      DEFINES["${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"
     elif [[ "${line}" =~ ^#include[[:space:]]\"([^\"]+)\" ]]; then
-      local inc="${BASH_REMATCH[1]}"
-      local inc_path="${base_dir}/${inc}"
+      inc="${BASH_REMATCH[1]}"
+      inc_path="${base_dir}/${inc}"
       if [[ ! -f "${inc_path}" ]]; then
         inc_path="${XRESOURCES_SEARCH_PATH}/${inc}"
       fi
-      load_defines "$1" "${inc_path}"
+      load_defines "${inc_path}"
     fi
   done < "${file}"
 }
 
-# Resolve a value: if it matches a key in the define map, return its value
+# Resolve a value: if it matches a key in DEFINES, return its value
 # (recursing until stable); otherwise return the value as-is.
 resolve() {
-  local -n _defs="$1"
-  local val="$2"
+  local val="$1"
   local seen=()
-  while [[ -n "${_defs[${val}]+_}" ]]; do
+  local s
+  while [[ -n "${DEFINES[${val}]+_}" ]]; do
     for s in "${seen[@]+"${seen[@]}"}"; do
       [[ "${s}" == "${val}" ]] && break 2
     done
     seen+=("${val}")
-    val="${_defs[${val}]}"
+    val="${DEFINES[${val}]}"
   done
   printf '%s' "${val}"
 }
@@ -65,6 +69,7 @@ generate() {
 
   local root_file="${look_dir}/root"
   local term_file="${look_dir}/gnome-terminal"
+  local f
   for f in "${root_file}" "${term_file}"; do
     if [[ ! -f "${f}" ]]; then
       echo "error: look file not found: ${f}" >&2
@@ -74,22 +79,22 @@ generate() {
 
   # Load all #define macros from the look's root file (which #includes the
   # rest of the look's Xresource files).
-  local -A defs=()
-  load_defines defs "${root_file}"
+  load_defines "${root_file}"
 
   # Parse gnome-terminal key/value pairs.
   local -A term=()
-  local key val
+  local line key val
   while IFS= read -r line; do
     [[ "${line}" =~ ^[[:space:]]*! ]] && continue
     [[ "${line}" =~ ^[[:space:]]*$ ]]  && continue
     if [[ "${line}" =~ ^([^:]+):[[:space:]]+(.+)$ ]]; then
       key="${BASH_REMATCH[1]}"
-      val="$(resolve defs "${BASH_REMATCH[2]}")"
+      val="$(resolve "${BASH_REMATCH[2]}")"
       term["${key}"]="${val}"
     fi
   done < "${term_file}"
 
+  local n
   for n in color{0..15}; do
     if [[ -z "${term[gnome.terminal.${n}]+_}" ]]; then
       echo "error: gnome.terminal.${n} not found in ${term_file}" >&2
