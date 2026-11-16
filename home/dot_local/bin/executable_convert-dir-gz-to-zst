@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-set -e
+set -eo pipefail
 
+# Runs in a new bash under xargs, so it sets its own options
 _process () {
-  set -e
+  set -eo pipefail
   local gz="$1"
   local zst="${1%.gz}.zst"
 
-  echo "$(date): Processing ${gz}"
-  gunzip -c "${gz}" |zstd -q --long -T0 -o "${zst}" || ( rm "${zst}" ; exit 1 )
+  printf '%(%a %b %e %T %Z %Y)T: Processing %s\n' -1 "${gz}"
+  gunzip -c "${gz}" |zstd -q --long -T0 -o "${zst}" || ( rm -f "${zst}" ; exit 1 )
   touch --reference="${gz}" "${zst}"
   if type chcon >/dev/null 2>&1; then
     # Ignore if the context can't be set
@@ -21,7 +22,7 @@ _process () {
     getfacl "${gz}" |setfacl --set-file=- "${zst}"
   fi
   rm "${gz}"
-  echo "$(date): Done processing ${gz}"
+  printf '%(%a %b %e %T %Z %Y)T: Done processing %s\n' -1 "${gz}"
 }
 export -f _process
 
@@ -82,7 +83,8 @@ main () {
       ;;
   esac
 
+  # shellcheck disable=SC2016 # The inner bash expands $1
   find "${directory}" -maxdepth 1 -iname '*.gz' -print0 |\
-    xargs -P"${max_procs}" -I{} -0 bash -c '_process {}'
+    xargs -P"${max_procs}" -0 -n1 bash -c '_process "$1"' _
 }
 main "$@"
